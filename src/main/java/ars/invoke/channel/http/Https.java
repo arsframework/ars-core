@@ -1,0 +1,1136 @@
+package ars.invoke.channel.http;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.Map;
+import java.util.List;
+import java.util.Date;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.net.URLEncoder;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.nio.channels.ReadableByteChannel;
+import java.security.cert.X509Certificate;
+import java.security.cert.CertificateException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
+
+import org.htmlparser.Parser;
+import org.htmlparser.beans.StringBean;
+import org.htmlparser.util.ParserException;
+import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
+import org.apache.http.util.EntityUtils;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+
+import ars.util.Nfile;
+import ars.util.Files;
+import ars.util.Streams;
+import ars.util.Strings;
+import ars.invoke.remote.Node;
+import ars.invoke.channel.http.HttpRequester;
+
+/**
+ * Http操作工具类
+ * 
+ * @author wuyq
+ * 
+ */
+public final class Https {
+	/**
+	 * 应用根资源地址
+	 */
+	public static final String ROOT_URI = "/";
+
+	/**
+	 * 应用根路径
+	 */
+	public static final String ROOT_PATH;
+
+	static {
+		ROOT_PATH = new File(Strings.CURRENT_PATH).getParentFile().getParentFile().getPath();
+	}
+
+	/**
+	 * HTTP协议请求方式
+	 * 
+	 * @author wuyq
+	 * 
+	 */
+	public enum Method {
+		/**
+		 * HEAD方式
+		 */
+		HEAD,
+
+		/**
+		 * GET方式
+		 */
+		GET,
+
+		/**
+		 * POST方式
+		 */
+		POST,
+
+		/**
+		 * PUT方式
+		 */
+		PUT,
+
+		/**
+		 * DELETE方式
+		 */
+		DELETE,
+
+		/**
+		 * TRACE方式
+		 */
+		TRACE,
+
+		/**
+		 * CONNECT方式
+		 */
+		CONNECT,
+
+		/**
+		 * OPTIONS方式
+		 */
+		OPTIONS;
+
+	}
+
+	/**
+	 * 资源地址上下文标识
+	 */
+	public static final String CONTEXT_URI = "uri";
+
+	/**
+	 * 资源地址全路径上下问标识
+	 */
+	public static final String CONTEXT_URL = "url";
+
+	/**
+	 * 客户地址上下文标识
+	 */
+	public static final String CONTEXT_HOST = "host";
+
+	/**
+	 * 系统路径上下文标识
+	 */
+	public static final String CONTEXT_PATH = "path";
+
+	/**
+	 * 请求令牌上下文标识
+	 */
+	public static final String CONTEXT_TOKEN = "token";
+
+	/**
+	 * 请求客户端上下文标识
+	 */
+	public static final String CONTEXT_CLIENT = "client";
+
+	/**
+	 * 请求协议上下文标识
+	 */
+	public static final String CONTEXT_SCHEME = "scheme";
+
+	/**
+	 * 请求域名上下文标识
+	 */
+	public static final String CONTEXT_DOMAIN = "domain";
+
+	/**
+	 * 主机地址上下文标识
+	 */
+	public static final String CONTEXT_SERVER = "server";
+
+	/**
+	 * 请求端口号上下文标识
+	 */
+	public static final String CONTEXT_PORT = "port";
+
+	/**
+	 * 请求参数上下文标识
+	 */
+	public static final String CONTEXT_REQUEST = "request";
+
+	/**
+	 * 请求内容上下文标识
+	 */
+	public static final String CONTEXT_CONTENT = "content";
+
+	/**
+	 * 请求响应上下文标识
+	 */
+	public static final String CONTEXT_RESPONSE = "response";
+
+	/**
+	 * 日期时间上下文标识
+	 */
+	public static final String CONTEXT_DATETIME = "datetime";
+
+	/**
+	 * 当前请求上下文标识
+	 */
+	public static final String CONTEXT_EXECUTOR = "executor";
+
+	/**
+	 * 请求时间戳上下文标识
+	 */
+	public static final String CONTEXT_TIMESTAMP = "timestamp";
+
+	/**
+	 * 请求耗时上下文标识
+	 */
+	public static final String CONTEXT_TIMESPEND = "timespend";
+
+	/**
+	 * 绑定SSL,默认使用443端口
+	 * 
+	 * @return 客户端包装器
+	 */
+	public static void bindSSL(HttpClient client) {
+		bindSSL(client, 443);
+	}
+
+	/**
+	 * 绑定SSL
+	 * 
+	 * @param port
+	 *            端口号
+	 * @return 客户端包装器
+	 */
+	public static void bindSSL(HttpClient client, int port) {
+		X509TrustManager trustManager = new X509TrustManager() {
+			public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+			}
+
+			public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+			}
+
+			public X509Certificate[] getAcceptedIssuers() {
+				return null;
+			}
+		};
+		try {
+			SSLContext context = SSLContext.getInstance("TLS");
+			context.init(null, new TrustManager[] { trustManager }, null);
+			Scheme scheme = new Scheme("https", port,
+					new SSLSocketFactory(context, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER));
+			client.getConnectionManager().getSchemeRegistry().register(scheme);
+		} catch (KeyManagementException e) {
+			throw new RuntimeException(e);
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * 获取Cookie
+	 * 
+	 * @param request
+	 *            Http请求对象
+	 * @param name
+	 *            Cookie名称
+	 * @return Cookie值
+	 */
+	public static String getCookie(HttpServletRequest request, String name) {
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : request.getCookies()) {
+				if (cookie.getName().equals(name)) {
+					try {
+						return URLDecoder.decode(cookie.getValue(), Strings.UTF8);
+					} catch (UnsupportedEncodingException e) {
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * 设置Cookie
+	 * 
+	 * @param response
+	 *            Http响应对象
+	 * @param name
+	 *            Cookie名称
+	 * @param value
+	 *            Cookie值
+	 * @param timeout
+	 *            过期时间（秒）
+	 */
+	public static void setCookie(HttpServletResponse response, String name, String value, int timeout) {
+		if (timeout < 0) {
+			throw new IllegalArgumentException("llegal timeout:" + timeout);
+		}
+		if (value != null) {
+			try {
+				Cookie cookie = new Cookie(name, URLEncoder.encode(value, Strings.UTF8));
+				cookie.setPath("/");
+				cookie.setMaxAge(timeout);
+				response.addCookie(cookie);
+			} catch (UnsupportedEncodingException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	/**
+	 * 获取并删除Cookie
+	 * 
+	 * @param request
+	 *            Http请求对象
+	 * @param response
+	 *            Http响应对象
+	 * @param name
+	 *            Cookie名称
+	 * @return Cookie值
+	 */
+	public static String removeCookie(HttpServletRequest request, HttpServletResponse response, String name) {
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : request.getCookies()) {
+				if (cookie.getName().equals(name)) {
+					try {
+						return URLDecoder.decode(cookie.getValue(), Strings.UTF8);
+					} catch (UnsupportedEncodingException e) {
+						throw new RuntimeException(e);
+					} finally {
+						cookie.setMaxAge(0);
+						response.addCookie(cookie);
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * 获取远程节点访问地址
+	 * 
+	 * @param node
+	 *            远程节点对象
+	 * @return 远程节点访问地址
+	 */
+	public static String getUrl(Node node) {
+		return getUrl(node, null);
+	}
+
+	/**
+	 * 获取远程节点访问地址
+	 * 
+	 * @param node
+	 *            远程节点对象
+	 * @param uri
+	 *            远程节点资源地址
+	 * @return 远程节点访问地址
+	 */
+	public static String getUrl(Node node, String uri) {
+		if (node == null) {
+			return null;
+		}
+		StringBuilder url = new StringBuilder(node.getProtocol().toString()).append("://").append(node.getHost())
+				.append(':').append(node.getPort());
+		if (!Strings.isEmpty(uri)) {
+			url.append(Strings.replace(new StringBuilder("/").append(uri), "//", "/"));
+		}
+		return url.toString();
+	}
+
+	/**
+	 * 获取请求资源地址（不包含应用上下文地址）
+	 * 
+	 * @param request
+	 *            HTTP请求对象
+	 * @return 资源地址
+	 */
+	public static String getUri(HttpServletRequest request) {
+		String uri = request.getRequestURI();
+		String context = request.getContextPath();
+		return context == null ? uri : uri.substring(context.length());
+	}
+
+	/**
+	 * 获取HTTP请求的URL地址（不包含资源地址）
+	 * 
+	 * @param request
+	 *            HTTP请求对象
+	 * @return URL地址
+	 */
+	public static String getUrl(HttpServletRequest request) {
+		return getUrl(request.getScheme(), request.getServerName(), request.getServerPort(), request.getContextPath());
+	}
+
+	/**
+	 * 获取HTTP URL地址
+	 * 
+	 * @param scheme
+	 *            请求协议
+	 * @param domain
+	 *            请求域名
+	 * @param port
+	 *            请求端口
+	 * @param context
+	 *            请求上下文路径
+	 * @return URL地址
+	 */
+	public static String getUrl(String scheme, String domain, int port, String context) {
+		StringBuilder url = new StringBuilder().append(scheme).append("://").append(domain).append(':').append(port);
+		if (context != null) {
+			url.append(context);
+		}
+		return url.toString();
+	}
+
+	/**
+	 * 将参数字符串形式转换成键/值映射
+	 * 
+	 * @param param
+	 *            参数字符串形式
+	 * @return 键/值映射
+	 */
+	@SuppressWarnings("unchecked")
+	public static Map<String, Object> parseParam(String param) {
+		if (Strings.isEmpty(param)) {
+			return new HashMap<String, Object>(0);
+		}
+		String[] setions = Strings.split(param, '&');
+		Map<String, Object> parameters = new HashMap<String, Object>(setions.length);
+		for (String setion : setions) {
+			setion = setion.trim();
+			if (setion.isEmpty()) {
+				continue;
+			}
+			String[] kv = Strings.split(setion, '=');
+			String key = kv[0].trim();
+			if (key.isEmpty()) {
+				continue;
+			}
+			String value = kv.length > 1 ? kv[1].trim() : null;
+			Object exist = parameters.get(key);
+			if (exist == null) {
+				parameters.put(key, value);
+			} else if (value != null) {
+				if (exist instanceof List) {
+					((List<String>) exist).add(value);
+				} else {
+					List<String> list = new LinkedList<String>();
+					list.add((String) exist);
+					list.add(value);
+					parameters.put(key, list);
+				}
+			}
+		}
+		return parameters;
+	}
+
+	/**
+	 * 获取URL参数
+	 * 
+	 * @param url
+	 *            资源地址
+	 * @return 参数键/值映射
+	 */
+	public static Map<String, Object> getParameters(String url) {
+		int index = url == null ? -1 : url.indexOf('?');
+		return index < 0 ? new HashMap<String, Object>(0) : parseParam(url.substring(index + 1));
+	}
+
+	/**
+	 * 获取普通表单请求参数
+	 * 
+	 * @param request
+	 *            HTTP请求对象
+	 * @return 参数键/值表
+	 * @throws IOException
+	 */
+	public static Map<String, Object> getParameters(HttpServletRequest request) throws IOException {
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		Enumeration<String> names = request.getParameterNames();
+		while (names.hasMoreElements()) {
+			String name = names.nextElement();
+			Object value = null;
+			String[] values = request.getParameterValues(name);
+			if (values.length == 1) {
+				String param = values[0].trim();
+				if (!param.isEmpty()) {
+					value = param;
+				}
+			} else {
+				List<String> _values = new ArrayList<String>(values.length);
+				for (int i = 0; i < values.length; i++) {
+					String param = values[i].trim();
+					if (!param.isEmpty()) {
+						_values.add(param);
+					}
+				}
+				if (_values.size() == 1) {
+					value = _values.get(0);
+				} else if (!_values.isEmpty()) {
+					value = _values;
+				}
+			}
+			parameters.put(name, value);
+		}
+		return parameters;
+	}
+
+	/**
+	 * 获取文件上传表单参数
+	 * 
+	 * @param request
+	 *            HTTP请求对象
+	 * @param uploader
+	 *            文件上传处理器
+	 * @return 参数键/值表
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	public static Map<String, Object> getUploadParameters(HttpServletRequest request, ServletFileUpload uploader)
+			throws IOException, FileUploadException {
+		List<?> items = uploader.parseRequest(request);
+		Map<String, Object> parameters = new HashMap<String, Object>(items.size());
+		for (int i = 0; i < items.size(); i++) {
+			final FileItem item = (FileItem) items.get(i);
+			Object value = null;
+			String name = item.getFieldName();
+			if (item.isFormField()) {
+				String param = new String(item.get(), Strings.UTF8).trim();
+				if (!param.isEmpty()) {
+					value = param;
+				}
+			} else {
+				final File file = ((DiskFileItem) item).getStoreLocation();
+				value = new Nfile(Files.getName(item.getName())) {
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public long getSize() {
+						return item.getSize();
+					}
+
+					@Override
+					public boolean isFile() {
+						return file.exists();
+					}
+
+					@Override
+					public File getFile() {
+						return file;
+					}
+
+					@Override
+					public InputStream getInputStream() throws IOException {
+						return item.getInputStream();
+					}
+
+				};
+			}
+			Object o = parameters.get(name);
+			if (o == null) {
+				parameters.put(name, value);
+			} else if (value != null) {
+				if (o instanceof List) {
+					((List<Object>) o).add(value);
+				} else {
+					List<Object> values = new LinkedList<Object>();
+					values.add(o);
+					values.add(value);
+					parameters.put(name, values);
+				}
+			}
+		}
+		return parameters;
+	}
+
+	/**
+	 * 获取Http请求实体
+	 * 
+	 * @param parameters
+	 *            请求参数
+	 * @return 请求实体
+	 * @throws IOException
+	 */
+	public static HttpEntity getHttpEntity(Map<String, Object> parameters) throws IOException {
+		Collection<?> values = parameters.values();
+		for (Object value : values) {
+			if (value instanceof File || value instanceof Nfile) {
+				return getUploadEntity(parameters);
+			}
+		}
+		return getPostEntity(parameters);
+	}
+
+	/**
+	 * 获取Get请求参数
+	 * 
+	 * @param parameters
+	 *            请求参数
+	 * @return Get请求参数
+	 * @throws IOException
+	 */
+	public static String getGetEntity(Map<String, Object> parameters) throws IOException {
+		String charset = Charset.defaultCharset().name();
+		StringBuilder buffer = new StringBuilder();
+		for (Entry<String, Object> entry : parameters.entrySet()) {
+			String key = entry.getKey();
+			if (key == null) {
+				continue;
+			}
+			Object value = entry.getValue();
+			Collection<?> collection = value instanceof Collection ? (Collection<?>) value
+					: value instanceof Object[] ? Arrays.asList((Object[]) value) : Arrays.asList(value);
+			for (Object object : collection) {
+				if (buffer.length() > 0) {
+					buffer.append('&');
+				}
+				buffer.append(key);
+				buffer.append('=');
+				if (object != null) {
+					buffer.append(URLEncoder.encode(object.toString(), charset));
+				}
+			}
+		}
+		return buffer.length() == 0 ? null : buffer.toString();
+	}
+
+	/**
+	 * 获取普通表单请求实例
+	 * 
+	 * @param parameters
+	 *            请求参数
+	 * @return HTTP实例
+	 * @throws IOException
+	 */
+	public static UrlEncodedFormEntity getPostEntity(Map<String, Object> parameters) throws IOException {
+		if (parameters.isEmpty()) {
+			return null;
+		}
+		List<NameValuePair> nameValues = new LinkedList<NameValuePair>();
+		for (Entry<String, Object> entry : parameters.entrySet()) {
+			String key = entry.getKey();
+			Object value = entry.getValue();
+			Collection<?> collection = value instanceof Collection ? (Collection<?>) value
+					: value instanceof Object[] ? Arrays.asList((Object[]) value) : Arrays.asList(value);
+			for (Object object : collection) {
+				nameValues.add(new BasicNameValuePair(key, object == null ? Strings.EMPTY_STRING : object.toString()));
+			}
+		}
+		return new UrlEncodedFormEntity(nameValues, Charset.defaultCharset());
+	}
+
+	/**
+	 * 获取文件上传请求实例
+	 * 
+	 * @param parameters
+	 *            请求参数
+	 * @return HTTP实例
+	 * @throws IOException
+	 */
+	public static MultipartEntity getUploadEntity(Map<String, Object> parameters) throws IOException {
+		if (parameters.isEmpty()) {
+			return null;
+		}
+		Charset charset = Charset.defaultCharset();
+		MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE, null, charset);
+		for (Entry<String, Object> entry : parameters.entrySet()) {
+			String key = entry.getKey();
+			Object value = entry.getValue();
+			Collection<?> collection = value instanceof Collection ? (Collection<?>) value
+					: value instanceof Object[] ? Arrays.asList((Object[]) value) : Arrays.asList(value);
+			for (Object object : collection) {
+				if (object == null) {
+					entity.addPart(key, new StringBody(Strings.EMPTY_STRING));
+				} else if (object instanceof File) {
+					entity.addPart(key, new FileBody((File) object));
+				} else if (object instanceof Nfile) {
+					Nfile file = (Nfile) object;
+					if (file.isFile()) {
+						entity.addPart(key, new FileBody(file.getFile(), file.getName()));
+					} else {
+						entity.addPart(key, new ByteArrayBody(file.getBytes(), file.getName()));
+					}
+				} else {
+					entity.addPart(key, new StringBody(object.toString(), charset));
+				}
+			}
+		}
+		return entity;
+	}
+
+	/**
+	 * 获取Http资源请求对象
+	 * 
+	 * @param url
+	 *            请求地址
+	 * @param method
+	 *            请求方式
+	 * @param entity
+	 *            Http请求实体
+	 * @return Http资源请求对象
+	 * @throws IOException
+	 */
+	public static HttpUriRequest getHttpUriRequest(String url, Method method, HttpEntity entity) throws IOException {
+		if (method == Method.POST) {
+			HttpPost httpPost = new HttpPost(url);
+			httpPost.setEntity(entity);
+			return httpPost;
+		} else if (method == Method.GET) {
+			return new HttpGet(url);
+		} else if (method == Method.PUT) {
+			HttpPut httpPut = new HttpPut(url);
+			httpPut.setEntity(entity);
+			return httpPut;
+		} else if (method == Method.DELETE) {
+			return new HttpDelete(url);
+		}
+		throw new RuntimeException("Not support method:" + method);
+	}
+
+	/**
+	 * 获取Http资源请求对象
+	 * 
+	 * @param url
+	 *            请求地址
+	 * @param method
+	 *            请求方式
+	 * @return Http资源请求对象
+	 * @throws IOException
+	 */
+	public static HttpUriRequest getHttpUriRequest(String url, Method method) throws IOException {
+		return getHttpUriRequest(url, method, Collections.<String, Object>emptyMap());
+	}
+
+	/**
+	 * 获取Http资源请求对象
+	 * 
+	 * @param url
+	 *            请求地址
+	 * @param method
+	 *            请求方式
+	 * @param parameters
+	 *            请求参数
+	 * @return Http资源请求对象
+	 * @throws IOException
+	 */
+	public static HttpUriRequest getHttpUriRequest(String url, Method method, Map<String, Object> parameters)
+			throws IOException {
+		if (method == Method.GET) {
+			if (parameters == null || parameters.isEmpty()) {
+				return new HttpGet(url);
+			}
+			return new HttpGet(new StringBuilder(url).append('?').append(getGetEntity(parameters)).toString());
+		}
+		HttpEntity httpEntity = parameters == null || parameters.isEmpty() ? null : getHttpEntity(parameters);
+		return getHttpUriRequest(url, method, httpEntity);
+	}
+
+	/**
+	 * 获取Http请求数据字节流
+	 * 
+	 * @param request
+	 *            Http请求对象
+	 * @return 字节数组
+	 * @throws IOException
+	 */
+	public static byte[] getBytes(HttpServletRequest request) throws IOException {
+		InputStream is = request.getInputStream();
+		try {
+			return Streams.getBytes(is);
+		} finally {
+			is.close();
+		}
+	}
+
+	/**
+	 * 获取Http请求结果字节数组
+	 * 
+	 * @param client
+	 *            Http客户端对象
+	 * @param request
+	 *            Http请求对象
+	 * @return 字节数组
+	 * @throws IOException
+	 */
+	public static byte[] getBytes(HttpClient client, HttpUriRequest request) throws IOException {
+		HttpEntity entity = null;
+		try {
+			entity = client.execute(request).getEntity();
+			return EntityUtils.toByteArray(entity);
+		} finally {
+			request.abort();
+			if (entity != null) {
+				EntityUtils.consumeQuietly(entity);
+			}
+		}
+	}
+
+	/**
+	 * 获取Http请求结果字节数组
+	 * 
+	 * @param client
+	 *            Http客户端对象
+	 * @param url
+	 *            请求地址
+	 * @param method
+	 *            请求方式
+	 * @return 字节数组
+	 * @throws IOException
+	 */
+	public static byte[] getBytes(HttpClient client, String url, Method method) throws IOException {
+		return getBytes(client, url, method, Collections.<String, Object>emptyMap());
+	}
+
+	/**
+	 * 获取Http请求结果字节数组
+	 * 
+	 * @param client
+	 *            Http客户端对象
+	 * @param url
+	 *            请求地址
+	 * @param method
+	 *            请求方式
+	 * @param parameters
+	 *            请求参数
+	 * @return 字节数组
+	 * @throws IOException
+	 */
+	public static byte[] getBytes(HttpClient client, String url, Method method, Map<String, Object> parameters)
+			throws IOException {
+		return getBytes(client, getHttpUriRequest(url, method, parameters));
+	}
+
+	/**
+	 * 获取Http请求数据流字符串形式
+	 * 
+	 * @param request
+	 *            Http请求对象
+	 * @return 数据字符串
+	 * @throws IOException
+	 */
+	public static String getString(HttpServletRequest request) throws IOException {
+		return new String(getBytes(request));
+	}
+
+	/**
+	 * 获取Http请求结果字符串
+	 * 
+	 * @param client
+	 *            Http客户端对象
+	 * @param request
+	 *            Http请求对象
+	 * @return 字符串
+	 * @throws IOException
+	 */
+	public static String getString(HttpClient client, HttpUriRequest request) throws IOException {
+		HttpEntity entity = null;
+		try {
+			entity = client.execute(request).getEntity();
+			return EntityUtils.toString(entity);
+		} finally {
+			request.abort();
+			if (entity != null) {
+				EntityUtils.consumeQuietly(entity);
+			}
+		}
+	}
+
+	/**
+	 * 获取Http请求结果字符串
+	 * 
+	 * @param client
+	 *            Http客户端对象
+	 * @param url
+	 *            请求地址
+	 * @param method
+	 *            请求方式
+	 * @return 字符串
+	 * @throws IOException
+	 */
+	public static String getString(HttpClient client, String url, Method method) throws IOException {
+		return getString(client, url, method, Collections.<String, Object>emptyMap());
+	}
+
+	/**
+	 * 获取Http请求结果字符串
+	 * 
+	 * @param client
+	 *            Http客户端对象
+	 * @param url
+	 *            请求地址
+	 * @param method
+	 *            请求方式
+	 * @param parameters
+	 *            请求参数
+	 * @return 字符串
+	 * @throws IOException
+	 */
+	public static String getString(HttpClient client, String url, Method method, Map<String, Object> parameters)
+			throws IOException {
+		return getString(client, getHttpUriRequest(url, method, parameters));
+	}
+
+	/**
+	 * 视图渲染
+	 * 
+	 * @param request
+	 *            HTTP请求对象
+	 * @param response
+	 *            HTTP响应对象
+	 * @param template
+	 *            视图模板名称
+	 * @param context
+	 *            渲染上下文数据
+	 * @return 渲染后的视图内容
+	 * @throws IOException
+	 * @throws ServletException
+	 */
+	public static String render(HttpServletRequest request, HttpServletResponse response, String template,
+			Map<String, Object> context) throws IOException, ServletException {
+		template = Strings.replace(template, "\\", "/");
+		if (template != null && template.charAt(0) != '/') {
+			template = new StringBuilder("/").append(template).toString();
+		}
+		RequestDispatcher dispatcher = request.getRequestDispatcher(template);
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		final PrintWriter writer = new PrintWriter(new OutputStreamWriter(os));
+		try {
+			for (Entry<String, Object> entry : context.entrySet()) {
+				request.setAttribute(entry.getKey(), entry.getValue());
+			}
+			dispatcher.include(request, new HttpServletResponseWrapper(response) {
+
+				@Override
+				public PrintWriter getWriter() throws IOException {
+					return writer;
+				}
+
+			});
+			writer.flush();
+			return os.toString();
+		} finally {
+			writer.close();
+		}
+	}
+
+	/**
+	 * 视图渲染
+	 * 
+	 * @param requester
+	 *            请求对象
+	 * @param template
+	 *            视图模板
+	 * @param content
+	 *            渲染内容
+	 * @return 渲染后的视图内容
+	 * @throws IOException
+	 * @throws ServletException
+	 */
+	public static String render(HttpRequester requester, String template, Object content)
+			throws IOException, ServletException {
+		return render(requester, template, content, requester.getParameters());
+	}
+
+	/**
+	 * 视图渲染
+	 * 
+	 * @param requester
+	 *            请求对象
+	 * @param template
+	 *            视图模板
+	 * @param content
+	 *            渲染内容
+	 * @param context
+	 *            上下文参数
+	 * @return 渲染后的视图内容
+	 * @throws IOException
+	 * @throws ServletException
+	 */
+	public static String render(HttpRequester requester, String template, Object content, Map<String, Object> context)
+			throws IOException, ServletException {
+		Date datetime = new Date();
+		HttpServletRequest request = requester.getHttpServletRequest();
+		HttpServletResponse response = requester.getHttpServletResponse();
+		Map<String, Object> data = new HashMap<String, Object>(14);
+		data.put(CONTEXT_URI, requester.getUri());
+		data.put(CONTEXT_URL, Https.getUrl(request));
+		data.put(CONTEXT_HOST, requester.getHost());
+		data.put(CONTEXT_PATH, request.getContextPath());
+		data.put(CONTEXT_PORT, request.getServerPort());
+		data.put(CONTEXT_TOKEN, requester.getToken());
+		data.put(CONTEXT_SCHEME, request.getScheme());
+		data.put(CONTEXT_DOMAIN, request.getServerName());
+		data.put(CONTEXT_SERVER, Strings.LOCALHOST_ADDRESS);
+		data.put(CONTEXT_REQUEST, context);
+		data.put(CONTEXT_RESPONSE, content);
+		data.put(CONTEXT_DATETIME, datetime);
+		data.put(CONTEXT_EXECUTOR, requester);
+		data.put(CONTEXT_TIMESPEND, datetime.getTime() - requester.getCreated().getTime());
+		return Https.render(request, response, template, data);
+	}
+
+	/**
+	 * 请求转发
+	 * 
+	 * @param request
+	 *            HTTP请求对象
+	 * @param response
+	 *            HTTP响应对象
+	 * @param path
+	 *            转发路径
+	 * @throws IOException
+	 * @throws ServletException
+	 */
+	public static void forward(HttpServletRequest request, HttpServletResponse response, String path)
+			throws IOException, ServletException {
+		String context = request.getContextPath();
+		if (context == null) {
+			request.getRequestDispatcher(path).forward(request, response);
+		} else {
+			request.getRequestDispatcher(context + path).forward(request, response);
+		}
+	}
+
+	/**
+	 * 请求重定向
+	 * 
+	 * @param request
+	 *            HTTP请求对象
+	 * @param response
+	 *            HTTP响应对象
+	 * @param path
+	 *            重定向路径
+	 * @throws IOException
+	 * @throws ServletException
+	 */
+	public static void redirect(HttpServletRequest request, HttpServletResponse response, String path)
+			throws IOException, ServletException {
+		String context = request.getContextPath();
+		if (context == null) {
+			response.sendRedirect(path);
+		} else {
+			response.sendRedirect(context + path);
+		}
+	}
+
+	/**
+	 * HTTP响应
+	 * 
+	 * @param response
+	 *            HTTP响应对象
+	 * @param object
+	 *            输出对象
+	 * @throws IOException
+	 */
+	public static void response(HttpServletResponse response, Object object) throws IOException {
+		if (object != null) {
+			OutputStream os = response.getOutputStream();
+			try {
+				if (object instanceof File || object instanceof Nfile) {
+					String name = object instanceof File ? ((File) object).getName() : ((Nfile) object).getName();
+					long length = object instanceof File ? ((File) object).length() : ((Nfile) object).getSize();
+					response.setContentType("application/octet-stream");
+					response.setHeader("Content-Disposition",
+							"attachment; filename=" + new String(name.getBytes(), "ISO-8859-1"));
+					response.setHeader("Content-Length", String.valueOf(length));
+					if (object instanceof File) {
+						Streams.write((File) object, os);
+					} else {
+						Streams.write((Nfile) object, os);
+					}
+				} else if (object instanceof byte[]) {
+					os.write((byte[]) object);
+				} else if (object instanceof InputStream) {
+					InputStream is = (InputStream) object;
+					try {
+						Streams.write(is, os);
+					} finally {
+						is.close();
+					}
+				} else if (object instanceof ReadableByteChannel) {
+					ReadableByteChannel channel = (ReadableByteChannel) object;
+					try {
+						Streams.write(channel, os);
+					} finally {
+						channel.close();
+					}
+				} else {
+					os.write(object.toString().getBytes());
+				}
+			} finally {
+				os.close();
+			}
+		}
+	}
+
+	/**
+	 * 获取html中纯文本
+	 * 
+	 * @param html
+	 *            html文本
+	 * @return 纯文本
+	 */
+	public static String getText(String html) {
+		if (Strings.isEmpty(html)) {
+			return html;
+		}
+		try {
+			Parser parser = new Parser();
+			parser.setInputHTML(html);
+			StringBean stringBean = new StringBean();
+			stringBean.setLinks(false);
+			stringBean.setCollapse(true);
+			stringBean.setReplaceNonBreakingSpaces(true);
+			parser.visitAllNodesWith(stringBean);
+			return stringBean.getStrings();
+		} catch (ParserException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+}

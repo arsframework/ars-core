@@ -48,6 +48,7 @@ public final class Files {
 	 * @param target
 	 *            目标文件/文件目录
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void copy(File source, File target) throws IOException {
 		if (source != null && source.exists()) {
@@ -158,6 +159,7 @@ public final class Files {
 	 *            文件对象
 	 * @return 行列表
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static List<String> getLines(File file) throws IOException {
 		if (file == null) {
@@ -178,6 +180,7 @@ public final class Files {
 	 *            文件字符流
 	 * @return 行列表
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static List<String> getLines(Reader reader) throws IOException {
 		if (reader == null) {
@@ -205,6 +208,7 @@ public final class Files {
 	 *            文件输入流
 	 * @return 行列表
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static List<String> getLines(InputStream input) throws IOException {
 		return input == null ? new ArrayList<String>(0) : getLines(new InputStreamReader(input));
@@ -234,10 +238,11 @@ public final class Files {
 	/**
 	 * 获取文件编码格式
 	 * 
-	 * @param path
-	 *            文件路径
+	 * @param file
+	 *            文件对象
 	 * @return 编码格式
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static String getEncoding(File file) throws IOException {
 		BytesEncoding encoding = new BytesEncoding();

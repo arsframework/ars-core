@@ -22,13 +22,12 @@ import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 public class SVGReplacedElementFactory implements ReplacedElementFactory {
 
 	@Override
-	public ReplacedElement createReplacedElement(LayoutContext c, BlockBox box,
-			UserAgentCallback uac, int cssWidth, int cssHeight) {
+	public ReplacedElement createReplacedElement(LayoutContext c, BlockBox box, UserAgentCallback uac, int cssWidth,
+			int cssHeight) {
 		Element element = box.getElement();
 		if ("svg".equals(element.getNodeName())) {
 
-			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
-					.newInstance();
+			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder documentBuilder;
 
 			try {
@@ -37,8 +36,7 @@ public class SVGReplacedElementFactory implements ReplacedElementFactory {
 				throw new RuntimeException(e);
 			}
 			Document svgDocument = documentBuilder.newDocument();
-			Element svgElement = (Element) svgDocument
-					.importNode(element, true);
+			Element svgElement = (Element) svgDocument.importNode(element, true);
 			svgDocument.appendChild(svgElement);
 			return new SVGReplacedElement(svgDocument, cssWidth, cssHeight);
 		}

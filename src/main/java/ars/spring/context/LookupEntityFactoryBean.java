@@ -18,8 +18,7 @@ import ars.util.Beans;
  * @author wuyq
  * 
  */
-public class LookupEntityFactoryBean implements FactoryBean<Object>,
-		ApplicationContextAware {
+public class LookupEntityFactoryBean implements FactoryBean<Object>, ApplicationContextAware {
 	private Object entity; // 对象实体
 	private Class<?> type; // 实体类型
 	private boolean proxy = true; // 是否代理
@@ -70,8 +69,7 @@ public class LookupEntityFactoryBean implements FactoryBean<Object>,
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
@@ -83,15 +81,13 @@ public class LookupEntityFactoryBean implements FactoryBean<Object>,
 			}
 			this.loaded = true;
 			if (this.multiple) {
-				Collection<?> objects = this.applicationContext.getBeansOfType(
-						this.type).values();
+				Collection<?> objects = this.applicationContext.getBeansOfType(this.type).values();
 				if (objects.isEmpty()) {
 					boolean supplied = !Beans.isEmpty(this.defaultEntity);
 					if (this.required && !supplied) {
 						throw new NoSuchBeanDefinitionException(this.type);
 					}
-					this.entity = supplied ? this.defaultEntity : Beans
-							.getArray(this.type, 0);
+					this.entity = supplied ? this.defaultEntity : Beans.getArray(this.type, 0);
 				} else {
 					this.entity = objects.toArray(Beans.getArray(this.type, 0));
 				}
@@ -111,14 +107,11 @@ public class LookupEntityFactoryBean implements FactoryBean<Object>,
 					for (int i = 0; i < entities.length; i++) {
 						Object object = entities[i];
 						if (AopUtils.isAopProxy(object)) {
-							entities[i] = ((Advised) object).getTargetSource()
-									.getTarget();
+							entities[i] = ((Advised) object).getTargetSource().getTarget();
 						}
 					}
-				} else if (this.entity != null
-						&& AopUtils.isAopProxy(this.entity)) {
-					this.entity = ((Advised) this.entity).getTargetSource()
-							.getTarget();
+				} else if (this.entity != null && AopUtils.isAopProxy(this.entity)) {
+					this.entity = ((Advised) this.entity).getTargetSource().getTarget();
 				}
 			}
 		}
@@ -127,8 +120,7 @@ public class LookupEntityFactoryBean implements FactoryBean<Object>,
 
 	@Override
 	public Class<?> getObjectType() {
-		return this.multiple ? Beans.getArray(this.type, 0).getClass()
-				: this.type;
+		return this.multiple ? Beans.getArray(this.type, 0).getClass() : this.type;
 	}
 
 	@Override

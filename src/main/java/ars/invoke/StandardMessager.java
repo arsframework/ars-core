@@ -22,8 +22,7 @@ public class StandardMessager implements Messager {
 
 	public StandardMessager(String... resources) {
 		if (resources == null || resources.length == 0) {
-			throw new IllegalArgumentException("Illegal resources:"
-					+ Strings.toString(resources));
+			throw new IllegalArgumentException("Illegal resources:" + Strings.toString(resources));
 		}
 		this.resources = resources;
 	}
@@ -43,8 +42,7 @@ public class StandardMessager implements Messager {
 				if (bundles == null) {
 					bundles = new ResourceBundle[this.resources.length];
 					for (int i = 0; i < bundles.length; i++) {
-						bundles[i] = ResourceBundle.getBundle(
-								this.resources[i], locale);
+						bundles[i] = ResourceBundle.getBundle(this.resources[i], locale);
 					}
 					this.localeBundles.put(locale, bundles);
 				}
@@ -73,8 +71,8 @@ public class StandardMessager implements Messager {
 		}
 		if (text == null) {
 			throw new MissingResourceException(
-					"Can't find resource for bundle java.util.PropertyResourceBundle, key "
-							+ key, StandardMessager.class.getName(), key);
+					"Can't find resource for bundle java.util.PropertyResourceBundle, key " + key,
+					StandardMessager.class.getName(), key);
 		}
 		return text;
 	}
@@ -87,8 +85,7 @@ public class StandardMessager implements Messager {
 	@Override
 	public String format(Locale locale, String key, Object[] args, String text) {
 		String message = this.getMessage(locale, key, text);
-		return args == null || args.length == 0 ? message : MessageFormat
-				.format(message, args);
+		return args == null || args.length == 0 ? message : MessageFormat.format(message, args);
 	}
 
 }

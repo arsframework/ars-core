@@ -18,8 +18,7 @@ import ars.invoke.channel.socket.SocketServer;
  * @author wuyq
  * 
  */
-public abstract class AbstractTcpServer extends AbstractServer implements
-		SocketServer {
+public abstract class AbstractTcpServer extends AbstractServer implements SocketServer {
 	private int port = 10000;
 	private Selector selector;
 
@@ -52,16 +51,13 @@ public abstract class AbstractTcpServer extends AbstractServer implements
 		while (this.isAlive()) {
 			try {
 				if (this.selector.select() > 0) {
-					Iterator<SelectionKey> iter = this.selector.selectedKeys()
-							.iterator();
+					Iterator<SelectionKey> iter = this.selector.selectedKeys().iterator();
 					while (iter.hasNext()) {
 						SelectionKey key = iter.next();
 						if (key.isAcceptable()) {
-							SocketChannel channel = ((ServerSocketChannel) key
-									.channel()).accept();
+							SocketChannel channel = ((ServerSocketChannel) key.channel()).accept();
 							channel.configureBlocking(false);
-							channel.register(this.selector,
-									SelectionKey.OP_READ);
+							channel.register(this.selector, SelectionKey.OP_READ);
 						} else if (key.isReadable() && key.isValid()) {
 							this.accept(key.channel());
 						}

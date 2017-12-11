@@ -20,35 +20,23 @@
 
 package ars.invoke.remote.slice;
 
-public final class IstreamHolder extends Ice.ObjectHolderBase<Istream>
-{
-    public
-    IstreamHolder()
-    {
-    }
+public final class IstreamHolder extends Ice.ObjectHolderBase<Istream> {
+	public IstreamHolder() {
+	}
 
-    public
-    IstreamHolder(Istream value)
-    {
-        this.value = value;
-    }
+	public IstreamHolder(Istream value) {
+		this.value = value;
+	}
 
-    public void
-    patch(Ice.Object v)
-    {
-        if(v == null || v instanceof Istream)
-        {
-            value = (Istream)v;
-        }
-        else
-        {
-            IceInternal.Ex.throwUOE(type(), v);
-        }
-    }
+	public void patch(Ice.Object v) {
+		if (v == null || v instanceof Istream) {
+			value = (Istream) v;
+		} else {
+			IceInternal.Ex.throwUOE(type(), v);
+		}
+	}
 
-    public String
-    type()
-    {
-        return Istream.ice_staticId();
-    }
+	public String type() {
+		return Istream.ice_staticId();
+	}
 }

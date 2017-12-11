@@ -49,7 +49,7 @@ public class SimpleTree extends AbstractTree<SimpleTree> {
 	public Map<String, Object> getAttributes() {
 		return attributes;
 	}
-	
+
 	@Override
 	public Map<String, Object> format() {
 		Map<String, Object> values = super.format();

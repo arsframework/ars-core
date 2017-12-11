@@ -10,8 +10,7 @@ import ars.server.AbstractServer;
  * @author wuyq
  * 
  */
-public abstract class AbstractPauseServer extends AbstractServer implements
-		PauseServer {
+public abstract class AbstractPauseServer extends AbstractServer implements PauseServer {
 	private volatile boolean paused;
 	private volatile boolean pausing;
 	private byte[] lock = new byte[0];
@@ -28,6 +27,7 @@ public abstract class AbstractPauseServer extends AbstractServer implements
 	 * 执行服务
 	 * 
 	 * @throws Exception
+	 *             操作异常
 	 */
 	protected abstract void execute() throws Exception;
 

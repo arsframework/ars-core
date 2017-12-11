@@ -29,12 +29,11 @@ public interface DocumentManager {
 	 *            请求参数
 	 * @return 文件路径
 	 * @throws Exception
+	 *             操作异常
 	 */
 	@Api("upload")
-	public String upload(Requester requester,
-			@Param(name = "path") String path,
-			@Param(name = "file", required = true) Nfile file,
-			Map<String, Object> parameters) throws Exception;
+	public String upload(Requester requester, @Param(name = "path") String path,
+			@Param(name = "file", required = true) Nfile file, Map<String, Object> parameters) throws Exception;
 
 	/**
 	 * 下载文件
@@ -47,10 +46,10 @@ public interface DocumentManager {
 	 *            附件过滤参数
 	 * @return 文件对象
 	 * @throws Exception
+	 *             操作异常
 	 */
 	@Api("download")
-	public Nfile download(Requester requester,
-			@Param(name = "path", required = true) String path,
+	public Nfile download(Requester requester, @Param(name = "path", required = true) String path,
 			Map<String, Object> parameters) throws Exception;
 
 	/**
@@ -64,10 +63,10 @@ public interface DocumentManager {
 	 *            请求参数
 	 * @return 文件描述对象树列表
 	 * @throws Exception
+	 *             操作异常
 	 */
 	@Api("trees")
-	public List<Describe> trees(Requester requester,
-			@Param(name = "path") String path, Map<String, Object> parameters)
+	public List<Describe> trees(Requester requester, @Param(name = "path") String path, Map<String, Object> parameters)
 			throws Exception;
 
 	/**
@@ -81,10 +80,10 @@ public interface DocumentManager {
 	 *            请求参数
 	 * @return 文件内容
 	 * @throws Exception
+	 *             操作异常
 	 */
 	@Api("content")
-	public String content(Requester requester,
-			@Param(name = "path", required = true) String path,
+	public String content(Requester requester, @Param(name = "path", required = true) String path,
 			Map<String, Object> parameters) throws Exception;
 
 	/**
@@ -100,12 +99,11 @@ public interface DocumentManager {
 	 *            请求参数
 	 * @return 文件描述对象列表
 	 * @throws Exception
+	 *             操作异常
 	 */
 	@Api("files")
-	public List<Describe> files(Requester requester,
-			@Param(name = "path") String path,
-			@Param(name = "spread") boolean spread,
-			Map<String, Object> parameters) throws Exception;
+	public List<Describe> files(Requester requester, @Param(name = "path") String path,
+			@Param(name = "spread") boolean spread, Map<String, Object> parameters) throws Exception;
 
 	/**
 	 * 拷贝文件或文件目录
@@ -119,12 +117,11 @@ public interface DocumentManager {
 	 * @param parameters
 	 *            请求参数
 	 * @throws Exception
+	 *             操作异常
 	 */
 	@Api("copy")
-	public void copy(Requester requester,
-			@Param(name = "source", required = true) String[] sources,
-			@Param(name = "target", required = true) String target,
-			Map<String, Object> parameters) throws Exception;
+	public void copy(Requester requester, @Param(name = "source", required = true) String[] sources,
+			@Param(name = "target", required = true) String target, Map<String, Object> parameters) throws Exception;
 
 	/**
 	 * 移动文件或文件目录
@@ -138,12 +135,11 @@ public interface DocumentManager {
 	 * @param parameters
 	 *            请求参数
 	 * @throws Exception
+	 *             操作异常
 	 */
 	@Api("move")
-	public void move(Requester requester,
-			@Param(name = "source", required = true) String[] sources,
-			@Param(name = "target", required = true) String target,
-			Map<String, Object> parameters) throws Exception;
+	public void move(Requester requester, @Param(name = "source", required = true) String[] sources,
+			@Param(name = "target", required = true) String target, Map<String, Object> parameters) throws Exception;
 
 	/**
 	 * 移除文件
@@ -155,10 +151,10 @@ public interface DocumentManager {
 	 * @param parameters
 	 *            附件过滤参数
 	 * @throws Exception
+	 *             操作异常
 	 */
 	@Api("remove")
-	public void remove(Requester requester,
-			@Param(name = "path", required = true) String[] paths,
+	public void remove(Requester requester, @Param(name = "path", required = true) String[] paths,
 			Map<String, Object> parameters) throws Exception;
 
 	/**
@@ -175,12 +171,11 @@ public interface DocumentManager {
 	 * @param parameters
 	 *            请求参数
 	 * @throws Exception
+	 *             操作异常
 	 */
 	@Api("append")
-	public void append(Requester requester,
-			@Param(name = "path", required = true) String path,
-			@Param(name = "content") String content,
-			@Param(name = "directory") boolean directory,
+	public void append(Requester requester, @Param(name = "path", required = true) String path,
+			@Param(name = "content") String content, @Param(name = "directory") boolean directory,
 			Map<String, Object> parameters) throws Exception;
 
 	/**
@@ -195,12 +190,11 @@ public interface DocumentManager {
 	 * @param parameters
 	 *            请求参数
 	 * @throws Exception
+	 *             操作异常
 	 */
 	@Api("rename")
-	public void rename(Requester requester,
-			@Param(name = "path", required = true) String path,
-			@Param(name = "name", required = true) String name,
-			Map<String, Object> parameters) throws Exception;
+	public void rename(Requester requester, @Param(name = "path", required = true) String path,
+			@Param(name = "name", required = true) String name, Map<String, Object> parameters) throws Exception;
 
 	/**
 	 * 修改文件内容
@@ -214,11 +208,10 @@ public interface DocumentManager {
 	 * @param parameters
 	 *            请求参数
 	 * @throws Exception
+	 *             操作异常
 	 */
 	@Api("update")
-	public void update(Requester requester,
-			@Param(name = "path", required = true) String path,
-			@Param(name = "content") String content,
-			Map<String, Object> parameters) throws Exception;
+	public void update(Requester requester, @Param(name = "path", required = true) String path,
+			@Param(name = "content") String content, Map<String, Object> parameters) throws Exception;
 
 }

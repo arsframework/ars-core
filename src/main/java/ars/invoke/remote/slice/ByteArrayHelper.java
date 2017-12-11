@@ -20,19 +20,14 @@
 
 package ars.invoke.remote.slice;
 
-public final class ByteArrayHelper
-{
-    public static void
-    write(IceInternal.BasicStream __os, byte[] __v)
-    {
-        __os.writeByteSeq(__v);
-    }
+public final class ByteArrayHelper {
+	public static void write(IceInternal.BasicStream __os, byte[] __v) {
+		__os.writeByteSeq(__v);
+	}
 
-    public static byte[]
-    read(IceInternal.BasicStream __is)
-    {
-        byte[] __v;
-        __v = __is.readByteSeq();
-        return __v;
-    }
+	public static byte[] read(IceInternal.BasicStream __is) {
+		byte[] __v;
+		__v = __is.readByteSeq();
+		return __v;
+	}
 }

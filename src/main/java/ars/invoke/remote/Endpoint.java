@@ -24,8 +24,7 @@ public class Endpoint implements Resource {
 			throw new IllegalArgumentException("Illegal uri:" + uri);
 		}
 		if (nodes == null || nodes.length == 0) {
-			throw new IllegalArgumentException("Illegal nodes:"
-					+ Arrays.toString(nodes));
+			throw new IllegalArgumentException("Illegal nodes:" + Arrays.toString(nodes));
 		}
 		this.uri = uri;
 		this.nodes = nodes;
@@ -61,16 +60,14 @@ public class Endpoint implements Resource {
 			return false;
 		}
 		Endpoint endpoint = (Endpoint) obj;
-		return Beans.isEqual(this.nodes, endpoint.getNodes())
-				&& (this.uri == null && endpoint.getUri() == null || (this.uri != null && this.uri
-						.equals(endpoint.getUri())));
+		return Beans.isEqual(this.nodes, endpoint.getNodes()) && (this.uri == null && endpoint.getUri() == null
+				|| (this.uri != null && this.uri.equals(endpoint.getUri())));
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder buffer = new StringBuilder(Arrays.toString(this.nodes));
-		return this.uri == null ? buffer.toString() : buffer.append(':')
-				.append(this.uri).toString();
+		return this.uri == null ? buffer.toString() : buffer.append(':').append(this.uri).toString();
 	}
 
 }

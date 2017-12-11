@@ -33,11 +33,10 @@ public final class Converts {
 	 * @param handle
 	 *            转换操作
 	 * @throws IOException
+	 *             IO操作异常
 	 */
-	private static void file2swf(File input, File output, String handle)
-			throws IOException {
-		String command = new StringBuilder(handle).append(" ")
-				.append(input.getPath()).append(" -o ")
+	private static void file2swf(File input, File output, String handle) throws IOException {
+		String command = new StringBuilder(handle).append(" ").append(input.getPath()).append(" -o ")
 				.append(output.getPath()).append(" -T 9").toString();
 		try {
 			Runtime.getRuntime().exec(command).waitFor();
@@ -53,6 +52,7 @@ public final class Converts {
 	 * @param output
 	 *            输出文件
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void pdf2swf(File input, File output) throws IOException {
 		file2swf(input, output, "pdf2swf");
@@ -66,6 +66,7 @@ public final class Converts {
 	 * @param output
 	 *            输出文件
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void gif2swf(File input, File output) throws IOException {
 		file2swf(input, output, "gif2swf");
@@ -79,6 +80,7 @@ public final class Converts {
 	 * @param output
 	 *            输出文件
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void png2swf(File input, File output) throws IOException {
 		file2swf(input, output, "png2swf");
@@ -92,6 +94,7 @@ public final class Converts {
 	 * @param output
 	 *            输出文件
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void jpeg2swf(File input, File output) throws IOException {
 		file2swf(input, output, "jpeg2swf");
@@ -105,6 +108,7 @@ public final class Converts {
 	 * @param output
 	 *            输出文件
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void wav2swf(File input, File output) throws IOException {
 		file2swf(input, output, "wav2swf");
@@ -118,6 +122,7 @@ public final class Converts {
 	 * @param output
 	 *            输出文件
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void font2swf(File input, File output) throws IOException {
 		file2swf(input, output, "font2swf");
@@ -131,11 +136,11 @@ public final class Converts {
 	 * @param output
 	 *            输出文件
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void file2swf(File input, File output) throws IOException {
 		String name = input.getName().toLowerCase();
-		if (name.endsWith(".jpg") || name.endsWith(".jpe")
-				|| name.endsWith(".jpeg")) {
+		if (name.endsWith(".jpg") || name.endsWith(".jpe") || name.endsWith(".jpeg")) {
 			jpeg2swf(input, output);
 		} else if (name.endsWith(".png")) {
 			png2swf(input, output);
@@ -160,10 +165,11 @@ public final class Converts {
 	 * @param target
 	 *            PDF文件
 	 * @throws IOException
+	 *             IO操作异常
 	 * @throws TranscoderException
+	 *             转换异常
 	 */
-	public static void svg2pdf(File source, File target) throws IOException,
-			TranscoderException {
+	public static void svg2pdf(File source, File target) throws IOException, TranscoderException {
 		FileInputStream input = null;
 		FileOutputStream output = null;
 		try {
@@ -188,15 +194,14 @@ public final class Converts {
 	 * 
 	 * @param reader
 	 *            SVG字符流
-	 * @param target
+	 * @param output
 	 *            PDF输出流
 	 * @throws TranscoderException
+	 *             转换异常
 	 */
-	public static void svg2pdf(Reader reader, OutputStream output)
-			throws TranscoderException {
+	public static void svg2pdf(Reader reader, OutputStream output) throws TranscoderException {
 		Transcoder transcoder = new PDFTranscoder();
-		transcoder.transcode(new TranscoderInput(reader), new TranscoderOutput(
-				output));
+		transcoder.transcode(new TranscoderInput(reader), new TranscoderOutput(output));
 	}
 
 	/**
@@ -204,15 +209,14 @@ public final class Converts {
 	 * 
 	 * @param input
 	 *            SVG输入流
-	 * @param target
+	 * @param output
 	 *            PDF输出流
 	 * @throws TranscoderException
+	 *             转换异常
 	 */
-	public static void svg2pdf(InputStream input, OutputStream output)
-			throws TranscoderException {
+	public static void svg2pdf(InputStream input, OutputStream output) throws TranscoderException {
 		Transcoder transcoder = new PDFTranscoder();
-		transcoder.transcode(new TranscoderInput(input), new TranscoderOutput(
-				output));
+		transcoder.transcode(new TranscoderInput(input), new TranscoderOutput(output));
 	}
 
 	/**
@@ -223,10 +227,11 @@ public final class Converts {
 	 * @param target
 	 *            PNG文件
 	 * @throws IOException
+	 *             IO操作异常
 	 * @throws TranscoderException
+	 *             转换异常
 	 */
-	public static void svg2png(File source, File target) throws IOException,
-			TranscoderException {
+	public static void svg2png(File source, File target) throws IOException, TranscoderException {
 		FileInputStream input = null;
 		FileOutputStream output = null;
 		try {
@@ -251,15 +256,14 @@ public final class Converts {
 	 * 
 	 * @param reader
 	 *            SVG字符流
-	 * @param target
+	 * @param output
 	 *            PNG输出流
 	 * @throws TranscoderException
+	 *             转换异常
 	 */
-	public static void svg2png(Reader reader, OutputStream output)
-			throws TranscoderException {
+	public static void svg2png(Reader reader, OutputStream output) throws TranscoderException {
 		Transcoder transcoder = new PNGTranscoder();
-		transcoder.transcode(new TranscoderInput(reader), new TranscoderOutput(
-				output));
+		transcoder.transcode(new TranscoderInput(reader), new TranscoderOutput(output));
 	}
 
 	/**
@@ -267,15 +271,14 @@ public final class Converts {
 	 * 
 	 * @param input
 	 *            SVG输入流
-	 * @param target
+	 * @param output
 	 *            PNG输出流
 	 * @throws TranscoderException
+	 *             转换异常
 	 */
-	public static void svg2png(InputStream input, OutputStream output)
-			throws TranscoderException {
+	public static void svg2png(InputStream input, OutputStream output) throws TranscoderException {
 		Transcoder transcoder = new PNGTranscoder();
-		transcoder.transcode(new TranscoderInput(input), new TranscoderOutput(
-				output));
+		transcoder.transcode(new TranscoderInput(input), new TranscoderOutput(output));
 	}
 
 	/**
@@ -286,10 +289,11 @@ public final class Converts {
 	 * @param target
 	 *            JPEG文件
 	 * @throws IOException
+	 *             IO操作异常
 	 * @throws TranscoderException
+	 *             转换异常
 	 */
-	public static void svg2jpeg(File source, File target) throws IOException,
-			TranscoderException {
+	public static void svg2jpeg(File source, File target) throws IOException, TranscoderException {
 		FileInputStream input = null;
 		FileOutputStream output = null;
 		try {
@@ -314,15 +318,14 @@ public final class Converts {
 	 * 
 	 * @param reader
 	 *            SVG字符流
-	 * @param target
+	 * @param output
 	 *            JPEG输出流
 	 * @throws TranscoderException
+	 *             转换异常
 	 */
-	public static void svg2jpeg(Reader reader, OutputStream output)
-			throws TranscoderException {
+	public static void svg2jpeg(Reader reader, OutputStream output) throws TranscoderException {
 		Transcoder transcoder = new JPEGTranscoder();
-		transcoder.transcode(new TranscoderInput(reader), new TranscoderOutput(
-				output));
+		transcoder.transcode(new TranscoderInput(reader), new TranscoderOutput(output));
 	}
 
 	/**
@@ -330,15 +333,14 @@ public final class Converts {
 	 * 
 	 * @param input
 	 *            SVG输入流
-	 * @param target
+	 * @param output
 	 *            JPEG输出流
 	 * @throws TranscoderException
+	 *             转换异常
 	 */
-	public static void svg2jpeg(InputStream input, OutputStream output)
-			throws TranscoderException {
+	public static void svg2jpeg(InputStream input, OutputStream output) throws TranscoderException {
 		Transcoder transcoder = new JPEGTranscoder();
-		transcoder.transcode(new TranscoderInput(input), new TranscoderOutput(
-				output));
+		transcoder.transcode(new TranscoderInput(input), new TranscoderOutput(output));
 	}
 
 }

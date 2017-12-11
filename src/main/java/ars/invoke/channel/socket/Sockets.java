@@ -23,9 +23,9 @@ public final class Sockets {
 	 *            字节数据
 	 * @return 链接通道
 	 * @throws IOException
+	 *             IO操作异常
 	 */
-	public static Channel tcp(SocketAddress address, byte[] bytes)
-			throws IOException {
+	public static Channel tcp(SocketAddress address, byte[] bytes) throws IOException {
 		SocketChannel channel = SocketChannel.open();
 		channel.connect(address);
 		channel.write(ByteBuffer.wrap(bytes));
@@ -41,9 +41,9 @@ public final class Sockets {
 	 *            字节数据
 	 * @return 链接通道
 	 * @throws IOException
+	 *             IO操作异常
 	 */
-	public static Channel udp(SocketAddress address, byte[] bytes)
-			throws IOException {
+	public static Channel udp(SocketAddress address, byte[] bytes) throws IOException {
 		DatagramChannel channel = DatagramChannel.open();
 		channel.connect(address);
 		channel.write(ByteBuffer.wrap(bytes));

@@ -25,11 +25,9 @@ package ars.invoke.remote.slice;
  * 
  **/
 
-public interface AMD_Resource_upload extends Ice.AMDCallback
-{
-    /**
-     * ice_response indicates that
-     * the operation completed successfully.
-     **/
-    void ice_response();
+public interface AMD_Resource_upload extends Ice.AMDCallback {
+	/**
+	 * ice_response indicates that the operation completed successfully.
+	 **/
+	void ice_response();
 }

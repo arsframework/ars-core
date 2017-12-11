@@ -190,6 +190,10 @@ public final class Beans {
 	/**
 	 * 获取树型键/值对象比较器
 	 * 
+	 * @param <K>
+	 *            键类型
+	 * @param <V>
+	 *            值类型
 	 * @param map
 	 *            树型键/值对象
 	 * @return 比较器对象
@@ -285,6 +289,8 @@ public final class Beans {
 	/**
 	 * 判断数组中是否存在制定对象
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param array
 	 *            数组
 	 * @param object
@@ -298,6 +304,8 @@ public final class Beans {
 	/**
 	 * 判断数组中是否存在制定对象
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param array
 	 *            数组
 	 * @param object
@@ -313,6 +321,8 @@ public final class Beans {
 	/**
 	 * 判断数组中是否存在制定对象
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param array
 	 *            数组
 	 * @param objects
@@ -327,6 +337,8 @@ public final class Beans {
 	/**
 	 * 判断数组中是否存在制定对象
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param array
 	 *            数组
 	 * @param objects
@@ -343,6 +355,8 @@ public final class Beans {
 	/**
 	 * 判断集合中是否存在制定对象
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param collection
 	 *            集合
 	 * @param object
@@ -356,10 +370,14 @@ public final class Beans {
 	/**
 	 * 判断集合中是否存在制定对象
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param collection
 	 *            集合
 	 * @param object
 	 *            对象
+	 * @param comparator
+	 *            对象比较器
 	 * @return true/false
 	 */
 	public static <T> boolean isExist(Collection<T> collection, T object, Comparator<T> comparator) {
@@ -376,6 +394,8 @@ public final class Beans {
 	/**
 	 * 判断集合中是否存在制定对象
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param collection
 	 *            集合
 	 * @param objects
@@ -397,6 +417,8 @@ public final class Beans {
 	/**
 	 * 判断集合中是否存在制定对象
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param collection
 	 *            集合
 	 * @param objects
@@ -418,10 +440,14 @@ public final class Beans {
 	/**
 	 * 判断集合中是否存在制定对象
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param collection
 	 *            集合
 	 * @param objects
 	 *            对象数组
+	 * @param comparator
+	 *            对象比较器
 	 * @return true/false
 	 */
 	public static <T> boolean isExist(Collection<T> collection, T[] objects, Comparator<T> comparator) {
@@ -439,10 +465,14 @@ public final class Beans {
 	/**
 	 * 判断集合中是否存在制定对象
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param collection
 	 *            集合
 	 * @param objects
 	 *            对象集合
+	 * @param comparator
+	 *            对象比较器
 	 * @return true/false
 	 */
 	public static <T> boolean isExist(Collection<T> collection, Collection<T> objects, Comparator<T> comparator) {
@@ -473,6 +503,8 @@ public final class Beans {
 	/**
 	 * 判断两个数组中元素是否相同
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param array1
 	 *            数组1
 	 * @param array2
@@ -493,6 +525,8 @@ public final class Beans {
 	/**
 	 * 判断两个数组中元素是否相同
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param array1
 	 *            数组1
 	 * @param array2
@@ -509,6 +543,8 @@ public final class Beans {
 	/**
 	 * 判断两个集合中元素是否相同
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param collection1
 	 *            集合1
 	 * @param collection2
@@ -552,6 +588,8 @@ public final class Beans {
 	/**
 	 * 判断两个集合中元素是否相同
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param collection1
 	 *            集合1
 	 * @param collection2
@@ -607,6 +645,8 @@ public final class Beans {
 	/**
 	 * 判断两个对象属性值是否相同
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param object
 	 *            对象
 	 * @param other
@@ -644,6 +684,8 @@ public final class Beans {
 	/**
 	 * 判断两个对象属性值是否相同
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param object
 	 *            对象
 	 * @param other
@@ -691,6 +733,8 @@ public final class Beans {
 	/**
 	 * 获取对象实例
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param type
 	 *            对象类型
 	 * @return 对象实例
@@ -708,6 +752,8 @@ public final class Beans {
 	/**
 	 * 获取对象实例
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param type
 	 *            对象类型
 	 * @param parameters
@@ -1036,6 +1082,8 @@ public final class Beans {
 	 * 
 	 * @param object
 	 *            对象实例
+	 * @param properties
+	 *            属性名称数组（如果为空则获取所有属性值）
 	 * @return 键/值对象
 	 */
 	public static Map<String, Object> getValues(Object object, String... properties) {
@@ -1188,7 +1236,9 @@ public final class Beans {
 	 * @param object
 	 *            对象实例
 	 * @param property
-	 *            属性名称
+	 *            键属性名称
+	 * @param mapping
+	 *            值属性名称
 	 * @return 键/值对
 	 */
 	public static Map<Object, Object> getAssemblePropertyValue(Object object, String property, String mapping) {
@@ -1465,6 +1515,8 @@ public final class Beans {
 	/**
 	 * 对象拷贝（属性复制）
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param source
 	 *            源对象
 	 * @return 目标对象
@@ -1482,6 +1534,8 @@ public final class Beans {
 	/**
 	 * 对象拷贝（属性复制）
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param source
 	 *            源对象
 	 * @param target
@@ -1513,6 +1567,8 @@ public final class Beans {
 	/**
 	 * 初始化对象实例
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param type
 	 *            对象类型
 	 * @param values
@@ -1703,6 +1759,8 @@ public final class Beans {
 	/**
 	 * 获取数组对象
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param type
 	 *            数组类型
 	 * @param length
@@ -1789,6 +1847,12 @@ public final class Beans {
 	/**
 	 * 键/值对类型转换
 	 * 
+	 * @param <K>
+	 *            键类型
+	 * @param <V>
+	 *            值类型
+	 * @param <T>
+	 *            目标数据类型
 	 * @param type
 	 *            转换类型
 	 * @param object
@@ -1809,6 +1873,8 @@ public final class Beans {
 	/**
 	 * 集合类型转换
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param type
 	 *            转换类型
 	 * @param object
@@ -1830,6 +1896,8 @@ public final class Beans {
 	/**
 	 * 列表类型转换
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param type
 	 *            转换类型
 	 * @param object
@@ -1851,6 +1919,8 @@ public final class Beans {
 	/**
 	 * 将对象转换成数组
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param type
 	 *            数组类型
 	 * @param object
@@ -2094,11 +2164,13 @@ public final class Beans {
 	/**
 	 * 枚举类型转换
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param type
 	 *            Enum类型
 	 * @param object
 	 *            被转换对象
-	 * @return Enum
+	 * @return 枚举实例
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends Enum<T>> T toEnum(Class<T> type, Object object) {
@@ -2139,6 +2211,8 @@ public final class Beans {
 	/**
 	 * 拷贝对象实例，深度克隆
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param source
 	 *            源对象
 	 * @return 对象实例副本
@@ -2325,6 +2399,8 @@ public final class Beans {
 	/**
 	 * 合并对象集合（过滤重复对象）
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param collection1
 	 *            对象集合
 	 * @param collection2
@@ -2356,8 +2432,6 @@ public final class Beans {
 	/**
 	 * 对象比较
 	 * 
-	 * o1 < o2 返回-1；o1 = o2 返回0；o1 > o2 返回1；
-	 * 
 	 * @param o1
 	 *            比较对象
 	 * @param o2
@@ -2383,7 +2457,9 @@ public final class Beans {
 	/**
 	 * 将对象排序
 	 * 
-	 * @param objects
+	 * @param <M>
+	 *            数据类型
+	 * @param collection
 	 *            对象集合
 	 * @return 排序后对象集合
 	 */
@@ -2394,6 +2470,8 @@ public final class Beans {
 	/**
 	 * 将对象集合按照属性值排序（属性名以“+”号开头或不以“-”号开头表示升序，以“-”号开头表示降序）
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param collection
 	 *            对象集合
 	 * @param properties
@@ -2433,6 +2511,8 @@ public final class Beans {
 	/**
 	 * 获取两个对象实例不同属性值
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param object
 	 *            对象实例
 	 * @param other
@@ -2469,6 +2549,8 @@ public final class Beans {
 	/**
 	 * 获取两个对象实例不同属性值
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param object
 	 *            对象实例
 	 * @param other

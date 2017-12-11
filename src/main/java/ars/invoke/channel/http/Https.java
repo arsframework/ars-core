@@ -229,7 +229,8 @@ public final class Https {
 	/**
 	 * 绑定SSL,默认使用443端口
 	 * 
-	 * @return 客户端包装器
+	 * @param client
+	 *            Http客户端对象
 	 */
 	public static void bindSSL(HttpClient client) {
 		bindSSL(client, 443);
@@ -238,9 +239,10 @@ public final class Https {
 	/**
 	 * 绑定SSL
 	 * 
+	 * @param client
+	 *            Http客户端对象
 	 * @param port
 	 *            端口号
-	 * @return 客户端包装器
 	 */
 	public static void bindSSL(HttpClient client, int port) {
 		X509TrustManager trustManager = new X509TrustManager() {
@@ -488,6 +490,7 @@ public final class Https {
 	 *            HTTP请求对象
 	 * @return 参数键/值表
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static Map<String, Object> getParameters(HttpServletRequest request) throws IOException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
@@ -529,6 +532,9 @@ public final class Https {
 	 *            文件上传处理器
 	 * @return 参数键/值表
 	 * @throws IOException
+	 *             IO操作异常
+	 * @throws FileUploadException
+	 *             文件上传异常
 	 */
 	@SuppressWarnings("unchecked")
 	public static Map<String, Object> getUploadParameters(HttpServletRequest request, ServletFileUpload uploader)
@@ -595,6 +601,7 @@ public final class Https {
 	 *            请求参数
 	 * @return 请求实体
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static HttpEntity getHttpEntity(Map<String, Object> parameters) throws IOException {
 		Collection<?> values = parameters.values();
@@ -613,6 +620,7 @@ public final class Https {
 	 *            请求参数
 	 * @return Get请求参数
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static String getGetEntity(Map<String, Object> parameters) throws IOException {
 		String charset = Charset.defaultCharset().name();
@@ -646,6 +654,7 @@ public final class Https {
 	 *            请求参数
 	 * @return HTTP实例
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static UrlEncodedFormEntity getPostEntity(Map<String, Object> parameters) throws IOException {
 		if (parameters.isEmpty()) {
@@ -671,6 +680,7 @@ public final class Https {
 	 *            请求参数
 	 * @return HTTP实例
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static MultipartEntity getUploadEntity(Map<String, Object> parameters) throws IOException {
 		if (parameters.isEmpty()) {
@@ -714,6 +724,7 @@ public final class Https {
 	 *            Http请求实体
 	 * @return Http资源请求对象
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static HttpUriRequest getHttpUriRequest(String url, Method method, HttpEntity entity) throws IOException {
 		if (method == Method.POST) {
@@ -741,6 +752,7 @@ public final class Https {
 	 *            请求方式
 	 * @return Http资源请求对象
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static HttpUriRequest getHttpUriRequest(String url, Method method) throws IOException {
 		return getHttpUriRequest(url, method, Collections.<String, Object>emptyMap());
@@ -757,6 +769,7 @@ public final class Https {
 	 *            请求参数
 	 * @return Http资源请求对象
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static HttpUriRequest getHttpUriRequest(String url, Method method, Map<String, Object> parameters)
 			throws IOException {
@@ -777,6 +790,7 @@ public final class Https {
 	 *            Http请求对象
 	 * @return 字节数组
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static byte[] getBytes(HttpServletRequest request) throws IOException {
 		InputStream is = request.getInputStream();
@@ -796,6 +810,7 @@ public final class Https {
 	 *            Http请求对象
 	 * @return 字节数组
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static byte[] getBytes(HttpClient client, HttpUriRequest request) throws IOException {
 		HttpEntity entity = null;
@@ -821,6 +836,7 @@ public final class Https {
 	 *            请求方式
 	 * @return 字节数组
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static byte[] getBytes(HttpClient client, String url, Method method) throws IOException {
 		return getBytes(client, url, method, Collections.<String, Object>emptyMap());
@@ -839,6 +855,7 @@ public final class Https {
 	 *            请求参数
 	 * @return 字节数组
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static byte[] getBytes(HttpClient client, String url, Method method, Map<String, Object> parameters)
 			throws IOException {
@@ -852,6 +869,7 @@ public final class Https {
 	 *            Http请求对象
 	 * @return 数据字符串
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static String getString(HttpServletRequest request) throws IOException {
 		return new String(getBytes(request));
@@ -866,6 +884,7 @@ public final class Https {
 	 *            Http请求对象
 	 * @return 字符串
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static String getString(HttpClient client, HttpUriRequest request) throws IOException {
 		HttpEntity entity = null;
@@ -891,6 +910,7 @@ public final class Https {
 	 *            请求方式
 	 * @return 字符串
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static String getString(HttpClient client, String url, Method method) throws IOException {
 		return getString(client, url, method, Collections.<String, Object>emptyMap());
@@ -909,6 +929,7 @@ public final class Https {
 	 *            请求参数
 	 * @return 字符串
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static String getString(HttpClient client, String url, Method method, Map<String, Object> parameters)
 			throws IOException {
@@ -928,7 +949,9 @@ public final class Https {
 	 *            渲染上下文数据
 	 * @return 渲染后的视图内容
 	 * @throws IOException
+	 *             IO操作异常
 	 * @throws ServletException
+	 *             Servlet操作异常
 	 */
 	public static String render(HttpServletRequest request, HttpServletResponse response, String template,
 			Map<String, Object> context) throws IOException, ServletException {
@@ -969,7 +992,9 @@ public final class Https {
 	 *            渲染内容
 	 * @return 渲染后的视图内容
 	 * @throws IOException
+	 *             IO操作异常
 	 * @throws ServletException
+	 *             Servlet操作异常
 	 */
 	public static String render(HttpRequester requester, String template, Object content)
 			throws IOException, ServletException {
@@ -989,7 +1014,9 @@ public final class Https {
 	 *            上下文参数
 	 * @return 渲染后的视图内容
 	 * @throws IOException
+	 *             IO操作异常
 	 * @throws ServletException
+	 *             Servlet操作异常
 	 */
 	public static String render(HttpRequester requester, String template, Object content, Map<String, Object> context)
 			throws IOException, ServletException {
@@ -1024,7 +1051,9 @@ public final class Https {
 	 * @param path
 	 *            转发路径
 	 * @throws IOException
+	 *             IO操作异常
 	 * @throws ServletException
+	 *             Servlet操作异常
 	 */
 	public static void forward(HttpServletRequest request, HttpServletResponse response, String path)
 			throws IOException, ServletException {
@@ -1046,7 +1075,9 @@ public final class Https {
 	 * @param path
 	 *            重定向路径
 	 * @throws IOException
+	 *             IO操作异常
 	 * @throws ServletException
+	 *             Servlet操作异常
 	 */
 	public static void redirect(HttpServletRequest request, HttpServletResponse response, String path)
 			throws IOException, ServletException {
@@ -1066,6 +1097,7 @@ public final class Https {
 	 * @param object
 	 *            输出对象
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void response(HttpServletResponse response, Object object) throws IOException {
 		if (object != null) {

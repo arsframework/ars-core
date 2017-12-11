@@ -10,8 +10,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
  * @author wuyq
  * 
  */
-public abstract class ApplicationInitializer implements
-		ApplicationListener<ApplicationEvent> {
+public abstract class ApplicationInitializer implements ApplicationListener<ApplicationEvent> {
 	private boolean initialized = false; // 容器是否已经加载完成
 
 	/**

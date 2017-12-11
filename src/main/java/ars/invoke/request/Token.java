@@ -165,6 +165,7 @@ public class Token implements Map<String, Object>, Formable, Serializable {
 	 * 令牌有效性验证
 	 * 
 	 * @throws TokenInvalidException
+	 *             令牌无效异常
 	 */
 	public void validate() throws TokenInvalidException {
 		if (!this.validated) {

@@ -23,6 +23,7 @@ public interface HttpChannel extends Channel {
 	 * @param response
 	 *            HTTP响应对象
 	 * @throws Exception
+	 *             操作异常
 	 */
 	public void dispatch(ServletConfig config, HttpServletRequest request, HttpServletResponse response)
 			throws Exception;

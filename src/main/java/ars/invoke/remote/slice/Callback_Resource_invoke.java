@@ -27,11 +27,9 @@ package ars.invoke.remote.slice;
  * 
  **/
 
-public abstract class Callback_Resource_invoke
-    extends IceInternal.TwowayCallback implements Ice.TwowayCallbackArg1<ars.invoke.remote.slice.Iresult>
-{
-    public final void __completed(Ice.AsyncResult __result)
-    {
-        ResourcePrxHelper.__invoke_completed(this, __result);
-    }
+public abstract class Callback_Resource_invoke extends IceInternal.TwowayCallback
+		implements Ice.TwowayCallbackArg1<ars.invoke.remote.slice.Iresult> {
+	public final void __completed(Ice.AsyncResult __result) {
+		ResourcePrxHelper.__invoke_completed(this, __result);
+	}
 }

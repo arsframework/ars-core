@@ -20,29 +20,22 @@
 
 package ars.invoke.remote.slice;
 
-final class _AMD_Resource_download extends IceInternal.IncomingAsync implements AMD_Resource_download
-{
-    public _AMD_Resource_download(IceInternal.Incoming in)
-    {
-        super(in);
-    }
+final class _AMD_Resource_download extends IceInternal.IncomingAsync implements AMD_Resource_download {
+	public _AMD_Resource_download(IceInternal.Incoming in) {
+		super(in);
+	}
 
-    public void ice_response(byte[] __ret)
-    {
-        if(__validateResponse(true))
-        {
-            try
-            {
-                IceInternal.BasicStream __os = this.__startWriteParams(Ice.FormatType.DefaultFormat);
-                ByteArrayHelper.write(__os, __ret);
-                this.__endWriteParams(true);
-            }
-            catch(Ice.LocalException __ex)
-            {
-                __exception(__ex);
-                return;
-            }
-            __response();
-        }
-    }
+	public void ice_response(byte[] __ret) {
+		if (__validateResponse(true)) {
+			try {
+				IceInternal.BasicStream __os = this.__startWriteParams(Ice.FormatType.DefaultFormat);
+				ByteArrayHelper.write(__os, __ret);
+				this.__endWriteParams(true);
+			} catch (Ice.LocalException __ex) {
+				__exception(__ex);
+				return;
+			}
+			__response();
+		}
+	}
 }

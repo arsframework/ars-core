@@ -32,6 +32,7 @@ public interface Channel {
 	 *            请求对象
 	 * @return 请求结果
 	 * @throws Exception
+	 *             操作异常
 	 */
 	public Object dispatch(Requester requester) throws Exception;
 

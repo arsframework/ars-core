@@ -81,7 +81,11 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 	 *            Http响应对象
 	 * @return 请求对象
 	 * @throws IOException
+	 *             IO操作异常
+	 * @throws IOException
+	 *             IO操作异常
 	 * @throws ServletException
+	 *             Servlet操作异常
 	 */
 	protected abstract HttpRequester getRequester(String uri, ServletConfig config, HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException;
@@ -158,7 +162,9 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 	 *            数据内容
 	 * @return 模板内容
 	 * @throws IOException
+	 *             IO操作异常
 	 * @throws ServletException
+	 *             Servlet操作异常
 	 */
 	protected String render(HttpRequester requester, String template, Object content)
 			throws IOException, ServletException {
@@ -183,7 +189,9 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 	 *            重定向内容
 	 * @return 是否重定向成功
 	 * @throws IOException
+	 *             IO操作异常
 	 * @throws ServletException
+	 *             Servlet操作异常
 	 */
 	protected boolean redirect(HttpRequester requester, Object content) throws IOException, ServletException {
 		for (Redirector redirector : this.redirectors) {
@@ -213,6 +221,7 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 	 * @param value
 	 *            请求结果
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	protected void response(HttpRequester requester, Object value) throws IOException {
 		Https.response(requester.getHttpServletResponse(), value);

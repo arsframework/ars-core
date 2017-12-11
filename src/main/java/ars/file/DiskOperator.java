@@ -43,14 +43,12 @@ public class DiskOperator extends AbstractOperator {
 
 	@Override
 	public void copy(String source, String target) throws Exception {
-		Files.copy(new File(this.getWorkingDirectory(), source),
-				new File(this.getWorkingDirectory(), target));
+		Files.copy(new File(this.getWorkingDirectory(), source), new File(this.getWorkingDirectory(), target));
 	}
 
 	@Override
 	public void move(String source, String target) throws Exception {
-		new File(this.getWorkingDirectory(), source).renameTo(new File(this
-				.getWorkingDirectory(), target));
+		new File(this.getWorkingDirectory(), source).renameTo(new File(this.getWorkingDirectory(), target));
 	}
 
 	@Override
@@ -63,8 +61,7 @@ public class DiskOperator extends AbstractOperator {
 		File file = new File(this.getWorkingDirectory(), path);
 		if (file.exists()) {
 			Describe describe = new Describe(file);
-			describe.setPath(describe.getPath().substring(
-					this.getWorkingDirectory().length()));
+			describe.setPath(describe.getPath().substring(this.getWorkingDirectory().length()));
 		}
 		return null;
 	}
@@ -78,8 +75,7 @@ public class DiskOperator extends AbstractOperator {
 	@Override
 	public String write(Nfile file, String path) throws Exception {
 		String name = this.getActualPath(file.getName());
-		path = path == null ? name : Strings.replace(new StringBuilder(path)
-				.append('/').append(name), "//", "/");
+		path = path == null ? name : Strings.replace(new StringBuilder(path).append('/').append(name), "//", "/");
 		Streams.write(file, new File(this.getWorkingDirectory(), path));
 		return Strings.replace(path, "\\", "/");
 	}

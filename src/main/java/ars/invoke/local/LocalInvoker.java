@@ -24,6 +24,7 @@ public class LocalInvoker implements Invoker {
 	 *            本地资源对象
 	 * @return 参数数组
 	 * @throws Exception
+	 *             操作异常
 	 */
 	protected Object[] getParameters(Requester requester, Function function) throws Exception {
 		return Apis.getParameters(requester, function.getConditions());

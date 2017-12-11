@@ -55,6 +55,7 @@ public final class Streams {
 	 *            需要转换的对象
 	 * @return 字节数组
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static byte[] serialize(Object object) throws IOException {
 		if (object == null) {
@@ -77,7 +78,9 @@ public final class Streams {
 	 *            字节数组
 	 * @return 对象
 	 * @throws IOException
+	 *             IO操作异常
 	 * @throws ClassNotFoundException
+	 *             类不存在异常
 	 */
 	public static Object deserialize(byte[] bytes) throws IOException, ClassNotFoundException {
 		return bytes == null || bytes.length == 0 ? null
@@ -91,7 +94,9 @@ public final class Streams {
 	 *            输入流
 	 * @return 对象
 	 * @throws IOException
+	 *             IO操作异常
 	 * @throws ClassNotFoundException
+	 *             类不存在异常
 	 */
 	public static Object deserialize(InputStream input) throws IOException, ClassNotFoundException {
 		return new ObjectInputStream(input).readObject();
@@ -104,7 +109,9 @@ public final class Streams {
 	 *            套节字连接通道
 	 * @return 对象
 	 * @throws IOException
+	 *             IO操作异常
 	 * @throws ClassNotFoundException
+	 *             类不存在异常
 	 */
 	public static Object deserialize(ReadableByteChannel channel) throws IOException, ClassNotFoundException {
 		int n = 0;
@@ -128,6 +135,7 @@ public final class Streams {
 	 *            文件对象
 	 * @return 字节数组
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static byte[] getBytes(File file) throws IOException {
 		InputStream is = new FileInputStream(file);
@@ -145,6 +153,7 @@ public final class Streams {
 	 *            输入流
 	 * @return 字节数组
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static byte[] getBytes(InputStream input) throws IOException {
 		int n = 0;
@@ -163,6 +172,7 @@ public final class Streams {
 	 *            套接字读取通道
 	 * @return 字节数组
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static byte[] getBytes(ReadableByteChannel channel) throws IOException {
 		int n = 0;
@@ -182,6 +192,7 @@ public final class Streams {
 	 * @param target
 	 *            目标文件对象
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void append(byte[] source, File target) throws IOException {
 		File path = target.getParentFile();
@@ -204,6 +215,7 @@ public final class Streams {
 	 * @param target
 	 *            目标文件
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void append(File source, File target) throws IOException {
 		if (!source.exists()) {
@@ -256,6 +268,7 @@ public final class Streams {
 	 * @param target
 	 *            目标文件
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void append(Nfile source, File target) throws IOException {
 		if (source.isFile()) {
@@ -278,6 +291,7 @@ public final class Streams {
 	 * @param target
 	 *            目标文件对象
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void append(InputStream source, File target) throws IOException {
 		File path = target.getParentFile();
@@ -300,6 +314,7 @@ public final class Streams {
 	 * @param target
 	 *            目标文件对象
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void append(ReadableByteChannel source, File target) throws IOException {
 		File path = target.getParentFile();
@@ -322,6 +337,7 @@ public final class Streams {
 	 * @param target
 	 *            目标文件对象
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void write(byte[] source, File target) throws IOException {
 		File path = target.getParentFile();
@@ -344,6 +360,7 @@ public final class Streams {
 	 * @param target
 	 *            目标文件
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void write(File source, File target) throws IOException {
 		if (!source.exists()) {
@@ -396,6 +413,7 @@ public final class Streams {
 	 * @param target
 	 *            目标输出流
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void write(File source, OutputStream target) throws IOException {
 		InputStream is = new FileInputStream(source);
@@ -414,6 +432,7 @@ public final class Streams {
 	 * @param target
 	 *            目标输出流
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void write(File source, WritableByteChannel target) throws IOException {
 		InputStream is = new FileInputStream(source);
@@ -432,6 +451,7 @@ public final class Streams {
 	 * @param target
 	 *            目标文件
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void write(Nfile source, File target) throws IOException {
 		if (source.isFile()) {
@@ -454,6 +474,7 @@ public final class Streams {
 	 * @param target
 	 *            目标输出流
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void write(Nfile source, OutputStream target) throws IOException {
 		InputStream is = source.getInputStream();
@@ -472,6 +493,7 @@ public final class Streams {
 	 * @param target
 	 *            目标输出流
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void write(Nfile source, WritableByteChannel target) throws IOException {
 		InputStream is = source.getInputStream();
@@ -490,6 +512,7 @@ public final class Streams {
 	 * @param target
 	 *            目标文件对象
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void write(InputStream source, File target) throws IOException {
 		OutputStream os = new FileOutputStream(target);
@@ -508,6 +531,7 @@ public final class Streams {
 	 * @param target
 	 *            目标输出流
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void write(InputStream source, OutputStream target) throws IOException {
 		int n = 0;
@@ -525,6 +549,7 @@ public final class Streams {
 	 * @param target
 	 *            目标输出流
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void write(InputStream source, WritableByteChannel target) throws IOException {
 		byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
@@ -541,6 +566,7 @@ public final class Streams {
 	 * @param target
 	 *            目标文件对象
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void write(ReadableByteChannel source, File target) throws IOException {
 		File path = target.getParentFile();
@@ -563,6 +589,7 @@ public final class Streams {
 	 * @param target
 	 *            目标输出流
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void write(ReadableByteChannel source, OutputStream target) throws IOException {
 		int n = 0;
@@ -580,6 +607,7 @@ public final class Streams {
 	 * @param target
 	 *            目标套接字写通道
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static void write(ReadableByteChannel source, WritableByteChannel target) throws IOException {
 		int n = 0;

@@ -55,9 +55,9 @@ public abstract class AbstractQuery implements Query {
 	 *            查询条件数组
 	 * @return 文件描述列表
 	 * @throws Exception
+	 *             操作异常
 	 */
-	protected abstract List<Describe> execute(String path, boolean spread,
-			Condition... conditions) throws Exception;
+	protected abstract List<Describe> execute(String path, boolean spread, Condition... conditions) throws Exception;
 
 	@Override
 	public Iterator<Describe> iterator() {
@@ -138,8 +138,7 @@ public abstract class AbstractQuery implements Query {
 	@Override
 	public Query start(Property property, String value) {
 		if (value != null) {
-			this.conditions.add(Conditions
-					.like(property, value, Position.BEGIN));
+			this.conditions.add(Conditions.like(property, value, Position.BEGIN));
 		}
 		return this;
 	}
@@ -172,13 +171,10 @@ public abstract class AbstractQuery implements Query {
 			this.size = Integer.parseInt(value.toString());
 		} else if (key.equalsIgnoreCase(ORDER)) {
 			Collection<String> collection = value instanceof Collection ? (Collection<String>) value
-					: value instanceof String[] ? Arrays
-							.asList((String[]) value) : Arrays.asList(value
-							.toString());
+					: value instanceof String[] ? Arrays.asList((String[]) value) : Arrays.asList(value.toString());
 			for (String order : collection) {
 				boolean desc = order.charAt(0) == '-';
-				String property = desc || order.charAt(0) == '+' ? order
-						.substring(1) : order;
+				String property = desc || order.charAt(0) == '+' ? order.substring(1) : order;
 				if (desc) {
 					this.desc(Describe.Property.valueOf(property.toUpperCase()));
 				} else {
@@ -188,8 +184,7 @@ public abstract class AbstractQuery implements Query {
 		} else if (!key.startsWith(MARK)) {
 			int index = key.indexOf(MARK);
 			String name = index > 0 ? key.substring(0, index) : key; // 属性名称
-			String feature = index > 0 ? key.substring(index + MARK.length())
-					: EQ; // 特性查询类型
+			String feature = index > 0 ? key.substring(index + MARK.length()) : EQ; // 特性查询类型
 			Property property = null;
 			try {
 				property = Describe.Property.valueOf(name.toUpperCase());
@@ -205,8 +200,7 @@ public abstract class AbstractQuery implements Query {
 			} else {
 				Class<?> type = property == Describe.Property.NAME ? String.class
 						: property == Describe.Property.SIZE ? int.class
-								: property == Describe.Property.MODIFIED ? Date.class
-										: boolean.class;
+								: property == Describe.Property.MODIFIED ? Date.class : boolean.class;
 				value = Beans.toObject(type, value);
 				if (feature.equalsIgnoreCase(GE)) {
 					this.ge(property, value);
@@ -279,13 +273,12 @@ public abstract class AbstractQuery implements Query {
 	public List<Describe> list() throws Exception {
 		if (!this.loaded) {
 			Condition[] conditions = this.conditions.toArray(new Condition[0]);
-			List<Describe> describes = this.execute(this.path, this.spread,
-					conditions);
+			List<Describe> describes = this.execute(this.path, this.spread, conditions);
 			if (!this.orders.isEmpty()) {
 				Conditions.sort(describes, this.orders.toArray(new Order[0]));
 			}
-			this.cache = this.page > 0 && this.size > 0 ? Conditions.paging(
-					describes, this.page, this.size) : describes;
+			this.cache = this.page > 0 && this.size > 0 ? Conditions.paging(describes, this.page, this.size)
+					: describes;
 			this.loaded = true;
 		}
 		return this.cache;

@@ -17,8 +17,7 @@ public class UUIDNameGenerator implements NameGenerator {
 	public String generate(String name) {
 		String uuid = UUID.randomUUID().toString();
 		String suffix = Files.getSuffix(name);
-		return suffix == null ? uuid : new StringBuilder(uuid).append('.')
-				.append(suffix).toString();
+		return suffix == null ? uuid : new StringBuilder(uuid).append('.').append(suffix).toString();
 	}
 
 }

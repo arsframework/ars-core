@@ -15,15 +15,13 @@ import ars.invoke.remote.RemoteRequester;
  * @author wuyq
  * 
  */
-public class StandardRemoteRequester extends StandardRequester implements
-		RemoteRequester {
+public class StandardRemoteRequester extends StandardRequester implements RemoteRequester {
 	private static final long serialVersionUID = 1L;
 
 	private transient Ice.Current context;
 
-	public StandardRemoteRequester(Channel channel, Ice.Current context,
-			Requester parent, Locale locale, String client, String host,
-			Token token, String uri, Map<String, Object> parameters) {
+	public StandardRemoteRequester(Channel channel, Ice.Current context, Requester parent, Locale locale, String client,
+			String host, Token token, String uri, Map<String, Object> parameters) {
 		super(channel, parent, locale, client, host, token, uri, parameters);
 		this.context = context;
 	}
@@ -35,9 +33,8 @@ public class StandardRemoteRequester extends StandardRequester implements
 
 	@Override
 	public Requester build(String uri, Map<String, Object> parameters) {
-		return new StandardRemoteRequester(this.getChannel(), this.context,
-				this, this.getLocale(), this.getClient(), this.getHost(),
-				this.getToken(), uri, parameters);
+		return new StandardRemoteRequester(this.getChannel(), this.context, this, this.getLocale(), this.getClient(),
+				this.getHost(), this.getToken(), uri, parameters);
 	}
 
 }

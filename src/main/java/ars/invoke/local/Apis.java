@@ -64,6 +64,8 @@ public final class Apis {
 	/**
 	 * 获取所有使用了Api注解的公共类
 	 * 
+	 * @param packages
+	 *            包路径数组
 	 * @return 类对象集合
 	 */
 	public static List<Class<?>> getApiClasses(String... packages) {
@@ -287,6 +289,7 @@ public final class Apis {
 	 *            接口方法条件对象数据
 	 * @return 本地接口方法参数数组
 	 * @throws Exception
+	 *             操作异常
 	 */
 	public static Object[] getParameters(Requester requester, Condition... conditions) throws Exception {
 		Object[] _parameters = new Object[conditions.length];

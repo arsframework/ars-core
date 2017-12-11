@@ -24,6 +24,5 @@ package ars.invoke.remote.slice;
  * 数据流结果类型
  *
  **/
-public interface IstreamPrx extends IresultPrx
-{
+public interface IstreamPrx extends IresultPrx {
 }

@@ -91,6 +91,7 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 		 *            数据长度
 		 * @return 字节数组
 		 * @throws IOException
+		 *             IO操作异常
 		 */
 		public abstract byte[] read(int index, int length) throws IOException;
 
@@ -98,6 +99,7 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 		 * 关闭数据流
 		 * 
 		 * @throws IOException
+		 *             IO操作异常
 		 */
 		public abstract void close() throws IOException;
 
@@ -110,6 +112,7 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 		 *            数据长度
 		 * @return 字节数组
 		 * @throws IOException
+		 *             IO操作异常
 		 */
 		public byte[] fetch(int index, int length) throws IOException {
 			this.timestamp = System.currentTimeMillis();
@@ -120,6 +123,7 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 		 * 销毁流对象
 		 * 
 		 * @throws IOException
+		 *             IO操作异常
 		 */
 		public void destroy() throws IOException {
 			if (!this.destroied) {
@@ -342,12 +346,12 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 	 * 
 	 * @param client
 	 *            客户标识
-	 * @param atoken
+	 * @param itoken
 	 *            请求令牌
 	 * @param uri
 	 *            资源地址
-	 * @param parameters
-	 *            请求参数
+	 * @param parameter
+	 *            请求参数（JSON格式）
 	 * @param context
 	 *            ICE上下文
 	 * @return 请求对象

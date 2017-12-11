@@ -19,6 +19,7 @@ public interface Invoker {
 	 *            接口资源
 	 * @return 调用结果
 	 * @throws Exception
+	 *             操作异常
 	 */
 	public Object execute(Requester requester, Resource resource) throws Exception;
 

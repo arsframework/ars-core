@@ -27,24 +27,20 @@ public class DiskQuery extends AbstractQuery {
 	}
 
 	@Override
-	public List<Describe> execute(String path, final boolean spread,
-			final Condition... conditions) {
+	public List<Describe> execute(String path, final boolean spread, final Condition... conditions) {
 		final String workingDirectory = this.getWorkingDirectory();
 		final List<Describe> describes = new LinkedList<Describe>();
-		(path == null ? new File(workingDirectory) : new File(workingDirectory,
-				path)).listFiles(new FileFilter() {
+		(path == null ? new File(workingDirectory) : new File(workingDirectory, path)).listFiles(new FileFilter() {
 
 			@Override
 			public boolean accept(File file) {
 				Describe describe = new Describe(file);
-				describe.setPath(describe.getPath().substring(
-						workingDirectory.length()));
+				describe.setPath(describe.getPath().substring(workingDirectory.length()));
 				if (Conditions.isSatisfy(describe, conditions)) {
 					describes.add(describe);
 				}
 				if (spread && describe.isDirectory()) {
-					describes.addAll(execute(describe.getPath(), spread,
-							conditions));
+					describes.addAll(execute(describe.getPath(), spread, conditions));
 				}
 				return false;
 			}

@@ -24,6 +24,5 @@ package ars.invoke.remote.slice;
  * 字符串结果类型
  *
  **/
-public interface IstringPrx extends IresultPrx
-{
+public interface IstringPrx extends IresultPrx {
 }

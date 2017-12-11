@@ -29,16 +29,13 @@ public final class Maps {
 	 *            第二点维度
 	 * @return 距离（米）
 	 */
-	public static double getDistance(double longitude1, double latitude1,
-			double longitude2, double latitude2) {
+	public static double getDistance(double longitude1, double latitude1, double longitude2, double latitude2) {
 		latitude1 = rad(latitude1);
 		latitude2 = rad(latitude2);
 		double sa = Math.sin((latitude1 - latitude2) / 2.0);
 		double sb = Math.sin(rad(longitude1 - longitude2) / 2.0);
-		double distance = 2
-				* EARTH_RADIUS
-				* Math.asin(Math.sqrt(sa * sa + Math.cos(latitude1)
-						* Math.cos(latitude2) * sb * sb));
+		double distance = 2 * EARTH_RADIUS
+				* Math.asin(Math.sqrt(sa * sa + Math.cos(latitude1) * Math.cos(latitude2) * sb * sb));
 		return distance;
 	}
 

@@ -144,6 +144,7 @@ public final class Mail {
 	 * 发送邮件
 	 * 
 	 * @throws Exception
+	 *             操作异常
 	 */
 	public void send() throws Exception {
 		Properties properties = new Properties();
@@ -271,6 +272,7 @@ public final class Mail {
 		 * 
 		 * @return 邮件体
 		 * @throws Exception
+		 *             操作异常
 		 */
 		public Multipart combine() throws Exception {
 			MimeBodyPart text = new MimeBodyPart();
@@ -287,8 +289,7 @@ public final class Mail {
 				for (DataSource dataSource : this.relates) {
 					MimeBodyPart body = new MimeBodyPart();
 					body.setDataHandler(new DataHandler(dataSource));
-					body.setContentID(MimeUtility.encodeText(dataSource
-							.getName()));
+					body.setContentID(MimeUtility.encodeText(dataSource.getName()));
 					part.addBodyPart(body);
 				}
 				part.setSubType("related");
@@ -304,8 +305,7 @@ public final class Mail {
 				for (DataSource dataSource : this.mixes) {
 					MimeBodyPart body = new MimeBodyPart();
 					body.setDataHandler(new DataHandler(dataSource));
-					body.setFileName(MimeUtility.encodeText(dataSource
-							.getName()));
+					body.setFileName(MimeUtility.encodeText(dataSource.getName()));
 					part.addBodyPart(body);
 				}
 				part.setSubType("mixed");

@@ -122,8 +122,7 @@ public final class Conditions {
 	 * @return 条件对象
 	 */
 	public static Between between(Property property, Object low, Object high) {
-		return new Between(property, valueAdapter(property, low), valueAdapter(
-				property, high));
+		return new Between(property, valueAdapter(property, low), valueAdapter(property, high));
 	}
 
 	/**
@@ -133,10 +132,11 @@ public final class Conditions {
 	 *            属性
 	 * @param value
 	 *            属性值
+	 * @param position
+	 *            匹配位置
 	 * @return 条件对象
 	 */
-	public static Like like(Property property, String value,
-			Like.Position position) {
+	public static Like like(Property property, String value, Like.Position position) {
 		return new Like(property, value, position);
 	}
 
@@ -174,17 +174,13 @@ public final class Conditions {
 	public static Object valueAdapter(Property property, Object value) {
 		boolean array = value != null && value.getClass().isArray();
 		if (property == Property.NAME) {
-			return array ? Beans.toArray(String.class, value) : Beans.toObject(
-					String.class, value);
+			return array ? Beans.toArray(String.class, value) : Beans.toObject(String.class, value);
 		} else if (property == Property.SIZE) {
-			return array ? Beans.toArray(long.class, value) : Beans.toObject(
-					long.class, value);
+			return array ? Beans.toArray(long.class, value) : Beans.toObject(long.class, value);
 		} else if (property == Property.MODIFIED) {
-			return array ? Beans.toArray(Date.class, value) : Beans.toObject(
-					Date.class, value);
+			return array ? Beans.toArray(Date.class, value) : Beans.toObject(Date.class, value);
 		}
-		return array ? Beans.toArray(boolean.class, value) : Beans.toObject(
-				boolean.class, value);
+		return array ? Beans.toArray(boolean.class, value) : Beans.toObject(boolean.class, value);
 	}
 
 	/**
@@ -199,14 +195,11 @@ public final class Conditions {
 	public static boolean isSatisfy(Describe describe, Less less) {
 		Property property = less.getProperty();
 		Object value = less.getValue();
-		if (property == Property.NAME
-				&& describe.getName().compareToIgnoreCase((String) value) > -1) {
+		if (property == Property.NAME && describe.getName().compareToIgnoreCase((String) value) > -1) {
 			return false;
-		} else if (property == Property.SIZE
-				&& describe.getSize() >= (Long) value) {
+		} else if (property == Property.SIZE && describe.getSize() >= (Long) value) {
 			return false;
-		} else if (property == Property.MODIFIED
-				&& !describe.getModified().before((Date) value)) {
+		} else if (property == Property.MODIFIED && !describe.getModified().before((Date) value)) {
 			return false;
 		}
 		return describe.isDirectory() == false && (Boolean) value == true;
@@ -237,8 +230,7 @@ public final class Conditions {
 		}
 		if (position == Like.Position.BEGIN && source.indexOf(value) > 0) {
 			return false;
-		} else if (position == Like.Position.END
-				&& source.length() > source.lastIndexOf(value) + value.length()) {
+		} else if (position == Like.Position.END && source.length() > source.lastIndexOf(value) + value.length()) {
 			return false;
 		} else if (position == Like.Position.ANY && source.indexOf(value) < 0) {
 			return false;
@@ -319,14 +311,11 @@ public final class Conditions {
 	public static boolean isSatisfy(Describe describe, Large large) {
 		Property property = large.getProperty();
 		Object value = large.getValue();
-		if (property == Property.NAME
-				&& describe.getName().compareToIgnoreCase((String) value) < 0) {
+		if (property == Property.NAME && describe.getName().compareToIgnoreCase((String) value) < 0) {
 			return false;
-		} else if (property == Property.SIZE
-				&& describe.getSize() <= (Long) value) {
+		} else if (property == Property.SIZE && describe.getSize() <= (Long) value) {
 			return false;
-		} else if (property == Property.MODIFIED
-				&& !describe.getModified().after((Date) value)) {
+		} else if (property == Property.MODIFIED && !describe.getModified().after((Date) value)) {
 			return false;
 		}
 		return describe.isDirectory() == true && (Boolean) value == false;
@@ -345,16 +334,13 @@ public final class Conditions {
 		Property property = between.getProperty();
 		Object low = between.getLow();
 		Object high = between.getHigh();
-		if (property == Property.NAME
-				&& (describe.getName().compareToIgnoreCase((String) low) < 0 || describe
-						.getName().compareToIgnoreCase((String) high) > 0)) {
+		if (property == Property.NAME && (describe.getName().compareToIgnoreCase((String) low) < 0
+				|| describe.getName().compareToIgnoreCase((String) high) > 0)) {
 			return false;
-		} else if (property == Property.SIZE
-				&& (describe.getSize() < (Long) low || describe.getSize() > (Long) high)) {
+		} else if (property == Property.SIZE && (describe.getSize() < (Long) low || describe.getSize() > (Long) high)) {
 			return false;
 		} else if (property == Property.MODIFIED
-				&& (describe.getModified().before((Date) low) || describe
-						.getModified().after((Date) high))) {
+				&& (describe.getModified().before((Date) low) || describe.getModified().after((Date) high))) {
 			return false;
 		}
 		return true;
@@ -428,14 +414,11 @@ public final class Conditions {
 	public static boolean isSatisfy(Describe describe, LessEqual lessEqual) {
 		Property property = lessEqual.getProperty();
 		Object value = lessEqual.getValue();
-		if (property == Property.NAME
-				&& describe.getName().compareToIgnoreCase((String) value) > 0) {
+		if (property == Property.NAME && describe.getName().compareToIgnoreCase((String) value) > 0) {
 			return false;
-		} else if (property == Property.SIZE
-				&& describe.getSize() > (Long) value) {
+		} else if (property == Property.SIZE && describe.getSize() > (Long) value) {
 			return false;
-		} else if (property == Property.MODIFIED
-				&& describe.getModified().after((Date) value)) {
+		} else if (property == Property.MODIFIED && describe.getModified().after((Date) value)) {
 			return false;
 		}
 		return describe.isDirectory() == false;
@@ -453,14 +436,11 @@ public final class Conditions {
 	public static boolean isSatisfy(Describe describe, LargeEqual largeEqual) {
 		Property property = largeEqual.getProperty();
 		Object value = largeEqual.getValue();
-		if (property == Property.NAME
-				&& describe.getName().compareToIgnoreCase((String) value) < 0) {
+		if (property == Property.NAME && describe.getName().compareToIgnoreCase((String) value) < 0) {
 			return false;
-		} else if (property == Property.SIZE
-				&& describe.getSize() < (Long) value) {
+		} else if (property == Property.SIZE && describe.getSize() < (Long) value) {
 			return false;
-		} else if (property == Property.MODIFIED
-				&& describe.getModified().before((Date) value)) {
+		} else if (property == Property.MODIFIED && describe.getModified().before((Date) value)) {
 			return false;
 		}
 		return describe.isDirectory() == true;
@@ -477,29 +457,21 @@ public final class Conditions {
 	 */
 	public static boolean isSatisfy(Describe describe, Condition... conditions) {
 		for (Condition condition : conditions) {
-			if (condition instanceof Less
-					&& !isSatisfy(describe, (Less) condition)) {
+			if (condition instanceof Less && !isSatisfy(describe, (Less) condition)) {
 				return false;
-			} else if (condition instanceof Like
-					&& !isSatisfy(describe, (Like) condition)) {
+			} else if (condition instanceof Like && !isSatisfy(describe, (Like) condition)) {
 				return false;
-			} else if (condition instanceof Equal
-					&& !isSatisfy(describe, (Equal) condition)) {
+			} else if (condition instanceof Equal && !isSatisfy(describe, (Equal) condition)) {
 				return false;
-			} else if (condition instanceof Large
-					&& !isSatisfy(describe, (Large) condition)) {
+			} else if (condition instanceof Large && !isSatisfy(describe, (Large) condition)) {
 				return false;
-			} else if (condition instanceof Between
-					&& !isSatisfy(describe, (Between) condition)) {
+			} else if (condition instanceof Between && !isSatisfy(describe, (Between) condition)) {
 				return false;
-			} else if (condition instanceof NotEqual
-					&& !isSatisfy(describe, (NotEqual) condition)) {
+			} else if (condition instanceof NotEqual && !isSatisfy(describe, (NotEqual) condition)) {
 				return false;
-			} else if (condition instanceof LessEqual
-					&& !isSatisfy(describe, (LessEqual) condition)) {
+			} else if (condition instanceof LessEqual && !isSatisfy(describe, (LessEqual) condition)) {
 				return false;
-			} else if (condition instanceof LargeEqual
-					&& !isSatisfy(describe, (LargeEqual) condition)) {
+			} else if (condition instanceof LargeEqual && !isSatisfy(describe, (LargeEqual) condition)) {
 				return false;
 			}
 		}
@@ -646,8 +618,7 @@ public final class Conditions {
 	 *            长度
 	 * @return 分页后文件描述对象列表
 	 */
-	public static List<Describe> paging(List<Describe> describes, int page,
-			int size) {
+	public static List<Describe> paging(List<Describe> describes, int page, int size) {
 		int begin = (page - 1) * size; // 开始下标
 		if (begin >= describes.size()) {
 			return new ArrayList<Describe>(0);

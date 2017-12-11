@@ -96,6 +96,7 @@ public final class Jsons {
 	 * @param level
 	 *            当前层级
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	private static void write(JsonWriter writer, Object object, int level) throws IOException {
 		ObjectAdapter adapter;
@@ -241,6 +242,8 @@ public final class Jsons {
 	/**
 	 * 将JSON字符串反转成对象
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param type
 	 *            目标对象类型
 	 * @param json

@@ -59,15 +59,13 @@ public class Node implements Serializable {
 			return false;
 		}
 		Node node = (Node) obj;
-		return this.protocol == node.getProtocol()
-				&& this.host.equals(node.getHost())
-				&& this.port == node.getPort();
+		return this.protocol == node.getProtocol() && this.host.equals(node.getHost()) && this.port == node.getPort();
 	}
 
 	@Override
 	public String toString() {
-		return new StringBuilder().append(this.protocol).append(':')
-				.append(this.host).append(':').append(this.port).toString();
+		return new StringBuilder().append(this.protocol).append(':').append(this.host).append(':').append(this.port)
+				.toString();
 	}
 
 }

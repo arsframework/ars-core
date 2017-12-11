@@ -20,35 +20,23 @@
 
 package ars.invoke.remote.slice;
 
-public final class IresultHolder extends Ice.ObjectHolderBase<Iresult>
-{
-    public
-    IresultHolder()
-    {
-    }
+public final class IresultHolder extends Ice.ObjectHolderBase<Iresult> {
+	public IresultHolder() {
+	}
 
-    public
-    IresultHolder(Iresult value)
-    {
-        this.value = value;
-    }
+	public IresultHolder(Iresult value) {
+		this.value = value;
+	}
 
-    public void
-    patch(Ice.Object v)
-    {
-        if(v == null || v instanceof Iresult)
-        {
-            value = (Iresult)v;
-        }
-        else
-        {
-            IceInternal.Ex.throwUOE(type(), v);
-        }
-    }
+	public void patch(Ice.Object v) {
+		if (v == null || v instanceof Iresult) {
+			value = (Iresult) v;
+		} else {
+			IceInternal.Ex.throwUOE(type(), v);
+		}
+	}
 
-    public String
-    type()
-    {
-        return Iresult.ice_staticId();
-    }
+	public String type() {
+		return Iresult.ice_staticId();
+	}
 }

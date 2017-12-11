@@ -20,18 +20,13 @@
 
 package ars.invoke.remote.slice;
 
-public final class IresultPrxHolder
-{
-    public
-    IresultPrxHolder()
-    {
-    }
+public final class IresultPrxHolder {
+	public IresultPrxHolder() {
+	}
 
-    public
-    IresultPrxHolder(IresultPrx value)
-    {
-        this.value = value;
-    }
+	public IresultPrxHolder(IresultPrx value) {
+		this.value = value;
+	}
 
-    public IresultPrx value;
+	public IresultPrx value;
 }

@@ -20,30 +20,23 @@
 
 package ars.invoke.remote.slice;
 
-final class _AMD_Resource_invoke extends IceInternal.IncomingAsync implements AMD_Resource_invoke
-{
-    public _AMD_Resource_invoke(IceInternal.Incoming in)
-    {
-        super(in);
-    }
+final class _AMD_Resource_invoke extends IceInternal.IncomingAsync implements AMD_Resource_invoke {
+	public _AMD_Resource_invoke(IceInternal.Incoming in) {
+		super(in);
+	}
 
-    public void ice_response(Iresult __ret)
-    {
-        if(__validateResponse(true))
-        {
-            try
-            {
-                IceInternal.BasicStream __os = this.__startWriteParams(Ice.FormatType.DefaultFormat);
-                __os.writeObject(__ret);
-                __os.writePendingObjects();
-                this.__endWriteParams(true);
-            }
-            catch(Ice.LocalException __ex)
-            {
-                __exception(__ex);
-                return;
-            }
-            __response();
-        }
-    }
+	public void ice_response(Iresult __ret) {
+		if (__validateResponse(true)) {
+			try {
+				IceInternal.BasicStream __os = this.__startWriteParams(Ice.FormatType.DefaultFormat);
+				__os.writeObject(__ret);
+				__os.writePendingObjects();
+				this.__endWriteParams(true);
+			} catch (Ice.LocalException __ex) {
+				__exception(__ex);
+				return;
+			}
+			__response();
+		}
+	}
 }

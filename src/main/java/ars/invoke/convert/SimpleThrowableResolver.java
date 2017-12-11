@@ -41,8 +41,7 @@ public class SimpleThrowableResolver implements ThrowableResolver {
 
 	@Override
 	public boolean isResolvable(Throwable throwable) {
-		return throwable != null
-				&& this.type.isAssignableFrom(throwable.getClass());
+		return throwable != null && this.type.isAssignableFrom(throwable.getClass());
 	}
 
 }

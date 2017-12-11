@@ -24,38 +24,57 @@ package ars.invoke.remote.slice;
  * 远程资源
  *
  **/
-public interface _ResourceOperations
-{
-    /**
-     * 远程调用
-     * 
-     * 如果参数包含文件，则需要先将文件上传，然后将参数名称修改为：__file_ + 实际参数名称
-     * 
-     * @param __cb The callback object for the operation.
-     * @param client 客户标识
-     * @param uri 资源地址
-     * @param __current The Current object for the invocation.
-     **/
-    void invoke_async(AMD_Resource_invoke __cb, String client, Itoken token, String uri, String parameter, Ice.Current __current);
+public interface _ResourceOperations {
+	/**
+	 * 远程调用
+	 * 
+	 * 如果参数包含文件，则需要先将文件上传，然后将参数名称修改为：__file_ + 实际参数名称
+	 * 
+	 * @param __cb
+	 *            The callback object for the operation.
+	 * @param client
+	 *            客户标识
+	 * @param token
+	 *            令牌对象
+	 * @param uri
+	 *            资源地址
+	 * @param parameter
+	 *            请求参数（JSON格式）
+	 * @param __current
+	 *            The Current object for the invocation.
+	 **/
+	void invoke_async(AMD_Resource_invoke __cb, String client, Itoken token, String uri, String parameter,
+			Ice.Current __current);
 
-    /**
-     * 文件上传
-     * 
-     * @param __cb The callback object for the operation.
-     * @param name 文件名称
-     * @param length 缓冲字节长度
-     * 
-     * @param __current The Current object for the invocation.
-     **/
-    void upload_async(AMD_Resource_upload __cb, String name, byte[] buffer, int length, Ice.Current __current);
+	/**
+	 * 文件上传
+	 * 
+	 * @param __cb
+	 *            The callback object for the operation.
+	 * @param name
+	 *            文件名称
+	 * @param buffer
+	 *            文件字节数组缓冲区
+	 * @param length
+	 *            缓冲字节长度
+	 * @param __current
+	 *            The Current object for the invocation.
+	 **/
+	void upload_async(AMD_Resource_upload __cb, String name, byte[] buffer, int length, Ice.Current __current);
 
-    /**
-     * 文件下载
-     * 
-     * @param __cb The callback object for the operation.
-     * @param id 数据流标识
-     * @param length 文件字节长度
-     * @param __current The Current object for the invocation.
-     **/
-    void download_async(AMD_Resource_download __cb, String id, int index, int length, Ice.Current __current);
+	/**
+	 * 文件下载
+	 * 
+	 * @param __cb
+	 *            The callback object for the operation.
+	 * @param id
+	 *            数据流标识
+	 * @param index
+	 *            文件流开始位置
+	 * @param length
+	 *            文件字节长度
+	 * @param __current
+	 *            The Current object for the invocation.
+	 **/
+	void download_async(AMD_Resource_download __cb, String id, int index, int length, Ice.Current __current);
 }

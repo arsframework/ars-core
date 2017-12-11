@@ -115,6 +115,7 @@ public class Nfile implements Serializable {
 	 * 
 	 * @return 字节数组
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public byte[] getBytes() throws IOException {
 		if (this.bytes == null) {
@@ -146,6 +147,7 @@ public class Nfile implements Serializable {
 	 * 
 	 * @return 输入流
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public InputStream getInputStream() throws IOException {
 		if (this.input != null) {
@@ -163,6 +165,7 @@ public class Nfile implements Serializable {
 	 * 
 	 * @return 输出流
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public OutputStream getOutputStream() throws IOException {
 		if (this.file != null) {

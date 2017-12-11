@@ -31,6 +31,7 @@ public abstract class AbstractTimerServer extends AbstractServer {
 	 * 执行服务
 	 * 
 	 * @throws Exception
+	 *             操作异常
 	 */
 	protected abstract void execute() throws Exception;
 

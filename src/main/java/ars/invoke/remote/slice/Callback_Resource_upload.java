@@ -25,6 +25,5 @@ package ars.invoke.remote.slice;
  * 
  **/
 
-public abstract class Callback_Resource_upload extends Ice.OnewayCallback
-{
+public abstract class Callback_Resource_upload extends Ice.OnewayCallback {
 }

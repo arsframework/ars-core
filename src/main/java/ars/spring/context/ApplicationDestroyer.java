@@ -10,8 +10,7 @@ import org.springframework.context.event.ContextClosedEvent;
  * @author wuyq
  * 
  */
-public abstract class ApplicationDestroyer implements
-		ApplicationListener<ApplicationEvent> {
+public abstract class ApplicationDestroyer implements ApplicationListener<ApplicationEvent> {
 	private boolean destroied = false;
 
 	/**

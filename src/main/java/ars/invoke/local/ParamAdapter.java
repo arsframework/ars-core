@@ -22,6 +22,7 @@ public interface ParamAdapter {
 	 *            请求参数
 	 * @return 适配结果对象
 	 * @throws Exception
+	 *             操作异常
 	 */
 	public Object adaption(Requester requester, Class<?> type, Map<String, Object> parameters) throws Exception;
 

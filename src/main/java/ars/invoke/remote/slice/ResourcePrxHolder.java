@@ -20,18 +20,13 @@
 
 package ars.invoke.remote.slice;
 
-public final class ResourcePrxHolder
-{
-    public
-    ResourcePrxHolder()
-    {
-    }
+public final class ResourcePrxHolder {
+	public ResourcePrxHolder() {
+	}
 
-    public
-    ResourcePrxHolder(ResourcePrx value)
-    {
-        this.value = value;
-    }
+	public ResourcePrxHolder(ResourcePrx value) {
+		this.value = value;
+	}
 
-    public ResourcePrx value;
+	public ResourcePrx value;
 }

@@ -33,8 +33,7 @@ public abstract class AbstractTaskServer extends AbstractServer {
 	public static final class JobHandler implements Job {
 
 		@Override
-		public void execute(JobExecutionContext context)
-				throws JobExecutionException {
+		public void execute(JobExecutionContext context) throws JobExecutionException {
 			JobDataMap data = context.getJobDetail().getJobDataMap();
 			AbstractTaskServer server = (AbstractTaskServer) data.get("server");
 			try {
@@ -72,6 +71,7 @@ public abstract class AbstractTaskServer extends AbstractServer {
 	 * 执行服务
 	 * 
 	 * @throws Exception
+	 *             操作异常
 	 */
 	protected abstract void execute() throws Exception;
 
@@ -82,11 +82,8 @@ public abstract class AbstractTaskServer extends AbstractServer {
 		}
 		try {
 			JobDetail detail = JobBuilder.newJob(JobHandler.class).build();
-			Trigger trigger = TriggerBuilder
-					.newTrigger()
-					.withSchedule(
-							CronScheduleBuilder.cronSchedule(this.expression))
-					.build();
+			Trigger trigger = TriggerBuilder.newTrigger()
+					.withSchedule(CronScheduleBuilder.cronSchedule(this.expression)).build();
 			JobDataMap data = detail.getJobDataMap();
 			data.put("server", this);
 			data.put("concurrent", this.concurrent);

@@ -124,6 +124,7 @@ public final class Remotes {
 	 *            配置文件路径
 	 * @param args
 	 *            通信器运行参数
+	 * @return ICE通信器对象
 	 */
 	public static Ice.Communicator initializeCommunicator(String configure, String... args) {
 		if (configure == null) {
@@ -264,6 +265,7 @@ public final class Remotes {
 	 *            远程资源标识
 	 * @return 调用结果
 	 * @throws Exception
+	 *             操作异常
 	 */
 	public static Object invoke(Ice.ObjectPrx proxy, String uri) throws Exception {
 		return invoke(proxy, null, uri, null);
@@ -280,6 +282,7 @@ public final class Remotes {
 	 *            请求参数
 	 * @return 调用结果
 	 * @throws Exception
+	 *             操作异常
 	 */
 	public static Object invoke(Ice.ObjectPrx proxy, String uri, Map<String, Object> parameters) throws Exception {
 		return invoke(proxy, null, uri, parameters);
@@ -296,6 +299,7 @@ public final class Remotes {
 	 *            远程资源标识
 	 * @return 调用结果
 	 * @throws Exception
+	 *             操作异常
 	 */
 	public static Object invoke(Ice.ObjectPrx proxy, Token token, String uri) throws Exception {
 		return invoke(proxy, token, uri, null);
@@ -314,6 +318,7 @@ public final class Remotes {
 	 *            请求参数
 	 * @return 调用结果（JSON格式）
 	 * @throws Exception
+	 *             操作异常
 	 */
 	@SuppressWarnings("unchecked")
 	public static Object invoke(final Ice.ObjectPrx proxy, Token token, String uri, Map<String, Object> parameters)
@@ -426,6 +431,7 @@ public final class Remotes {
 	 *            文件对象
 	 * @return 远程文件名称
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static String upload(Ice.ObjectPrx proxy, Nfile file) throws IOException {
 		if (proxy == null) {
@@ -470,8 +476,13 @@ public final class Remotes {
 	 *            远程资源代理
 	 * @param id
 	 *            文件标识
+	 * @param name
+	 *            文件名称
+	 * @param size
+	 *            文件大小（字节）
 	 * @return 文件对象
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static File download(Ice.ObjectPrx proxy, String id, String name, long size) throws IOException {
 		if (proxy == null) {

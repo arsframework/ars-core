@@ -181,6 +181,8 @@ public final class Servers {
 	/**
 	 * 提交任务
 	 * 
+	 * @param <T>
+	 *            结果类型
 	 * @param runnable
 	 *            线程处理接口
 	 * @param result
@@ -194,6 +196,8 @@ public final class Servers {
 	/**
 	 * 提交任务
 	 * 
+	 * @param <T>
+	 *            结果类型
 	 * @param callable
 	 *            线程处理接口
 	 * @return 任务结果

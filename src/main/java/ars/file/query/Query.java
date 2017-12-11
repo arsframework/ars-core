@@ -81,7 +81,7 @@ public interface Query extends Iterable<Describe> {
 	/**
 	 * 获取文件操作工作目录
 	 * 
-	 * @return
+	 * @return 文件目录
 	 */
 	public String getWorkingDirectory();
 
@@ -251,6 +251,7 @@ public interface Query extends Iterable<Describe> {
 	 *            页码
 	 * @param size
 	 *            每页数据量
+	 * @return 文件集合
 	 */
 	public Query paging(int page, int size);
 
@@ -268,6 +269,7 @@ public interface Query extends Iterable<Describe> {
 	 * 
 	 * @return 列表对象
 	 * @throws Exception
+	 *             操作异常
 	 */
 	public List<Describe> list() throws Exception;
 

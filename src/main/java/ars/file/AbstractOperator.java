@@ -56,7 +56,6 @@ public abstract class AbstractOperator implements Operator {
 	 * @param path
 	 *            文件相对路径
 	 * @return 实际文件路径
-	 * @throws IOException
 	 */
 	protected String getActualPath(String path) {
 		File file = new File(path);
@@ -64,11 +63,9 @@ public abstract class AbstractOperator implements Operator {
 			return new File(this.directoryGenerator.generate(file.getParent()),
 					this.nameGenerator.generate(file.getName())).getPath();
 		} else if (this.directoryGenerator != null) {
-			return new File(this.directoryGenerator.generate(file.getParent()),
-					file.getName()).getPath();
+			return new File(this.directoryGenerator.generate(file.getParent()), file.getName()).getPath();
 		} else if (this.nameGenerator != null) {
-			return new File(file.getParent(), this.nameGenerator.generate(file
-					.getName())).getPath();
+			return new File(file.getParent(), this.nameGenerator.generate(file.getName())).getPath();
 		}
 		return path;
 	}
@@ -80,12 +77,11 @@ public abstract class AbstractOperator implements Operator {
 
 	@Override
 	public List<Describe> trees(String path) throws Exception {
-		return this.trees(path, Collections.<String, Object> emptyMap());
+		return this.trees(path, Collections.<String, Object>emptyMap());
 	}
 
 	@Override
-	public List<Describe> trees(String path, Map<String, Object> parameters)
-			throws Exception {
+	public List<Describe> trees(String path, Map<String, Object> parameters) throws Exception {
 		Query query = this.query().path(path).custom(parameters);
 		List<Describe> describes = query.list();
 		List<Describe> trees = new ArrayList<Describe>(describes.size());

@@ -68,6 +68,7 @@ public class StandardRouter implements Router {
 		 *            请求对象
 		 * @return 调用结果
 		 * @throws Exception
+		 *             操作异常
 		 */
 		public Object execute(Requester requester) throws Exception {
 			return this.invoker.execute(requester, this.resource);
@@ -175,6 +176,7 @@ public class StandardRouter implements Router {
 	 *            请求对象
 	 * @return 请求结果
 	 * @throws Exception
+	 *             操作异常
 	 */
 	protected Object access(Requester requester) throws Exception {
 		return this.lookupInvokeWrapper(requester).execute(requester);

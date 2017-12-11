@@ -35,16 +35,14 @@ public final class Conditions {
 
 		public Or(Logic... logics) {
 			if (logics == null || logics.length == 0) {
-				throw new IllegalArgumentException("Illegal logics:"
-						+ Strings.toString(logics));
+				throw new IllegalArgumentException("Illegal logics:" + Strings.toString(logics));
 			}
 			this.logics = logics;
 		}
 
 		public Or(Map<String, Object> conditions) {
 			if (conditions == null || conditions.isEmpty()) {
-				throw new IllegalArgumentException("Illegal conditions:"
-						+ conditions);
+				throw new IllegalArgumentException("Illegal conditions:" + conditions);
 			}
 			List<Logic> logics = new ArrayList<Logic>(conditions.size());
 			for (Entry<String, Object> entry : conditions.entrySet()) {
@@ -89,16 +87,14 @@ public final class Conditions {
 
 		public And(Logic... logics) {
 			if (logics == null || logics.length == 0) {
-				throw new IllegalArgumentException("Illegal logics:"
-						+ Strings.toString(logics));
+				throw new IllegalArgumentException("Illegal logics:" + Strings.toString(logics));
 			}
 			this.logics = logics;
 		}
 
 		public And(Map<String, Object> conditions) {
 			if (conditions == null || conditions.isEmpty()) {
-				throw new IllegalArgumentException("Illegal conditions:"
-						+ conditions);
+				throw new IllegalArgumentException("Illegal conditions:" + conditions);
 			}
 			List<Logic> logics = new ArrayList<Logic>(conditions.size());
 			for (Entry<String, Object> entry : conditions.entrySet()) {
@@ -160,8 +156,7 @@ public final class Conditions {
 
 		@Override
 		public String toString() {
-			return new StringBuilder(this.key).append('=').append(this.value)
-					.toString();
+			return new StringBuilder(this.key).append('=').append(this.value).toString();
 		}
 
 	}
@@ -198,10 +193,8 @@ public final class Conditions {
 			} else if (start == end) {
 				int index = 0;
 				String handle = null;
-				if ((i > 3 && (handle = source.substring(index = i - 3, i + 1))
-						.equalsIgnoreCase(" or "))
-						|| (i > 4 && (handle = source.substring(index = i - 4,
-								i + 1)).equalsIgnoreCase(" and "))) {
+				if ((i > 3 && (handle = source.substring(index = i - 3, i + 1)).equalsIgnoreCase(" or "))
+						|| (i > 4 && (handle = source.substring(index = i - 4, i + 1)).equalsIgnoreCase(" and "))) {
 					if (!continued) {
 						setions.add(source.substring(offset, index));
 					}
@@ -224,8 +217,7 @@ public final class Conditions {
 			if (setion.isEmpty()) {
 				continue;
 			}
-			if (setion.charAt(0) == '('
-					&& setion.charAt(setion.length() - 1) == ')') {
+			if (setion.charAt(0) == '(' && setion.charAt(setion.length() - 1) == ')') {
 				setion = setion.substring(1, setion.length() - 1).trim();
 				if (setion.isEmpty()) {
 					continue;
@@ -233,16 +225,13 @@ public final class Conditions {
 				_logic = parse(setion);
 			} else {
 				int split = setion.indexOf("=");
-				String key = split < 0 ? setion.trim() : setion.substring(0,
-						split).trim();
+				String key = split < 0 ? setion.trim() : setion.substring(0, split).trim();
 				if (key.isEmpty()) {
 					continue;
 				}
-				String value = split < 0 ? null : setion.substring(split + 1)
-						.trim();
+				String value = split < 0 ? null : setion.substring(split + 1).trim();
 				_logic = new Condition(key,
-						Strings.isList(value) ? Strings.toList(value)
-								: Strings.isEmpty(value) ? null : value);
+						Strings.isList(value) ? Strings.toList(value) : Strings.isEmpty(value) ? null : value);
 			}
 			if (logic == null) {
 				logic = _logic;

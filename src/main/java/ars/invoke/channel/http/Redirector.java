@@ -12,7 +12,7 @@ public interface Redirector {
 	 * 
 	 * @param requester
 	 *            请求对象
-	 * @param value
+	 * @param content
 	 *            请求结果
 	 * @return 重定向资源路径
 	 */

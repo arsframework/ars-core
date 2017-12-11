@@ -925,7 +925,8 @@ public final class Strings {
 	 *            源字符串
 	 * @param sign
 	 *            分隔符
-	 * @param 开始位置
+	 * @param index
+	 *            开始位置
 	 * @return 字符串数组
 	 */
 	public static String[] split(CharSequence source, CharSequence sign, int index) {
@@ -1465,7 +1466,7 @@ public final class Strings {
 	/**
 	 * 将对象数组链接成字符串
 	 * 
-	 * @param objects
+	 * @param array
 	 *            对象数组
 	 * @return 字符串
 	 */
@@ -1652,8 +1653,8 @@ public final class Strings {
 	 * 
 	 * 表达式格式为：多个条件使用“,”号隔开；如果参数值为多个值，则使用“[]”包围，并且每个值使用“,”号隔开。
 	 * 
-	 * @param expression
-	 *            字符串表达式
+	 * @param expressions
+	 *            字符串表达式数组
 	 * @return 键/值对
 	 */
 	public static Map<String, Object> toMap(String... expressions) {

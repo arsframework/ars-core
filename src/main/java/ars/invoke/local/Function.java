@@ -27,8 +27,7 @@ public class Function implements Resource {
 			throw new IllegalArgumentException("Illegal method:" + method);
 		}
 		if (conditions == null) {
-			throw new IllegalArgumentException("Illegal conditions:"
-					+ conditions);
+			throw new IllegalArgumentException("Illegal conditions:" + conditions);
 		}
 		this.target = target;
 		this.method = method;
@@ -42,8 +41,7 @@ public class Function implements Resource {
 		if (method == null) {
 			throw new IllegalArgumentException("Illegal method:" + method);
 		}
-		Class<?> meta = target instanceof Class ? (Class<?>) target : target
-				.getClass();
+		Class<?> meta = target instanceof Class ? (Class<?>) target : target.getClass();
 		for (int i = 0; i < conditions.length; i++) {
 			types[i] = conditions[i].getType();
 		}
@@ -65,8 +63,7 @@ public class Function implements Resource {
 			throw new IllegalArgumentException("Illegal method:" + method);
 		}
 		Class<?>[] types = new Class<?>[conditions.length];
-		Class<?> targetClass = target instanceof Class ? (Class<?>) target
-				: target.getClass();
+		Class<?> targetClass = target instanceof Class ? (Class<?>) target : target.getClass();
 		for (int i = 0; i < conditions.length; i++) {
 			types[i] = conditions[i].getType();
 		}

@@ -188,8 +188,6 @@ public interface Requester extends Serializable {
 	 * 
 	 * @param key
 	 *            消息索引
-	 * @param args
-	 *            格式化参数
 	 * @return 消息内容
 	 */
 	public String format(String key);

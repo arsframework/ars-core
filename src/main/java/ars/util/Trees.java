@@ -23,6 +23,8 @@ public final class Trees {
 	/**
 	 * 获取树最大深度
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param tree
 	 *            树对象实例
 	 * @return 树深度
@@ -49,6 +51,8 @@ public final class Trees {
 	/**
 	 * 获取树最大宽度
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param tree
 	 *            树对象实例
 	 * @return 树宽度
@@ -72,6 +76,8 @@ public final class Trees {
 	/**
 	 * 获取树层级（从1开始）
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param tree
 	 *            树对象实例
 	 * @return 树层级
@@ -93,9 +99,10 @@ public final class Trees {
 	/**
 	 * 判断树对象是否是环形对象
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param tree
 	 *            树对象实例
-	 * 
 	 * @return true/false
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -116,6 +123,8 @@ public final class Trees {
 	/**
 	 * 获取树对象根节点
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param tree
 	 *            树对象实例
 	 * @return 树对象实例
@@ -135,6 +144,8 @@ public final class Trees {
 	/**
 	 * 获取树对象所有父节点
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param tree
 	 *            树对象实例
 	 * @return 父节点实例列表
@@ -156,19 +167,22 @@ public final class Trees {
 	/**
 	 * 获取树对象所有父节点
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param trees
 	 *            树对象实例数组
 	 * @return 父节点实例列表
 	 */
 	@SuppressWarnings("rawtypes")
 	public static <M extends Tree> List<M> getParents(M[] trees) {
-		return trees == null || trees.length == 0 ? new ArrayList<M>(0)
-				: getParents(Arrays.asList(trees));
+		return trees == null || trees.length == 0 ? new ArrayList<M>(0) : getParents(Arrays.asList(trees));
 	}
 
 	/**
 	 * 获取树对象所有父节点
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param trees
 	 *            树对象实例集合
 	 * @return 父节点实例列表
@@ -194,6 +208,8 @@ public final class Trees {
 	/**
 	 * 获取树对象所有叶节点
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param tree
 	 *            树对象实例
 	 * @return 树对象列表
@@ -218,19 +234,22 @@ public final class Trees {
 	/**
 	 * 获取树对象所有叶节点
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param trees
 	 *            树对象数组
 	 * @return 树对象列表
 	 */
 	@SuppressWarnings("rawtypes")
 	public static <M extends Tree> List<M> getLeaves(M[] trees) {
-		return trees == null || trees.length == 0 ? new ArrayList<M>(0)
-				: getLeaves(Arrays.asList(trees));
+		return trees == null || trees.length == 0 ? new ArrayList<M>(0) : getLeaves(Arrays.asList(trees));
 	}
 
 	/**
 	 * 获取树对象所有叶节点
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param trees
 	 *            树对象集合
 	 * @return 树对象列表
@@ -250,6 +269,8 @@ public final class Trees {
 	/**
 	 * 获取树展开列表
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param tree
 	 *            树对象实例
 	 * @return 树对象列表
@@ -271,19 +292,22 @@ public final class Trees {
 	/**
 	 * 获取树展开列表
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param trees
 	 *            树对象数组
 	 * @return 树对象列表
 	 */
 	@SuppressWarnings("rawtypes")
 	public static <M extends Tree> List<M> getExpands(M[] trees) {
-		return trees == null || trees.length == 0 ? new ArrayList<M>(0)
-				: getExpands(Arrays.asList(trees));
+		return trees == null || trees.length == 0 ? new ArrayList<M>(0) : getExpands(Arrays.asList(trees));
 	}
 
 	/**
 	 * 获取树展开列表
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param trees
 	 *            树对象集合
 	 * @return 树对象列表
@@ -303,19 +327,22 @@ public final class Trees {
 	/**
 	 * 合并树
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param trees
 	 *            树数组
 	 * @return 合并后的树列表
 	 */
 	@SuppressWarnings("rawtypes")
 	public static <M extends Tree> List<M> getMerges(M[] trees) {
-		return trees == null || trees.length == 0 ? new ArrayList<M>(0)
-				: getMerges(Arrays.asList(trees));
+		return trees == null || trees.length == 0 ? new ArrayList<M>(0) : getMerges(Arrays.asList(trees));
 	}
 
 	/**
 	 * 合并树
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param trees
 	 *            树集合
 	 * @return 合并后的树列表
@@ -355,6 +382,8 @@ public final class Trees {
 	/**
 	 * 比较两个树对象数组是否相同
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param trees
 	 *            树对象数组
 	 * @param _trees
@@ -363,14 +392,15 @@ public final class Trees {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static <M extends Tree> boolean isEqual(M[] trees, M[] _trees) {
-		return trees == _trees
-				|| (trees != null && _trees != null && trees.length == 0 && _trees.length == 0)
+		return trees == _trees || (trees != null && _trees != null && trees.length == 0 && _trees.length == 0)
 				|| isEqual(Arrays.asList(trees), Arrays.asList(_trees));
 	}
 
 	/**
 	 * 比较两个树对象数组是否相同
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param trees
 	 *            树对象数组
 	 * @param _trees
@@ -380,17 +410,16 @@ public final class Trees {
 	 * @return true/false
 	 */
 	@SuppressWarnings("rawtypes")
-	public static <M extends Tree> boolean isEqual(M[] trees, M[] _trees,
-			Comparator<M> comparator) {
-		return trees == _trees
-				|| (trees != null && _trees != null && trees.length == 0 && _trees.length == 0)
-				|| isEqual(Arrays.asList(trees), Arrays.asList(_trees),
-						comparator);
+	public static <M extends Tree> boolean isEqual(M[] trees, M[] _trees, Comparator<M> comparator) {
+		return trees == _trees || (trees != null && _trees != null && trees.length == 0 && _trees.length == 0)
+				|| isEqual(Arrays.asList(trees), Arrays.asList(_trees), comparator);
 	}
 
 	/**
 	 * 比较两个树对象集合是否相同
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param trees
 	 *            树对象集合
 	 * @param _trees
@@ -398,8 +427,7 @@ public final class Trees {
 	 * @return true/false
 	 */
 	@SuppressWarnings("rawtypes")
-	public static <M extends Tree> boolean isEqual(Collection<M> trees,
-			Collection<M> _trees) {
+	public static <M extends Tree> boolean isEqual(Collection<M> trees, Collection<M> _trees) {
 		return isEqual(trees, _trees, new Comparator<M>() {
 
 			@Override
@@ -413,6 +441,8 @@ public final class Trees {
 	/**
 	 * 比较两个树对象集合是否相同
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param trees
 	 *            树对象集合
 	 * @param _trees
@@ -422,11 +452,9 @@ public final class Trees {
 	 * @return true/false
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static <M extends Tree> boolean isEqual(Collection<M> trees,
-			Collection<M> _trees, Comparator<M> comparator) {
-		if (trees == _trees
-				|| (trees != null && _trees != null && trees.isEmpty() && _trees
-						.isEmpty())) {
+	public static <M extends Tree> boolean isEqual(Collection<M> trees, Collection<M> _trees,
+			Comparator<M> comparator) {
+		if (trees == _trees || (trees != null && _trees != null && trees.isEmpty() && _trees.isEmpty())) {
 			return true;
 		}
 		for (M tree : trees) {
@@ -437,8 +465,7 @@ public final class Trees {
 					break;
 				}
 			}
-			boolean found = _tree == null ? false : isEqual(tree.getChildren(),
-					_tree.getChildren(), comparator);
+			boolean found = _tree == null ? false : isEqual(tree.getChildren(), _tree.getChildren(), comparator);
 			if (!found) {
 				return false;
 			}
@@ -451,8 +478,7 @@ public final class Trees {
 					break;
 				}
 			}
-			boolean found = tree == null ? false : isEqual(_tree.getChildren(),
-					tree.getChildren(), comparator);
+			boolean found = tree == null ? false : isEqual(_tree.getChildren(), tree.getChildren(), comparator);
 			if (!found) {
 				return false;
 			}
@@ -463,6 +489,8 @@ public final class Trees {
 	/**
 	 * 串联所有父节点字符串
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param tree
 	 *            树对象实例
 	 * @param sign
@@ -477,6 +505,8 @@ public final class Trees {
 	/**
 	 * 串联所有父节点字符串
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param tree
 	 *            树对象实例
 	 * @param sign
@@ -486,14 +516,15 @@ public final class Trees {
 	 * @return 当前节点及所有父节点字符串串联
 	 */
 	@SuppressWarnings("rawtypes")
-	public static <M extends Tree> String toString(M tree, CharSequence sign,
-			boolean reverse) {
+	public static <M extends Tree> String toString(M tree, CharSequence sign, boolean reverse) {
 		return toString(tree, sign, 0, reverse);
 	}
 
 	/**
 	 * 串联所有父节点字符串
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param tree
 	 *            树对象实例
 	 * @param sign
@@ -503,14 +534,15 @@ public final class Trees {
 	 * @return 当前节点及所有父节点字符串串联
 	 */
 	@SuppressWarnings("rawtypes")
-	public static <M extends Tree> String toString(M tree, CharSequence sign,
-			int depth) {
+	public static <M extends Tree> String toString(M tree, CharSequence sign, int depth) {
 		return toString(tree, sign, depth, false);
 	}
 
 	/**
 	 * 串联所有父节点字符串
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param tree
 	 *            树对象实例
 	 * @param sign
@@ -522,8 +554,7 @@ public final class Trees {
 	 * @return 当前节点及所有父节点字符串串联
 	 */
 	@SuppressWarnings("rawtypes")
-	public static <M extends Tree> String toString(M tree, CharSequence sign,
-			int depth, boolean reverse) {
+	public static <M extends Tree> String toString(M tree, CharSequence sign, int depth, boolean reverse) {
 		if (tree == null || sign == null) {
 			return null;
 		}
@@ -546,6 +577,8 @@ public final class Trees {
 	/**
 	 * 获取多个树对象第一个共同父节点
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param trees
 	 *            树对象数组
 	 * @return 树对象
@@ -565,6 +598,8 @@ public final class Trees {
 	/**
 	 * 获取多个树对象第一个共同父节点
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param trees
 	 *            树对象数组
 	 * @param comparator
@@ -572,8 +607,7 @@ public final class Trees {
 	 * @return 树对象
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static <M extends Tree> M getAncestor(M[] trees,
-			Comparator<M> comparator) {
+	public static <M extends Tree> M getAncestor(M[] trees, Comparator<M> comparator) {
 		if (trees == null || trees.length == 0) {
 			return null;
 		}
@@ -597,6 +631,8 @@ public final class Trees {
 	/**
 	 * 获取多个树对象第一个共同父节点
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param trees
 	 *            树对象集合
 	 * @return 树对象
@@ -616,6 +652,8 @@ public final class Trees {
 	/**
 	 * 获取多个树对象第一个共同父节点
 	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param trees
 	 *            树对象集合
 	 * @param comparator
@@ -623,11 +661,9 @@ public final class Trees {
 	 * @return 树对象
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static <M extends Tree> M getAncestor(Collection<M> trees,
-			Comparator<M> comparator) {
-		return trees == null || trees.isEmpty() ? null : getAncestor(
-				(M[]) trees.toArray(Beans.getArray(trees.iterator().next()
-						.getClass(), 0)), comparator);
+	public static <M extends Tree> M getAncestor(Collection<M> trees, Comparator<M> comparator) {
+		return trees == null || trees.isEmpty() ? null
+				: getAncestor((M[]) trees.toArray(Beans.getArray(trees.iterator().next().getClass(), 0)), comparator);
 	}
 
 }

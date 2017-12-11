@@ -27,13 +27,13 @@ package ars.invoke.remote.slice;
  * 
  **/
 
-public interface AMD_Resource_invoke extends Ice.AMDCallback
-{
-    /**
-     * ice_response indicates that
-     * the operation completed successfully.
-     * @param __ret (return value) 结果对象
-     * 
-     **/
-    void ice_response(Iresult __ret);
+public interface AMD_Resource_invoke extends Ice.AMDCallback {
+	/**
+	 * ice_response indicates that the operation completed successfully.
+	 * 
+	 * @param __ret
+	 *            (return value) 结果对象
+	 * 
+	 **/
+	void ice_response(Iresult __ret);
 }

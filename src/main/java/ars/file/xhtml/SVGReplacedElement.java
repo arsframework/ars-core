@@ -79,8 +79,7 @@ public class SVGReplacedElement implements ITextReplacedElement {
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public void paint(RenderingContext renderingContext,
-			ITextOutputDevice outputDevice, BlockBox blockBox) {
+	public void paint(RenderingContext renderingContext, ITextOutputDevice outputDevice, BlockBox blockBox) {
 		PdfContentByte cb = outputDevice.getWriter().getDirectContent();
 		float width = (float) (cssWidth / outputDevice.getDotsPerPoint());
 		float height = (float) (cssHeight / outputDevice.getDotsPerPoint());
@@ -99,12 +98,9 @@ public class SVGReplacedElement implements ITextReplacedElement {
 		g2d.dispose();
 
 		PageBox page = renderingContext.getPage();
-		float x = blockBox.getAbsX()
-				+ page.getMarginBorderPadding(renderingContext,
-						CalculatedStyle.LEFT);
+		float x = blockBox.getAbsX() + page.getMarginBorderPadding(renderingContext, CalculatedStyle.LEFT);
 		float y = (page.getBottom() - (blockBox.getAbsY() + cssHeight))
-				+ page.getMarginBorderPadding(renderingContext,
-						CalculatedStyle.BOTTOM);
+				+ page.getMarginBorderPadding(renderingContext, CalculatedStyle.BOTTOM);
 		x /= outputDevice.getDotsPerPoint();
 		y /= outputDevice.getDotsPerPoint();
 

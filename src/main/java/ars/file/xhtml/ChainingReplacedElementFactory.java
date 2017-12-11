@@ -20,17 +20,15 @@ import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 public class ChainingReplacedElementFactory implements ReplacedElementFactory {
 	private List<ReplacedElementFactory> replacedElementFactories = new ArrayList<ReplacedElementFactory>();
 
-	public void addReplacedElementFactory(
-			ReplacedElementFactory replacedElementFactory) {
+	public void addReplacedElementFactory(ReplacedElementFactory replacedElementFactory) {
 		replacedElementFactories.add(0, replacedElementFactory);
 	}
 
 	@Override
-	public ReplacedElement createReplacedElement(LayoutContext c, BlockBox box,
-			UserAgentCallback uac, int cssWidth, int cssHeight) {
+	public ReplacedElement createReplacedElement(LayoutContext c, BlockBox box, UserAgentCallback uac, int cssWidth,
+			int cssHeight) {
 		for (ReplacedElementFactory replacedElementFactory : replacedElementFactories) {
-			ReplacedElement element = replacedElementFactory
-					.createReplacedElement(c, box, uac, cssWidth, cssHeight);
+			ReplacedElement element = replacedElementFactory.createReplacedElement(c, box, uac, cssWidth, cssHeight);
 			if (element != null) {
 				return element;
 			}

@@ -24,10 +24,8 @@ package ars.invoke.remote.slice;
  * 远程资源
  *
  **/
-public interface Resource extends Ice.Object,
-                                  _ResourceOperations, _ResourceOperationsNC
-{
-    public static final String ice_staticId = "::ars::invoke::remote::slice::Resource";
+public interface Resource extends Ice.Object, _ResourceOperations, _ResourceOperationsNC {
+	public static final String ice_staticId = "::ars::invoke::remote::slice::Resource";
 
-    public static final long serialVersionUID = -1764459085L;
+	public static final long serialVersionUID = -1764459085L;
 }

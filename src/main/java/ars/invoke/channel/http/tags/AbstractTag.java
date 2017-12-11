@@ -108,6 +108,7 @@ public abstract class AbstractTag extends SimpleTagSupport {
 	 * 
 	 * @return 执行结果
 	 * @throws Exception
+	 *             操作异常
 	 */
 	protected abstract Object execute() throws Exception;
 
@@ -117,7 +118,9 @@ public abstract class AbstractTag extends SimpleTagSupport {
 	 * @param value
 	 *            上下文值对象
 	 * @throws IOException
+	 *             IO操作异常
 	 * @throws JspException
+	 *             Jsp操作异常
 	 */
 	protected void setContextValue(Object value) throws IOException, JspException {
 		JspContext context = this.getJspContext();

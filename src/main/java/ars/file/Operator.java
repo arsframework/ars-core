@@ -17,7 +17,7 @@ public interface Operator {
 	/**
 	 * 获取文件操作工作目录
 	 * 
-	 * @return
+	 * @return 文件工作目录
 	 */
 	public String getWorkingDirectory();
 
@@ -28,6 +28,7 @@ public interface Operator {
 	 *            文件/文件目录相对路径
 	 * @return true/false
 	 * @throws Exception
+	 *             操作异常
 	 */
 	public boolean exists(String path) throws Exception;
 
@@ -36,8 +37,9 @@ public interface Operator {
 	 * 
 	 * @param path
 	 *            文件目录相对路径
-	 * @return true/fase
+	 * @return true/false
 	 * @throws Exception
+	 *             操作异常
 	 */
 	public boolean mkdirs(String path) throws Exception;
 
@@ -47,6 +49,7 @@ public interface Operator {
 	 * @param path
 	 *            文件/文件目录相对路径
 	 * @throws Exception
+	 *             操作异常
 	 */
 	public void delete(String path) throws Exception;
 
@@ -58,6 +61,7 @@ public interface Operator {
 	 * @param target
 	 *            目标文件目录
 	 * @throws Exception
+	 *             操作异常
 	 */
 	public void copy(String source, String target) throws Exception;
 
@@ -69,6 +73,7 @@ public interface Operator {
 	 * @param target
 	 *            目标文件目录
 	 * @throws Exception
+	 *             操作异常
 	 */
 	public void move(String source, String target) throws Exception;
 
@@ -86,6 +91,7 @@ public interface Operator {
 	 *            文件/文件目录相对路径
 	 * @return 文件描述对象
 	 * @throws Exception
+	 *             操作异常
 	 */
 	public Describe describe(String path) throws Exception;
 
@@ -96,6 +102,7 @@ public interface Operator {
 	 *            文件/文件目录相对路径
 	 * @return 文件描述树对象列表
 	 * @throws Exception
+	 *             操作异常
 	 */
 	public List<Describe> trees(String path) throws Exception;
 
@@ -108,9 +115,9 @@ public interface Operator {
 	 *            过滤参数
 	 * @return 文件描述树对象列表
 	 * @throws Exception
+	 *             操作异常
 	 */
-	public List<Describe> trees(String path, Map<String, Object> parameters)
-			throws Exception;
+	public List<Describe> trees(String path, Map<String, Object> parameters) throws Exception;
 
 	/**
 	 * 读文件
@@ -119,6 +126,7 @@ public interface Operator {
 	 *            文件相对路径
 	 * @return 文件
 	 * @throws Exception
+	 *             操作异常
 	 */
 	public Nfile read(String path) throws Exception;
 
@@ -129,6 +137,7 @@ public interface Operator {
 	 *            源文件
 	 * @return 文件相对路径
 	 * @throws Exception
+	 *             操作异常
 	 */
 	public String write(Nfile file) throws Exception;
 
@@ -141,6 +150,7 @@ public interface Operator {
 	 *            目标文件路径
 	 * @return 文件相对路径
 	 * @throws Exception
+	 *             操作异常
 	 */
 	public String write(Nfile file, String path) throws Exception;
 
@@ -152,6 +162,7 @@ public interface Operator {
 	 * @param path
 	 *            目标文件路径
 	 * @throws Exception
+	 *             操作异常
 	 */
 	public void write(byte[] bytes, String path) throws Exception;
 

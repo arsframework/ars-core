@@ -17,6 +17,7 @@ public interface SocketServer extends Server {
 	 * @param channel
 	 *            数据通道
 	 * @throws Exception
+	 *             操作异常
 	 */
 	public void accept(Channel channel) throws Exception;
 

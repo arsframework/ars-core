@@ -17,8 +17,7 @@ import ars.invoke.channel.socket.SocketServer;
  * @author wuyq
  * 
  */
-public abstract class AbstractUdpServer extends AbstractServer implements
-		SocketServer {
+public abstract class AbstractUdpServer extends AbstractServer implements SocketServer {
 	private int port = 20000;
 	private Selector selector;
 
@@ -51,8 +50,7 @@ public abstract class AbstractUdpServer extends AbstractServer implements
 		while (this.isAlive()) {
 			try {
 				if (this.selector.select() > 0) {
-					Iterator<SelectionKey> iter = this.selector.selectedKeys()
-							.iterator();
+					Iterator<SelectionKey> iter = this.selector.selectedKeys().iterator();
 					while (iter.hasNext()) {
 						SelectionKey key = iter.next();
 						if (key.isReadable() && key.isValid()) {

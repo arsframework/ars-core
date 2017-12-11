@@ -12,8 +12,7 @@ import ars.invoke.event.InvokeListener;
  * @param <E>
  *            事件模型
  */
-public abstract class AbstractInvokeListener<E extends InvokeEvent> implements
-		InvokeListener<E> {
+public abstract class AbstractInvokeListener<E extends InvokeEvent> implements InvokeListener<E> {
 	private String pattern; // 资源地址匹配模式
 
 	public String getPattern() {
@@ -34,8 +33,7 @@ public abstract class AbstractInvokeListener<E extends InvokeEvent> implements
 
 	@Override
 	public final void onInvokeEvent(E event) {
-		if (this.pattern == null
-				|| Strings.matches(event.getSource().getUri(), this.pattern)) {
+		if (this.pattern == null || Strings.matches(event.getSource().getUri(), this.pattern)) {
 			this.execute(event);
 		}
 	}

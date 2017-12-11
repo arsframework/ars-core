@@ -31,8 +31,7 @@ public final class Opcodes {
 		return new Color(r, g, b);
 	}
 
-	private static void drawLine(Graphics graphics, int number, int width,
-			int height) {
+	private static void drawLine(Graphics graphics, int number, int width, int height) {
 		Random random = new Random();
 		for (int i = 0; i < number; i++) {
 			int x = random.nextInt(width - 1);
@@ -43,13 +42,11 @@ public final class Opcodes {
 		}
 	}
 
-	private static void drawYawp(BufferedImage image, float rate, int width,
-			int height) {
+	private static void drawYawp(BufferedImage image, float rate, int width, int height) {
 		Random random = new Random();
 		int area = (int) (rate * width * height);
 		for (int i = 0; i < area; i++) {
-			image.setRGB(random.nextInt(width), random.nextInt(height),
-					getRandomIntColor());
+			image.setRGB(random.nextInt(width), random.nextInt(height), getRandomIntColor());
 		}
 	}
 
@@ -63,8 +60,7 @@ public final class Opcodes {
 		return color;
 	}
 
-	private static void shearX(Graphics graphics, Color color, int width,
-			int height) {
+	private static void shearX(Graphics graphics, Color color, int width, int height) {
 		Random random = new Random();
 		int period = random.nextInt(2);
 		boolean borderGap = true;
@@ -72,9 +68,7 @@ public final class Opcodes {
 		int phase = random.nextInt(2);
 		for (int i = 0; i < height; i++) {
 			double d = (double) (period >> 1)
-					* Math.sin((double) i / (double) period
-							+ (6.2831853071795862D * (double) phase)
-							/ (double) frames);
+					* Math.sin((double) i / (double) period + (6.2831853071795862D * (double) phase) / (double) frames);
 			graphics.copyArea(0, i, width, 1, (int) d, 0);
 			if (borderGap) {
 				graphics.setColor(color);
@@ -84,8 +78,7 @@ public final class Opcodes {
 		}
 	}
 
-	private static void shearY(Graphics graphics, Color color, int width,
-			int height) {
+	private static void shearY(Graphics graphics, Color color, int width, int height) {
 		Random random = new Random();
 		int period = random.nextInt(40) + 10; // 50;
 		boolean borderGap = true;
@@ -93,9 +86,7 @@ public final class Opcodes {
 		int phase = 7;
 		for (int i = 0; i < width; i++) {
 			double d = (double) (period >> 1)
-					* Math.sin((double) i / (double) period
-							+ (6.2831853071795862D * (double) phase)
-							/ (double) frames);
+					* Math.sin((double) i / (double) period + (6.2831853071795862D * (double) phase) / (double) frames);
 			graphics.copyArea(i, 0, 1, height, 0, (int) d);
 			if (borderGap) {
 				graphics.setColor(color);
@@ -128,11 +119,9 @@ public final class Opcodes {
 	 * @return 图片对象
 	 */
 	public static BufferedImage encode(String content, int width, int height) {
-		BufferedImage image = new BufferedImage(width, height,
-				BufferedImage.TYPE_INT_RGB);
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		Graphics2D graphics = image.createGraphics();
-		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
+		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		graphics.setColor(Color.GRAY);// 设置边框色
 		graphics.fillRect(0, 0, width, height);
 		graphics.setColor(getRandomColor(200, 250));// 设置背景色
@@ -150,13 +139,10 @@ public final class Opcodes {
 		char[] chars = content.toCharArray();
 		for (int i = 0; i < chars.length; i++) {
 			AffineTransform affine = new AffineTransform();
-			affine.setToRotation(
-					Math.PI / 4 * random.nextDouble()
-							* (random.nextBoolean() ? 1 : -1),
+			affine.setToRotation(Math.PI / 4 * random.nextDouble() * (random.nextBoolean() ? 1 : -1),
 					(width / chars.length) * i + fontSize / 2, height / 2);
 			graphics.setTransform(affine);
-			graphics.drawChars(chars, i, 1, ((width - 10) / chars.length) * i
-					+ 5, height / 2 + fontSize / 2 - 10);
+			graphics.drawChars(chars, i, 1, ((width - 10) / chars.length) * i + 5, height / 2 + fontSize / 2 - 10);
 		}
 		graphics.dispose();
 		return image;

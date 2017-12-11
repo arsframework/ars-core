@@ -34,6 +34,7 @@ public final class Barcodes {
 	 *            图片内容
 	 * @return 图片对象
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static BufferedImage encode(String content) throws IOException {
 		return encode(content, BarcodeFormat.QR_CODE, 200, 200);

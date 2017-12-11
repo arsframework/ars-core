@@ -24,104 +24,82 @@ package ars.invoke.remote.slice;
  * 字符串结果类型
  *
  **/
-public class Istring extends Iresult
-{
-    public Istring()
-    {
-        super();
-        json = "";
-    }
+public class Istring extends Iresult {
+	public Istring() {
+		super();
+		json = "";
+	}
 
-    public Istring(String json)
-    {
-        this.json = json;
-    }
+	public Istring(String json) {
+		this.json = json;
+	}
 
-    private static class __F implements Ice.ObjectFactory
-    {
-        public Ice.Object create(String type)
-        {
-            assert(type.equals(ice_staticId()));
-            return new Istring();
-        }
+	private static class __F implements Ice.ObjectFactory {
+		public Ice.Object create(String type) {
+			assert (type.equals(ice_staticId()));
+			return new Istring();
+		}
 
-        public void destroy()
-        {
-        }
-    }
-    private static Ice.ObjectFactory _factory = new __F();
+		public void destroy() {
+		}
+	}
 
-    public static Ice.ObjectFactory
-    ice_factory()
-    {
-        return _factory;
-    }
+	private static Ice.ObjectFactory _factory = new __F();
 
-    public static final String[] __ids =
-    {
-        "::Ice::Object",
-        "::ars::invoke::remote::slice::Iresult",
-        "::ars::invoke::remote::slice::Istring"
-    };
+	public static Ice.ObjectFactory ice_factory() {
+		return _factory;
+	}
 
-    public boolean ice_isA(String s)
-    {
-        return java.util.Arrays.binarySearch(__ids, s) >= 0;
-    }
+	public static final String[] __ids = { "::Ice::Object", "::ars::invoke::remote::slice::Iresult",
+			"::ars::invoke::remote::slice::Istring" };
 
-    public boolean ice_isA(String s, Ice.Current __current)
-    {
-        return java.util.Arrays.binarySearch(__ids, s) >= 0;
-    }
+	public boolean ice_isA(String s) {
+		return java.util.Arrays.binarySearch(__ids, s) >= 0;
+	}
 
-    public String[] ice_ids()
-    {
-        return __ids;
-    }
+	public boolean ice_isA(String s, Ice.Current __current) {
+		return java.util.Arrays.binarySearch(__ids, s) >= 0;
+	}
 
-    public String[] ice_ids(Ice.Current __current)
-    {
-        return __ids;
-    }
+	public String[] ice_ids() {
+		return __ids;
+	}
 
-    public String ice_id()
-    {
-        return __ids[2];
-    }
+	public String[] ice_ids(Ice.Current __current) {
+		return __ids;
+	}
 
-    public String ice_id(Ice.Current __current)
-    {
-        return __ids[2];
-    }
+	public String ice_id() {
+		return __ids[2];
+	}
 
-    public static String ice_staticId()
-    {
-        return __ids[2];
-    }
+	public String ice_id(Ice.Current __current) {
+		return __ids[2];
+	}
 
-    protected void __writeImpl(IceInternal.BasicStream __os)
-    {
-        __os.startWriteSlice(ice_staticId(), -1, false);
-        __os.writeString(json);
-        __os.endWriteSlice();
-        super.__writeImpl(__os);
-    }
+	public static String ice_staticId() {
+		return __ids[2];
+	}
 
-    protected void __readImpl(IceInternal.BasicStream __is)
-    {
-        __is.startReadSlice();
-        json = __is.readString();
-        __is.endReadSlice();
-        super.__readImpl(__is);
-    }
+	protected void __writeImpl(IceInternal.BasicStream __os) {
+		__os.startWriteSlice(ice_staticId(), -1, false);
+		__os.writeString(json);
+		__os.endWriteSlice();
+		super.__writeImpl(__os);
+	}
 
-    public String json;
+	protected void __readImpl(IceInternal.BasicStream __is) {
+		__is.startReadSlice();
+		json = __is.readString();
+		__is.endReadSlice();
+		super.__readImpl(__is);
+	}
 
-    public Istring
-    clone()
-    {
-        return (Istring)super.clone();
-    }
+	public String json;
 
-    public static final long serialVersionUID = -1887986862L;
+	public Istring clone() {
+		return (Istring) super.clone();
+	}
+
+	public static final long serialVersionUID = -1887986862L;
 }

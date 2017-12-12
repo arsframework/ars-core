@@ -1776,7 +1776,7 @@ public final class Strings {
 		if (index > 0 && path.substring(0, index).toLowerCase().equals("classpath")) {
 			URL url = String.class.getClassLoader().getResource(path.substring(index + 1));
 			if (url == null) {
-				throw new RuntimeException("File not found:" + path);
+				throw new RuntimeException("Path does not exist:" + path);
 			}
 			return url.getFile();
 		}

@@ -10,10 +10,10 @@ import ars.invoke.request.Requester;
  */
 public interface RemoteRequester extends Requester {
 	/**
-	 * 获取ICE远程调用请求上下文
+	 * 获取ICE当前请求对象
 	 * 
-	 * @return 上下文对象
+	 * @return 当前请求对象
 	 */
-	public Ice.Current getIceContext();
+	public Ice.Current getCurrent();
 
 }

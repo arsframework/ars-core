@@ -11,7 +11,7 @@ import ars.util.Strings;
 /**
  * 文件描述对象
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class Describe implements Serializable {
@@ -92,7 +92,7 @@ public class Describe implements Serializable {
 	/**
 	 * 文件/文件目录属性
 	 * 
-	 * @author wuyq
+	 * @author yongqiangwu
 	 * 
 	 */
 	public enum Property {

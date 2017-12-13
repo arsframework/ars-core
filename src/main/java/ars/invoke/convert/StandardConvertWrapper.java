@@ -14,7 +14,7 @@ import ars.invoke.request.ParameterInvalidException;
 /**
  * 对象转换包装标准实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  *
  */
 public class StandardConvertWrapper implements Converter {

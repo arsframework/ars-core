@@ -9,7 +9,7 @@ import ars.invoke.Channel;
 /**
  * Http请求通道接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public interface HttpChannel extends Channel {

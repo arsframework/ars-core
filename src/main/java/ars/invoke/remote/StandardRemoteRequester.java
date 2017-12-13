@@ -12,7 +12,7 @@ import ars.invoke.remote.RemoteRequester;
 /**
  * 基于ICE请求对象标准实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class StandardRemoteRequester extends StandardRequester implements RemoteRequester {

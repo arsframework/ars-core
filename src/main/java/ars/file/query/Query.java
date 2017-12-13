@@ -9,7 +9,7 @@ import ars.file.Describe.Property;
 /**
  * 文件查询集合接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public interface Query extends Iterable<Describe> {

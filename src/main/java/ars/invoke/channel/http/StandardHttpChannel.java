@@ -22,7 +22,7 @@ import ars.invoke.channel.http.StandardHttpRequester;
 /**
  * Http请求通道标准实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class StandardHttpChannel extends AbstractHttpChannel {
@@ -34,6 +34,26 @@ public class StandardHttpChannel extends AbstractHttpChannel {
 
 	public void setUploader(ServletFileUpload uploader) {
 		this.uploader = uploader;
+	}
+
+	/**
+	 * 根据请求参数JSON字符串获取请求参数键/值映射
+	 * 
+	 * @param parameter
+	 *            JSON参数
+	 * @return 参数键/值映射
+	 */
+	protected Map<String, Object> getParameters(HttpServletRequest request) throws IOException, ServletException {
+		if (ServletFileUpload.isMultipartContent(request)) {
+			try {
+				return Https.getUploadParameters(request, this.uploader);
+			} catch (FileUploadException e) {
+				throw new ServletException(e);
+			}
+		} else if ("application/json".equals(request.getContentType())) {
+			return Https.getStreamParameters(request);
+		}
+		return Https.getParameters(request);
 	}
 
 	@Override
@@ -48,17 +68,9 @@ public class StandardHttpChannel extends AbstractHttpChannel {
 		if (Strings.isEmpty(identity)) {
 			identity = Https.getCookie(request, Https.CONTEXT_TOKEN);
 		}
-		String contentType = request.getContentType();
-		try {
-			Map<String, Object> parameters = !Strings.isEmpty(contentType)
-					&& contentType.startsWith("multipart/form-data") ? Https.getUploadParameters(request, this.uploader)
-							: Https.getParameters(request);
-			Token token = identity == null ? null : new Token(identity);
-			return new StandardHttpRequester(this, config, request, response, null, request.getLocale(), client, host,
-					token, uri, parameters);
-		} catch (FileUploadException e) {
-			throw new ServletException(e);
-		}
+		Token token = identity == null ? null : new Token(identity);
+		return new StandardHttpRequester(this, config, request, response, null, request.getLocale(), client, host,
+				token, uri, this.getParameters(request));
 	}
 
 }

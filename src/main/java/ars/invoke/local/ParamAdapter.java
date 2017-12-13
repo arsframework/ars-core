@@ -7,7 +7,7 @@ import ars.invoke.request.Requester;
 /**
  * 对象适配接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public interface ParamAdapter {

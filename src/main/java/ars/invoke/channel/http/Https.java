@@ -2,9 +2,9 @@ package ars.invoke.channel.http;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.io.OutputStreamWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
@@ -66,6 +66,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import ars.util.Nfile;
 import ars.util.Files;
+import ars.util.Jsons;
 import ars.util.Streams;
 import ars.util.Strings;
 import ars.invoke.remote.Node;
@@ -74,7 +75,7 @@ import ars.invoke.channel.http.HttpRequester;
 /**
  * Http操作工具类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public final class Https {
@@ -95,7 +96,7 @@ public final class Https {
 	/**
 	 * HTTP协议请求方式
 	 * 
-	 * @author wuyq
+	 * @author yongqiangwu
 	 * 
 	 */
 	public enum Method {
@@ -592,6 +593,31 @@ public final class Https {
 			}
 		}
 		return parameters;
+	}
+
+	/**
+	 * 获取请求流参数（参数必须满足JSON格式）
+	 * 
+	 * @param request
+	 *            HTTP请求对象
+	 * @return 参数键/值表
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	@SuppressWarnings("unchecked")
+	public static Map<String, Object> getStreamParameters(HttpServletRequest request) throws IOException {
+		byte[] bytes = null;
+		InputStream is = request.getInputStream();
+		try {
+			bytes = Streams.getBytes(is);
+		} finally {
+			is.close();
+		}
+		String json = new String(bytes);
+		if (json.isEmpty()) {
+			return Collections.emptyMap();
+		}
+		return (Map<String, Object>) Jsons.parse(json);
 	}
 
 	/**

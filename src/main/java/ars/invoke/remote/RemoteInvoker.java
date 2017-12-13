@@ -10,7 +10,7 @@ import ars.invoke.request.Requester;
 /**
  * 基于ICE消息中间的远程调用实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class RemoteInvoker implements Invoker {

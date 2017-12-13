@@ -9,7 +9,7 @@ import ars.invoke.local.Condition;
 /**
  * 对象方法资源
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class Function implements Resource {

@@ -7,7 +7,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 /**
  * 基于Spring应用初始化接口抽象实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public abstract class ApplicationInitializer implements ApplicationListener<ApplicationEvent> {

@@ -5,7 +5,7 @@ import ars.invoke.request.AccessDeniedException;
 /**
  * 令牌无效异常
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class TokenInvalidException extends AccessDeniedException {

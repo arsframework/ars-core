@@ -14,7 +14,7 @@ import java.util.Date;
 /**
  * 非完全本地文件接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class Nfile implements Serializable {

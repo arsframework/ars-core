@@ -18,15 +18,20 @@ import ars.invoke.remote.Protocol;
 /**
  * 本地接口资源注册简单实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class SimpleApiRegister implements ApplicationContextAware {
 	private String api; // 接口地址（多个地址之间采用“,”号隔开）
+	private boolean cover; // 是否覆盖
 	private Invoker invoker; // 资源调用器
 	private Resource resource; // 服务资源
 
 	public SimpleApiRegister(String api, Invoker invoker, Resource resource) {
+		this(api, invoker, resource, true);
+	}
+
+	public SimpleApiRegister(String api, Invoker invoker, Resource resource, boolean cover) {
 		if (api == null) {
 			throw new IllegalArgumentException("Illegal api:" + api);
 		}
@@ -39,6 +44,7 @@ public class SimpleApiRegister implements ApplicationContextAware {
 		this.api = api;
 		this.invoker = invoker;
 		this.resource = resource;
+		this.cover = cover;
 	}
 
 	public SimpleApiRegister(String api, String uri, Node... nodes) {
@@ -61,6 +67,10 @@ public class SimpleApiRegister implements ApplicationContextAware {
 		return api;
 	}
 
+	public boolean isCover() {
+		return cover;
+	}
+
 	public Invoker getInvoker() {
 		return invoker;
 	}
@@ -76,7 +86,7 @@ public class SimpleApiRegister implements ApplicationContextAware {
 		for (String resource : apis) {
 			resource = resource.trim();
 			if (!resource.isEmpty()) {
-				router.register(resource, this.invoker, this.resource);
+				router.register(resource, this.invoker, this.resource, this.cover);
 			}
 		}
 	}

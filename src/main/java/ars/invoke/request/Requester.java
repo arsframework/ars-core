@@ -12,7 +12,7 @@ import ars.invoke.request.Token;
 /**
  * 请求对象接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public interface Requester extends Serializable {

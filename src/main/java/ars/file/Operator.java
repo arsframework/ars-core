@@ -10,7 +10,7 @@ import ars.file.query.Query;
 /**
  * 文件操作接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public interface Operator {

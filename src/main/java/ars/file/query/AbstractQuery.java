@@ -23,7 +23,7 @@ import ars.file.query.condition.Like.Position;
 /**
  * 文件查询集合抽象实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public abstract class AbstractQuery implements Query {

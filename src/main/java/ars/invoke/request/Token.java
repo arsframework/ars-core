@@ -27,7 +27,7 @@ import ars.invoke.request.TokenInvalidException;
 /**
  * JWT令牌实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class Token implements Map<String, Object>, Formable, Serializable {

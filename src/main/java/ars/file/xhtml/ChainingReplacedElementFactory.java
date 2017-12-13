@@ -14,7 +14,7 @@ import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 /**
  * 连接替换元素工厂对象
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class ChainingReplacedElementFactory implements ReplacedElementFactory {

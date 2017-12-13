@@ -26,7 +26,7 @@ import ars.invoke.channel.http.HttpRequester;
 /**
  * Http请求通道抽象实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public abstract class AbstractHttpChannel implements HttpChannel {

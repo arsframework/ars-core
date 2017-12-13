@@ -6,7 +6,7 @@ import ars.invoke.request.Requester;
 /**
  * 服务调用接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public interface Invoker {

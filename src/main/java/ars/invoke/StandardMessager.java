@@ -13,7 +13,7 @@ import ars.invoke.Messager;
 /**
  * 消息国际化处理标准实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class StandardMessager implements Messager {

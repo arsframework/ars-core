@@ -6,7 +6,7 @@ import ars.invoke.request.Requester;
 /**
  * 请求调用完成事件（成功/失败）
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class InvokeCompleteEvent extends InvokeEvent {

@@ -5,7 +5,7 @@ import ars.server.Server;
 /**
  * 可暂停服务接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public interface PauseServer extends Server {

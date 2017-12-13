@@ -5,7 +5,7 @@ import ars.invoke.local.ParamAdapter;
 /**
  * 参数条件对象
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class Condition {

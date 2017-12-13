@@ -6,7 +6,7 @@ import ars.file.query.condition.Condition;
 /**
  * 小于
  * 
- * @author wuyq
+ * @author yongqiangwu
  *
  */
 public class Less implements Condition {

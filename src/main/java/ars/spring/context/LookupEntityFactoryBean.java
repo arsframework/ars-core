@@ -15,7 +15,7 @@ import ars.util.Beans;
 /**
  * 从Spring上下文中查找对象实体工厂类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class LookupEntityFactoryBean implements FactoryBean<Object>, ApplicationContextAware {

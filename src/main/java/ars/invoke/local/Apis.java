@@ -28,7 +28,7 @@ import ars.invoke.request.ParameterInvalidException;
 /**
  * 接口工具类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public final class Apis {

@@ -8,7 +8,7 @@ import ars.invoke.request.Requester;
 /**
  * 请求调用事件
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public abstract class InvokeEvent extends EventObject {

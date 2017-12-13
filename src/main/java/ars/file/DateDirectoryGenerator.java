@@ -9,7 +9,7 @@ import ars.file.DirectoryGenerator;
 /**
  * 基于日期格式的文件目录名称生成器
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class DateDirectoryGenerator implements DirectoryGenerator {

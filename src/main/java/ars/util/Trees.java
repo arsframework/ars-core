@@ -16,7 +16,7 @@ import ars.util.Beans;
 /**
  * 树工具类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public final class Trees {

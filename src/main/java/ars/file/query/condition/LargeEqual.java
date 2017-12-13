@@ -6,7 +6,7 @@ import ars.file.query.condition.Condition;
 /**
  * 大于或等于
  * 
- * @author wuyq
+ * @author yongqiangwu
  *
  */
 public class LargeEqual implements Condition {

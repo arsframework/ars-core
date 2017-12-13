@@ -9,7 +9,7 @@ import ars.server.task.AbstractTaskServer;
 /**
  * 文件清理服务
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class DocumentCleanupServer extends AbstractTaskServer {

@@ -3,7 +3,7 @@ package ars.invoke;
 /**
  * 请求调用异常
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class InvokeException extends RuntimeException {

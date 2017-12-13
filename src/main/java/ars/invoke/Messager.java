@@ -5,7 +5,7 @@ import java.util.Locale;
 /**
  * 消息国际化处理接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public interface Messager {

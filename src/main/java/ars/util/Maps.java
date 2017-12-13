@@ -3,7 +3,7 @@ package ars.util;
 /**
  * 地图操作工具类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public final class Maps {

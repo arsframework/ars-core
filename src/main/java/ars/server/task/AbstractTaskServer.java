@@ -17,7 +17,7 @@ import ars.server.AbstractServer;
 /**
  * 计划任务服务抽象实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public abstract class AbstractTaskServer extends AbstractServer {
@@ -27,7 +27,7 @@ public abstract class AbstractTaskServer extends AbstractServer {
 	/**
 	 * 任务处理类（如果为内部类则必须是公共的静态内部类）
 	 * 
-	 * @author wuyq
+	 * @author yongqiangwu
 	 * 
 	 */
 	public static final class JobHandler implements Job {

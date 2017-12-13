@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * 对象可格式化接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public interface Formable {

@@ -7,7 +7,7 @@ import ars.invoke.cache.Cache;
 /**
  * 请求调用上下文接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public interface Context {

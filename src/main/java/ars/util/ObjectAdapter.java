@@ -3,7 +3,7 @@ package ars.util;
 /**
  * 对象适配接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  *
  */
 public interface ObjectAdapter {

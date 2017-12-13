@@ -7,7 +7,7 @@ import ars.invoke.event.InvokeEvent;
 /**
  * 请求调用监听器
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  * @param <E>
  *            事件模型

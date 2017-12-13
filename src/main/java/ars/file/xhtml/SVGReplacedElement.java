@@ -22,7 +22,7 @@ import com.itextpdf.text.pdf.PdfContentByte;
 /**
  * SVG元素对象
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class SVGReplacedElement implements ITextReplacedElement {

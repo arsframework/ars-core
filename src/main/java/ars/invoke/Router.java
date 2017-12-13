@@ -10,7 +10,7 @@ import ars.invoke.event.InvokeListener;
 /**
  * 请求调用路由接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public interface Router {
@@ -49,6 +49,14 @@ public interface Router {
 	public Object routing(Requester requester);
 
 	/**
+	 * 撤销注册资源
+	 * 
+	 * @param api
+	 *            接口地址
+	 */
+	public void revoke(String api);
+
+	/**
 	 * 资源注册
 	 * 
 	 * @param api
@@ -59,6 +67,20 @@ public interface Router {
 	 *            服务资源
 	 */
 	public void register(String api, Invoker invoker, Resource resource);
+
+	/**
+	 * 资源注册
+	 * 
+	 * @param api
+	 *            接口地址
+	 * @param invoker
+	 *            资源调用器
+	 * @param resource
+	 *            服务资源
+	 * @param cover
+	 *            是否覆盖
+	 */
+	public void register(String api, Invoker invoker, Resource resource, boolean cover);
 
 	/**
 	 * 设置事件监听器

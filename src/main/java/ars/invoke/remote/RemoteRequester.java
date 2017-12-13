@@ -5,7 +5,7 @@ import ars.invoke.request.Requester;
 /**
  * 基于ICE请求对象
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public interface RemoteRequester extends Requester {

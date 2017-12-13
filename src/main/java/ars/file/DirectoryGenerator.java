@@ -3,7 +3,7 @@ package ars.file;
 /**
  * 文件目录生成器
  * 
- * @author wuyq
+ * @author yongqiangwu
  *
  */
 public interface DirectoryGenerator {

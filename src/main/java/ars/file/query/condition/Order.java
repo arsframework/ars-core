@@ -6,7 +6,7 @@ import ars.file.query.condition.Condition;
 /**
  * 排序条件
  * 
- * @author wuyq
+ * @author yongqiangwu
  *
  */
 public class Order implements Condition {

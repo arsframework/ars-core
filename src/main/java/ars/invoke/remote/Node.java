@@ -7,7 +7,7 @@ import ars.util.Strings;
 /**
  * 远程节点
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class Node implements Serializable {

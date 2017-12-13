@@ -12,7 +12,7 @@ import ars.invoke.remote.RemoteInvoker;
 /**
  * 请求调用工具类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public final class Invokes {

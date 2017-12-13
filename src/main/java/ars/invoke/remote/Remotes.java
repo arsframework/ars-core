@@ -34,7 +34,7 @@ import ars.invoke.remote.slice.Callback_Resource_download;
 /**
  * 基于ICE消息中间件远程操作工具类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public final class Remotes {

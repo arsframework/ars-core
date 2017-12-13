@@ -43,7 +43,7 @@ import ars.util.Streams;
 /**
  * 对象工具类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public final class Beans {

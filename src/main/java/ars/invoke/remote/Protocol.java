@@ -3,7 +3,7 @@ package ars.invoke.remote;
 /**
  * 远程调用协议
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public enum Protocol {

@@ -16,7 +16,7 @@ import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 /**
  * SVG元素工厂对象
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class SVGReplacedElementFactory implements ReplacedElementFactory {

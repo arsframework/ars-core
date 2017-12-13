@@ -5,7 +5,7 @@ import ars.invoke.cache.Value;
 /**
  * 缓存值对象简单实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  *
  */
 public class SimpleValue implements Value {

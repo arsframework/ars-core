@@ -7,7 +7,7 @@ import ars.server.Server;
 /**
  * 套接字通信服务端接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public interface SocketServer extends Server {

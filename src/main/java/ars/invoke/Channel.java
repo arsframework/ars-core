@@ -6,7 +6,7 @@ import ars.invoke.request.Requester;
 /**
  * 请求调用通道接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public interface Channel {

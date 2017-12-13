@@ -5,7 +5,7 @@ import ars.invoke.InvokeException;
 /**
  * 拒绝访问异常
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class AccessDeniedException extends InvokeException {

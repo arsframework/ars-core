@@ -12,7 +12,7 @@ import java.util.Random;
 /**
  * 操作证码工具类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public final class Opcodes {

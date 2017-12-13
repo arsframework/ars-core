@@ -19,7 +19,7 @@ import ars.invoke.event.InvokeAfterEvent;
 /**
  * 数据缓存接口抽象实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public abstract class AbstractCache implements Cache, InvokeListener<InvokeAfterEvent> {

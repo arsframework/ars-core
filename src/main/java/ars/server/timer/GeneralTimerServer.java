@@ -6,7 +6,7 @@ import ars.server.timer.AbstractTimerServer;
 /**
  * 定时处理服务普通实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class GeneralTimerServer extends AbstractTimerServer {

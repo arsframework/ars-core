@@ -38,7 +38,7 @@ import ars.invoke.event.InvokeListener;
 /**
  * 基于Spring系统配置
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class ApplicationConfiguration extends StandardRouter

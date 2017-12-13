@@ -6,7 +6,7 @@ import java.io.Serializable;
 /**
  * 树接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  * @param <T>
  *            对象类型

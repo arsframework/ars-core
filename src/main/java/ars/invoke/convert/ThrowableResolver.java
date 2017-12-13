@@ -3,7 +3,7 @@ package ars.invoke.convert;
 /**
  * 异常对象转换接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public interface ThrowableResolver {

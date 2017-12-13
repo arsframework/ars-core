@@ -7,7 +7,7 @@ import ars.file.NameGenerator;
 /**
  * 随机文件名生成器
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class RandomNameGenerator implements NameGenerator {

@@ -12,7 +12,7 @@ import ars.invoke.request.Requester;
 /**
  * 文件操作外部接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public interface DocumentManager {

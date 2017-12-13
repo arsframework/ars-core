@@ -5,7 +5,7 @@ import ars.invoke.request.RequestHandleException;
 /**
  * 参数无效异常
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class ParameterInvalidException extends RequestHandleException {

@@ -9,7 +9,7 @@ import ars.server.AbstractServer;
 /**
  * 系统后台定时任务服务抽象类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public abstract class AbstractTimerServer extends AbstractServer {

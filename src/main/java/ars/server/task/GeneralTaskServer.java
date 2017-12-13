@@ -6,7 +6,7 @@ import ars.server.task.AbstractTaskServer;
 /**
  * 计划任务服务普通实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class GeneralTaskServer extends AbstractTaskServer {

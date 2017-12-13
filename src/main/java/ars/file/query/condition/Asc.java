@@ -6,7 +6,7 @@ import ars.file.query.condition.Order;
 /**
  * 升序排序条件
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class Asc extends Order {

@@ -23,7 +23,7 @@ import ars.util.Strings;
 /**
  * 条码工具类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public final class Barcodes {

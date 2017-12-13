@@ -15,7 +15,7 @@ import ars.invoke.channel.socket.SocketServer;
 /**
  * 基于TCP协议的数据接口服务抽象实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public abstract class AbstractTcpServer extends AbstractServer implements SocketServer {

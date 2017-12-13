@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * 缓存标识接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public interface Key extends Serializable {

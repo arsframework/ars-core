@@ -15,19 +15,28 @@ import ars.invoke.local.Function;
 /**
  * 查找对象实例中所有使用注解的方法，并将接口资源注册
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class AnnotationMethodApiRegister implements ApplicationContextAware {
+	private boolean cover; // 是否覆盖
 	private String prefix; // 资源地址前缀（多个前缀之间采用“,”号隔开）
 	private Object target; // 目标对象
 	private Invoker invoker; // 资源调用对象
 
 	public AnnotationMethodApiRegister(String prefix, Object target) {
-		this(prefix, target, Invokes.getSingleLocalInvoker());
+		this(prefix, target, true);
+	}
+
+	public AnnotationMethodApiRegister(String prefix, Object target, boolean cover) {
+		this(prefix, target, Invokes.getSingleLocalInvoker(), cover);
 	}
 
 	public AnnotationMethodApiRegister(String prefix, Object target, Invoker invoker) {
+		this(prefix, target, invoker, true);
+	}
+
+	public AnnotationMethodApiRegister(String prefix, Object target, Invoker invoker, boolean cover) {
 		if (prefix == null) {
 			throw new IllegalArgumentException("Illegal prefix:" + prefix);
 		}
@@ -37,9 +46,14 @@ public class AnnotationMethodApiRegister implements ApplicationContextAware {
 		if (invoker == null) {
 			throw new IllegalArgumentException("Illegal invoker:" + invoker);
 		}
+		this.cover = cover;
 		this.prefix = prefix;
 		this.target = target;
 		this.invoker = invoker;
+	}
+
+	public boolean isCover() {
+		return cover;
 	}
 
 	public Object getTarget() {
@@ -67,7 +81,8 @@ public class AnnotationMethodApiRegister implements ApplicationContextAware {
 					continue;
 				}
 				String api = Strings.replace(new StringBuilder(p).append('/').append(methodApi), "//", "/");
-				router.register(api, this.invoker, new Function(this.target, method, Apis.getConditions(method)));
+				router.register(api, this.invoker, new Function(this.target, method, Apis.getConditions(method)),
+						this.cover);
 			}
 		}
 	}

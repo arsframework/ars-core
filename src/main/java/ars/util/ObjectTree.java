@@ -7,7 +7,7 @@ import ars.util.AbstractTree;
 /**
  * 对象节点树实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  * @param <N>
  *            树节点对象类型

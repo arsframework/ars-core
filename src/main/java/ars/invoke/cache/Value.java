@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * 缓存值接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  *
  */
 public interface Value extends Serializable {

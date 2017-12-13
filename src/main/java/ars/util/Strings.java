@@ -40,7 +40,7 @@ import ars.util.Dates;
 /**
  * 字符串工具类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public final class Strings {

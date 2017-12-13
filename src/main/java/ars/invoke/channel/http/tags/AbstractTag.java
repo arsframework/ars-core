@@ -15,7 +15,7 @@ import ars.util.Strings;
 /**
  * 自定义JSP标签抽象类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public abstract class AbstractTag extends SimpleTagSupport {

@@ -18,7 +18,7 @@ import ars.file.DirectoryGenerator;
 /**
  * 文件操作抽象实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public abstract class AbstractOperator implements Operator {

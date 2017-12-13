@@ -18,7 +18,7 @@ import ars.util.Strings;
 /**
  * 文件处理工具类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public final class Files {
@@ -253,7 +253,7 @@ public final class Files {
 /**
  * 字节编码
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 class BytesEncoding extends Encoding {

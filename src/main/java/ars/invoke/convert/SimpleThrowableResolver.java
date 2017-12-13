@@ -5,7 +5,7 @@ import ars.invoke.convert.ThrowableResolver;
 /**
  * 异常转换简单实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class SimpleThrowableResolver implements ThrowableResolver {

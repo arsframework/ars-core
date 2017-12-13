@@ -6,7 +6,7 @@ import ars.invoke.request.Requester;
 /**
  * 请求调用失败触发事件
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class InvokeErrorEvent extends InvokeEvent {

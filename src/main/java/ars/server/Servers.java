@@ -19,7 +19,7 @@ import ars.server.Server;
 /**
  * 系统服务工具类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public final class Servers {

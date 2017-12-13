@@ -14,7 +14,7 @@ import ars.invoke.request.ParameterInvalidException;
 /**
  * 文件外部操作接口标准实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class StandardDocumentManager implements DocumentManager {

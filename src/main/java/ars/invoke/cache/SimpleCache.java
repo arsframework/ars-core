@@ -20,14 +20,14 @@ import ars.server.task.AbstractTaskServer;
 /**
  * 基于内存的数据缓存实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class SimpleCache extends AbstractCache {
 	/**
 	 * 缓存值包装对象
 	 * 
-	 * @author wuyq
+	 * @author yongqiangwu
 	 * 
 	 */
 	private class ValueWrapper {

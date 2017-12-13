@@ -3,7 +3,7 @@ package ars.file.query.condition;
 /**
  * 查询条件接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  *
  */
 public interface Condition {

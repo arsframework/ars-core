@@ -5,7 +5,7 @@ import ars.invoke.Channel;
 /**
  * 基于ICE远程调用通道接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public interface RemoteChannel extends Channel, Ice.Object {

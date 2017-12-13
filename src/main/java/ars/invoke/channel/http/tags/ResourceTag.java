@@ -11,7 +11,7 @@ import ars.invoke.channel.http.tags.AbstractTag;
 /**
  * 资源标签
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class ResourceTag extends AbstractTag {

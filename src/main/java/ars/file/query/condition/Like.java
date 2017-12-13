@@ -6,7 +6,7 @@ import ars.file.query.condition.Condition;
 /**
  * 模糊匹配
  * 
- * @author wuyq
+ * @author yongqiangwu
  *
  */
 public class Like implements Condition {
@@ -39,7 +39,7 @@ public class Like implements Condition {
 	/**
 	 * 匹配位置
 	 * 
-	 * @author wuyq
+	 * @author yongqiangwu
 	 *
 	 */
 	public enum Position {

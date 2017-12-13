@@ -7,7 +7,7 @@ import org.springframework.context.event.ContextClosedEvent;
 /**
  * 基于Spring应用销毁抽象实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public abstract class ApplicationDestroyer implements ApplicationListener<ApplicationEvent> {

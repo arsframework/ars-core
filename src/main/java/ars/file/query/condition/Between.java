@@ -6,7 +6,7 @@ import ars.file.query.condition.Condition;
 /**
  * 大于和小于
  * 
- * @author wuyq
+ * @author yongqiangwu
  *
  */
 public class Between implements Condition {

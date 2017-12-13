@@ -11,7 +11,7 @@ import ars.invoke.request.Requester;
 /**
  * 本地资源调用实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class LocalInvoker implements Invoker {

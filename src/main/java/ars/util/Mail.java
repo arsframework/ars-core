@@ -26,7 +26,7 @@ import ars.util.Strings;
 /**
  * 邮件工具类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public final class Mail {
@@ -183,7 +183,7 @@ public final class Mail {
 	/**
 	 * Nfile数据源
 	 * 
-	 * @author wuyq
+	 * @author yongqiangwu
 	 * 
 	 */
 	private class NfileDataSource implements DataSource {
@@ -218,7 +218,7 @@ public final class Mail {
 	/**
 	 * 邮件体
 	 * 
-	 * @author wuyq
+	 * @author yongqiangwu
 	 * 
 	 */
 	private class Body {

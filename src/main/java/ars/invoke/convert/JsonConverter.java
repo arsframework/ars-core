@@ -6,7 +6,7 @@ import ars.invoke.convert.Converter;
 /**
  * 基于json格式的对象数据转换实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  *
  */
 public class JsonConverter implements Converter {

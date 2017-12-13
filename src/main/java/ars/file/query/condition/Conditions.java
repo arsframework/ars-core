@@ -28,7 +28,7 @@ import ars.file.query.condition.LargeEqual;
 /**
  * 条件操作工具类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public final class Conditions {

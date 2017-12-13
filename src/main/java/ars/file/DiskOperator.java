@@ -13,7 +13,7 @@ import ars.file.AbstractOperator;
 /**
  * 磁盘文件操作实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class DiskOperator extends AbstractOperator {

@@ -10,7 +10,7 @@ import ars.invoke.remote.Node;
 /**
  * 远程资源端点
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class Endpoint implements Resource {

@@ -3,7 +3,7 @@ package ars.invoke.convert;
 /**
  * 对象反序列化接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  *
  */
 public interface Deserializer {

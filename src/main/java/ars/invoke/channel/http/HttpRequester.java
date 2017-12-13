@@ -9,7 +9,7 @@ import ars.invoke.request.Requester;
 /**
  * 基于HTTP协议请求接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public interface HttpRequester extends Requester {

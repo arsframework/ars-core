@@ -14,7 +14,7 @@ import ars.invoke.channel.socket.SocketServer;
 /**
  * 基于UDP协议的数据接口服务抽象实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public abstract class AbstractUdpServer extends AbstractServer implements SocketServer {

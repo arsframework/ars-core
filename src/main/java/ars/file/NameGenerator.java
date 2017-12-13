@@ -3,7 +3,7 @@ package ars.file;
 /**
  * 文件名生成器
  * 
- * @author wuyq
+ * @author yongqiangwu
  *
  */
 public interface NameGenerator {

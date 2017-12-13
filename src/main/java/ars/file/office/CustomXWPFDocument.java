@@ -16,7 +16,7 @@ import ars.util.Strings;
 /**
  * 自定义文档操作接口实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class CustomXWPFDocument extends XWPFDocument {

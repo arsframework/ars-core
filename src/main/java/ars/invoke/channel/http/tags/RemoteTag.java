@@ -8,7 +8,7 @@ import ars.invoke.channel.http.tags.ResourceTag;
 /**
  * 远程资源调用自定义标签
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class RemoteTag extends ResourceTag {

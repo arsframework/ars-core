@@ -22,7 +22,7 @@ import ars.util.Nfile;
 /**
  * IO流操作工具类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public final class Streams {

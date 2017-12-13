@@ -14,7 +14,7 @@ import ars.invoke.channel.http.StandardHttpChannel;
 /**
  * 基于Spring MVC 请求调度控制器实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 @Controller

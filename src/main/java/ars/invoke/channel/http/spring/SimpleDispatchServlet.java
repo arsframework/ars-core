@@ -15,7 +15,7 @@ import ars.invoke.channel.http.HttpChannel;
 /**
  * 请求调度Servlet简单实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class SimpleDispatchServlet extends HttpServlet {

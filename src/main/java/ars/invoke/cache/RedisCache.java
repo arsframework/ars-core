@@ -16,7 +16,7 @@ import ars.invoke.cache.AbstractCache;
 /**
  * 基于Redis的数据缓存实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class RedisCache extends AbstractCache {

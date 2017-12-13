@@ -16,7 +16,7 @@ import ars.invoke.channel.http.HttpRequester;
 /**
  * 基于HTTP请求基础实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class StandardHttpRequester extends StandardRequester implements HttpRequester {

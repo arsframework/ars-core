@@ -23,7 +23,7 @@ import ars.util.ObjectAdapter;
 /**
  * 基于google gson的json处理工具类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public final class Jsons {

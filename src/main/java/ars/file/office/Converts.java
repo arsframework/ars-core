@@ -19,7 +19,7 @@ import org.apache.batik.transcoder.image.JPEGTranscoder;
 /**
  * 文件转换工具类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public final class Converts {

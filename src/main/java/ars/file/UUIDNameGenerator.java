@@ -8,7 +8,7 @@ import ars.file.NameGenerator;
 /**
  * UUID名称生成器
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class UUIDNameGenerator implements NameGenerator {

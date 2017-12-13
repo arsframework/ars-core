@@ -6,7 +6,7 @@ import ars.file.query.condition.Condition;
 /**
  * 不等于
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class NotEqual implements Condition {

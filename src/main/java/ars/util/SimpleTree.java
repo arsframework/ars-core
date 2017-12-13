@@ -8,7 +8,7 @@ import ars.util.AbstractTree;
 /**
  * 树简单实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class SimpleTree extends AbstractTree<SimpleTree> {

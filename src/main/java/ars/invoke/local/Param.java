@@ -13,7 +13,7 @@ import ars.invoke.local.ParamAdapter;
 /**
  * 接口参数注解
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 @Inherited

@@ -38,7 +38,7 @@ import ars.server.timer.AbstractTimerServer;
 /**
  * 基于ICE消息中间的远程调用通道标准实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class StandardRemoteChannel extends _ResourceDisp implements RemoteChannel {
@@ -54,7 +54,7 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 	 * 
 	 * 如果数据流超过10秒为被读取则自动关闭并销毁
 	 * 
-	 * @author wuyq
+	 * @author yongqiangwu
 	 *
 	 */
 	abstract class StreamReader {
@@ -146,7 +146,7 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 	/**
 	 * 文件流读取实现
 	 * 
-	 * @author wuyq
+	 * @author yongqiangwu
 	 *
 	 */
 	class FileStreamReader extends StreamReader {
@@ -195,7 +195,7 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 	/**
 	 * 输入流读取实现
 	 * 
-	 * @author wuyq
+	 * @author yongqiangwu
 	 *
 	 */
 	class InputStreamReader extends StreamReader {
@@ -228,7 +228,7 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 	/**
 	 * 字节数组读取实现
 	 * 
-	 * @author wuyq
+	 * @author yongqiangwu
 	 *
 	 */
 	class ByteArrayStreamReader extends StreamReader {
@@ -261,7 +261,7 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 	/**
 	 * 字节通道读取实现
 	 * 
-	 * @author wuyq
+	 * @author yongqiangwu
 	 *
 	 */
 	class ByteChannelStreamReader extends StreamReader {

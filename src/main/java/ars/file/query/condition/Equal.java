@@ -6,7 +6,7 @@ import ars.file.query.condition.Condition;
 /**
  * 等于条件
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class Equal implements Condition {

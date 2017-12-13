@@ -5,7 +5,7 @@ import ars.file.NameGenerator;
 /**
  * 文件名称生成器简单实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class SimpleNameGenerator implements NameGenerator {

@@ -14,7 +14,7 @@ import ars.invoke.event.InvokeCompleteEvent;
 /**
  * 请求调用日志记录器
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class InvokeLogger implements InvokeListener<InvokeCompleteEvent> {

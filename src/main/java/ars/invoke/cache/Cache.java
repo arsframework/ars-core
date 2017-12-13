@@ -8,7 +8,7 @@ import ars.invoke.request.Requester;
 /**
  * 请求数据缓存接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public interface Cache {

@@ -10,7 +10,7 @@ import java.net.SocketAddress;
 /**
  * 套节字通信处理工具类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public final class Sockets {

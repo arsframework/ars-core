@@ -7,7 +7,7 @@ import ars.server.AbstractServer;
 /**
  * 可暂停服务抽象实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public abstract class AbstractPauseServer extends AbstractServer implements PauseServer {

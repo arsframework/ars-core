@@ -12,7 +12,7 @@ import ars.invoke.cache.Key;
 /**
  * 缓存标识简单实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  *
  */
 public class SimpleKey implements Key {

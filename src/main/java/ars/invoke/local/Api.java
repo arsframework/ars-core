@@ -12,7 +12,7 @@ import ars.util.Strings;
 /**
  * 接口映射注解
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 @Inherited

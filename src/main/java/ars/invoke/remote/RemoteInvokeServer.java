@@ -10,7 +10,7 @@ import ars.server.AbstractServer;
 /**
  * 基于ICE消息中间的远程调用服务
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class RemoteInvokeServer extends AbstractServer {

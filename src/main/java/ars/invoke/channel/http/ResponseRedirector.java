@@ -11,7 +11,7 @@ import ars.invoke.channel.http.HttpRequester;
 /**
  * 根据请求结果重定向实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class ResponseRedirector implements Redirector {

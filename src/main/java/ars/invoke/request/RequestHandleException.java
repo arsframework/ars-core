@@ -5,7 +5,7 @@ import ars.invoke.InvokeException;
 /**
  * 请求处理异常
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class RequestHandleException extends InvokeException {

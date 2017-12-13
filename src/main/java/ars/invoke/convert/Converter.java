@@ -6,7 +6,7 @@ import ars.invoke.convert.Deserializer;
 /**
  * 对象序列化/反序列化转换接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  *
  */
 public interface Converter extends Serializer, Deserializer {

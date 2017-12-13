@@ -11,7 +11,7 @@ import ars.util.Beans;
 /**
  * 日期处理工具类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public final class Dates {

@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * 缓存规则
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class Rule implements Serializable {
@@ -84,7 +84,7 @@ public class Rule implements Serializable {
 	/**
 	 * 规则应用范围
 	 * 
-	 * @author wuyq
+	 * @author yongqiangwu
 	 * 
 	 */
 	public enum Scope {

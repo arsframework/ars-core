@@ -5,7 +5,7 @@ import ars.file.DirectoryGenerator;
 /**
  * 文件路径名称生成器简单实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class SimpleDirectoryGenerator implements DirectoryGenerator {

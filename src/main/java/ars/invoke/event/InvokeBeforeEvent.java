@@ -6,7 +6,7 @@ import ars.invoke.request.Requester;
 /**
  * 请求调用之前触发事件
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class InvokeBeforeEvent extends InvokeEvent {

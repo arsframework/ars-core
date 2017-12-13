@@ -17,7 +17,7 @@ import ars.invoke.request.Requester;
 /**
  * 请求对象标准实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class StandardRequester implements Requester {

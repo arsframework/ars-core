@@ -10,14 +10,14 @@ import ars.util.Strings;
 /**
  * 条件操作工具类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public final class Conditions {
 	/**
 	 * 查询逻辑接口
 	 * 
-	 * @author wuyq
+	 * @author yongqiangwu
 	 * 
 	 */
 	public static interface Logic {
@@ -27,7 +27,7 @@ public final class Conditions {
 	/**
 	 * 或逻辑实现
 	 * 
-	 * @author wuyq
+	 * @author yongqiangwu
 	 * 
 	 */
 	public static class Or implements Logic {
@@ -79,7 +79,7 @@ public final class Conditions {
 	/**
 	 * 与逻辑实现
 	 * 
-	 * @author wuyq
+	 * @author yongqiangwu
 	 * 
 	 */
 	public static class And implements Logic {
@@ -131,7 +131,7 @@ public final class Conditions {
 	/**
 	 * 条件逻辑实现
 	 * 
-	 * @author wuyq
+	 * @author yongqiangwu
 	 * 
 	 */
 	public static class Condition implements Logic {

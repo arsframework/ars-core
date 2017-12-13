@@ -32,14 +32,14 @@ import ars.util.Strings;
 /**
  * Excel文件操作工具类
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public final class Excels {
 	/**
 	 * Excel读对象接口
 	 * 
-	 * @author wuyq
+	 * @author yongqiangwu
 	 * 
 	 * @param <T>
 	 *            数据模型
@@ -59,7 +59,7 @@ public final class Excels {
 	/**
 	 * Excel写对象接口
 	 * 
-	 * @author wuyq
+	 * @author yongqiangwu
 	 * 
 	 * @param <T>
 	 *            数据模型

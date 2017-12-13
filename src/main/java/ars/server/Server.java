@@ -3,7 +3,7 @@ package ars.server;
 /**
  * 系统后台服务接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public interface Server {

@@ -8,7 +8,7 @@ import org.springframework.beans.factory.InitializingBean;
 /**
  * 基于CXF框架的WebService数据接口服务简单实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class SimpleCxfRegister implements DisposableBean, InitializingBean {

@@ -29,7 +29,7 @@ import ars.invoke.request.AccessDeniedException;
 /**
  * 请求资源路由标准实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class StandardRouter implements Router {
@@ -43,7 +43,7 @@ public class StandardRouter implements Router {
 	/**
 	 * 请求调用包装类
 	 * 
-	 * @author wuyq
+	 * @author yongqiangwu
 	 *
 	 */
 	class InvokeWrapper {
@@ -247,14 +247,27 @@ public class StandardRouter implements Router {
 	}
 
 	@Override
+	public void revoke(String api) {
+		if (api == null) {
+			throw new IllegalArgumentException("Illegal api:" + api);
+		}
+		this.wrappers.remove(api);
+	}
+
+	@Override
 	public void register(String api, Invoker invoker, Resource resource) {
+		this.register(api, invoker, resource, false);
+	}
+
+	@Override
+	public void register(String api, Invoker invoker, Resource resource, boolean cover) {
 		if (api == null) {
 			throw new IllegalArgumentException("Illegal api:" + api);
 		}
 		if (invoker == null) {
 			throw new IllegalArgumentException("Illegal invoker:" + invoker);
 		}
-		if (this.isRegistered(api)) {
+		if (!cover && this.isRegistered(api)) {
 			throw new RuntimeException("Api is already registered:" + api);
 		}
 		this.wrappers.put(api, new InvokeWrapper(invoker, resource));

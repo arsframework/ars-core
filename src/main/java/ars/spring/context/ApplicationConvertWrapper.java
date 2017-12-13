@@ -12,7 +12,7 @@ import ars.invoke.convert.StandardConvertWrapper;
 /**
  * 基于Spring上下文对象数据转换实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class ApplicationConvertWrapper implements Converter, ApplicationContextAware {

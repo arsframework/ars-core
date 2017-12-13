@@ -3,7 +3,7 @@ package ars.invoke.channel.http;
 /**
  * 请求重定向接口
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public interface Redirector {

@@ -11,7 +11,7 @@ import ars.util.Formable;
 /**
  * 树抽象实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  *
  * @param <T>
  *            树对象类型

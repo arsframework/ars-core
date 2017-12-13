@@ -13,7 +13,7 @@ import ars.file.query.condition.Conditions;
 /**
  * 磁盘文件查询集合实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public class DiskQuery extends AbstractQuery {

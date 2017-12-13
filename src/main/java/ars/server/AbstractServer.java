@@ -6,7 +6,7 @@ import ars.server.Servers;
 /**
  * 系统后台服务抽象实现
  * 
- * @author wuyq
+ * @author yongqiangwu
  * 
  */
 public abstract class AbstractServer implements Server, Runnable {

@@ -37,11 +37,15 @@ public class StandardHttpChannel extends AbstractHttpChannel {
 	}
 
 	/**
-	 * 根据请求参数JSON字符串获取请求参数键/值映射
+	 * 获取请求参数
 	 * 
-	 * @param parameter
-	 *            JSON参数
+	 * @param request
+	 *            HTTP请求对象
 	 * @return 参数键/值映射
+	 * @throws IOException
+	 *             IO操作异常
+	 * @throws ServletException
+	 *             Servlet操作异常
 	 */
 	protected Map<String, Object> getParameters(HttpServletRequest request) throws IOException, ServletException {
 		if (ServletFileUpload.isMultipartContent(request)) {

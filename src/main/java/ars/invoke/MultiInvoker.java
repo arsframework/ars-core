@@ -22,6 +22,9 @@ public class MultiInvoker implements Invoker {
 		String[] uris = ((MultiResource) resource).getResources();
 		List<Object> results = new ArrayList<Object>(uris.length);
 		for (final String uri : uris) {
+			if (uri.equals(requester.getUri())) {
+				throw new RuntimeException("Resource address cycle reference:" + uri);
+			}
 			Object result = Servers.submit(new Callable<Object>() {
 
 				@Override

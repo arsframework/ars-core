@@ -3,7 +3,6 @@ package ars.invoke.remote;
 import java.util.Arrays;
 
 import ars.util.Beans;
-import ars.util.Strings;
 import ars.invoke.Resource;
 import ars.invoke.remote.Node;
 
@@ -19,15 +18,20 @@ public class Endpoint implements Resource {
 	private String uri; // 资源地址
 	private Node[] nodes; // 节点数组
 
+	public Endpoint(Node... nodes) {
+		this(null, nodes);
+	}
+
 	public Endpoint(String uri, Node... nodes) {
-		if (Strings.isEmpty(uri) || (uri = uri.trim()).isEmpty()) {
-			throw new IllegalArgumentException("Illegal uri:" + uri);
-		}
 		if (nodes == null || nodes.length == 0) {
 			throw new IllegalArgumentException("Illegal nodes:" + Arrays.toString(nodes));
 		}
 		this.uri = uri;
 		this.nodes = nodes;
+	}
+
+	public Endpoint(Protocol protocol, String host, int port) {
+		this(protocol, host, port, null);
 	}
 
 	public Endpoint(Protocol protocol, String host, int port, String uri) {

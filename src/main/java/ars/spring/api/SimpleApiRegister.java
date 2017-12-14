@@ -47,8 +47,16 @@ public class SimpleApiRegister implements ApplicationContextAware {
 		this.cover = cover;
 	}
 
+	public SimpleApiRegister(String api, Node... nodes) {
+		this(api, null, nodes);
+	}
+
 	public SimpleApiRegister(String api, String uri, Node... nodes) {
 		this(api, Invokes.getSingleRemoteInvoker(), new Endpoint(uri, nodes));
+	}
+
+	public SimpleApiRegister(String api, Protocol protocol, String host, int port) {
+		this(api, protocol, host, port, null);
 	}
 
 	public SimpleApiRegister(String api, Protocol protocol, String host, int port, String uri) {

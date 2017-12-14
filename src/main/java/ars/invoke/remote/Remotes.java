@@ -173,7 +173,7 @@ public final class Remotes {
 	 */
 	public static String getAddress(Node... nodes) {
 		if (nodes == null || nodes.length == 0) {
-			return null;
+			throw new IllegalArgumentException("Illegal nodes:" + Strings.toString(nodes));
 		}
 		StringBuilder address = new StringBuilder();
 		for (Node node : nodes) {
@@ -200,9 +200,12 @@ public final class Remotes {
 	 * @return 远程地址
 	 */
 	public static String getAddress(Protocol protocol, String host, int port) {
-		return protocol == null || Strings.isEmpty(host) ? null
-				: new StringBuilder().append(protocol).append(" -h ").append(host).append(" -p ").append(port)
-						.toString();
+		if (protocol == null) {
+			throw new IllegalArgumentException("Illegal protocol:" + protocol);
+		} else if (protocol != Protocol.tcp && protocol != Protocol.udp && protocol != Protocol.ssl) {
+			throw new IllegalArgumentException("Not support protocol:" + protocol);
+		}
+		return new StringBuilder().append(protocol).append(" -h ").append(host).append(" -p ").append(port).toString();
 	}
 
 	/**
@@ -226,8 +229,13 @@ public final class Remotes {
 	 * @return 远程调用代理对象
 	 */
 	public static Ice.ObjectPrx getProxy(String address, String identifier) {
-		return Strings.isEmpty(address) || Strings.isEmpty(identifier) ? null
-				: getCommunicator().stringToProxy(new StringBuilder(identifier).append(':').append(address).toString());
+		if (address == null) {
+			throw new IllegalArgumentException("Illegal address:" + address);
+		}
+		if (identifier == null) {
+			throw new IllegalArgumentException("Illegal identifier:" + identifier);
+		}
+		return getCommunicator().stringToProxy(new StringBuilder(identifier).append(':').append(address).toString());
 	}
 
 	/**

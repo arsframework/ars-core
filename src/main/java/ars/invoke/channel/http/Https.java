@@ -70,6 +70,7 @@ import ars.util.Jsons;
 import ars.util.Streams;
 import ars.util.Strings;
 import ars.invoke.remote.Node;
+import ars.invoke.remote.Protocol;
 import ars.invoke.channel.http.HttpRequester;
 
 /**
@@ -246,6 +247,9 @@ public final class Https {
 	 *            端口号
 	 */
 	public static void bindSSL(HttpClient client, int port) {
+		if (client == null) {
+			throw new IllegalArgumentException("Illegal client:" + client);
+		}
 		X509TrustManager trustManager = new X509TrustManager() {
 			public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
 			}
@@ -280,12 +284,19 @@ public final class Https {
 	 * @return Cookie值
 	 */
 	public static String getCookie(HttpServletRequest request, String name) {
+		if (request == null) {
+			throw new IllegalArgumentException("Illegal request:" + request);
+		}
+		if (name == null) {
+			throw new IllegalArgumentException("Illegal name:" + name);
+		}
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
 			for (Cookie cookie : request.getCookies()) {
 				if (cookie.getName().equals(name)) {
 					try {
-						return URLDecoder.decode(cookie.getValue(), Strings.UTF8);
+						String value = URLDecoder.decode(cookie.getValue(), Strings.UTF8);
+						return value == null || value.isEmpty() ? null : value;
 					} catch (UnsupportedEncodingException e) {
 						throw new RuntimeException(e);
 					}
@@ -308,18 +319,23 @@ public final class Https {
 	 *            过期时间（秒）
 	 */
 	public static void setCookie(HttpServletResponse response, String name, String value, int timeout) {
+		if (response == null) {
+			throw new IllegalArgumentException("Illegal response:" + response);
+		}
+		if (name == null) {
+			throw new IllegalArgumentException("Illegal name:" + name);
+		}
 		if (timeout < 0) {
 			throw new IllegalArgumentException("llegal timeout:" + timeout);
 		}
-		if (value != null) {
-			try {
-				Cookie cookie = new Cookie(name, URLEncoder.encode(value, Strings.UTF8));
-				cookie.setPath("/");
-				cookie.setMaxAge(timeout);
-				response.addCookie(cookie);
-			} catch (UnsupportedEncodingException e) {
-				throw new RuntimeException(e);
-			}
+		try {
+			Cookie cookie = new Cookie(name,
+					value == null ? Strings.EMPTY_STRING : URLEncoder.encode(value, Strings.UTF8));
+			cookie.setPath("/");
+			cookie.setMaxAge(timeout);
+			response.addCookie(cookie);
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -335,6 +351,15 @@ public final class Https {
 	 * @return Cookie值
 	 */
 	public static String removeCookie(HttpServletRequest request, HttpServletResponse response, String name) {
+		if (request == null) {
+			throw new IllegalArgumentException("Illegal request:" + request);
+		}
+		if (response == null) {
+			throw new IllegalArgumentException("Illegal response:" + response);
+		}
+		if (name == null) {
+			throw new IllegalArgumentException("Illegal name:" + name);
+		}
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
 			for (Cookie cookie : request.getCookies()) {
@@ -375,14 +400,9 @@ public final class Https {
 	 */
 	public static String getUrl(Node node, String uri) {
 		if (node == null) {
-			return null;
+			throw new IllegalArgumentException("Illegal node:" + node);
 		}
-		StringBuilder url = new StringBuilder(node.getProtocol().toString()).append("://").append(node.getHost())
-				.append(':').append(node.getPort());
-		if (!Strings.isEmpty(uri)) {
-			url.append(Strings.replace(new StringBuilder("/").append(uri), "//", "/"));
-		}
-		return url.toString();
+		return getUrl(node.getProtocol(), node.getHost(), node.getPort(), uri);
 	}
 
 	/**
@@ -393,6 +413,9 @@ public final class Https {
 	 * @return 资源地址
 	 */
 	public static String getUri(HttpServletRequest request) {
+		if (request == null) {
+			throw new IllegalArgumentException("Illegal request:" + request);
+		}
 		String uri = request.getRequestURI();
 		String context = request.getContextPath();
 		return context == null ? uri : uri.substring(context.length());
@@ -406,28 +429,44 @@ public final class Https {
 	 * @return URL地址
 	 */
 	public static String getUrl(HttpServletRequest request) {
-		return getUrl(request.getScheme(), request.getServerName(), request.getServerPort(), request.getContextPath());
+		if (request == null) {
+			throw new IllegalArgumentException("Illegal request:" + request);
+		}
+		StringBuilder url = new StringBuilder(request.getScheme()).append("://").append(request.getServerName())
+				.append(':').append(request.getServerPort());
+		String context = request.getContextPath();
+		return context == null ? url.toString() : url.append(context).toString();
 	}
 
 	/**
 	 * 获取HTTP URL地址
 	 * 
-	 * @param scheme
+	 * @param protocol
 	 *            请求协议
-	 * @param domain
+	 * @param host
 	 *            请求域名
 	 * @param port
 	 *            请求端口
-	 * @param context
-	 *            请求上下文路径
+	 * @param uri
+	 *            请求资源路径
 	 * @return URL地址
 	 */
-	public static String getUrl(String scheme, String domain, int port, String context) {
-		StringBuilder url = new StringBuilder().append(scheme).append("://").append(domain).append(':').append(port);
-		if (context != null) {
-			url.append(context);
+	public static String getUrl(Protocol protocol, String host, int port, String uri) {
+		if (protocol == null) {
+			throw new IllegalArgumentException("Illegal protocol:" + protocol);
+		} else if (protocol != Protocol.http && protocol != Protocol.https) {
+			throw new IllegalArgumentException("Not support protocol:" + protocol);
 		}
-		return url.toString();
+		if (host == null) {
+			throw new IllegalArgumentException("Illegal host:" + host);
+		}
+		StringBuilder url = new StringBuilder(protocol.toString()).append("://").append(host).append(':').append(port);
+		if (uri == null || uri.isEmpty()) {
+			return url.toString();
+		} else if (uri.charAt(0) == '/') {
+			return url.append(uri).toString();
+		}
+		return url.append('/').append(uri).toString();
 	}
 
 	/**
@@ -494,6 +533,9 @@ public final class Https {
 	 *             IO操作异常
 	 */
 	public static Map<String, Object> getParameters(HttpServletRequest request) throws IOException {
+		if (request == null) {
+			throw new IllegalArgumentException("Illegal request:" + request);
+		}
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		Enumeration<String> names = request.getParameterNames();
 		while (names.hasMoreElements()) {
@@ -540,6 +582,12 @@ public final class Https {
 	@SuppressWarnings("unchecked")
 	public static Map<String, Object> getUploadParameters(HttpServletRequest request, ServletFileUpload uploader)
 			throws IOException, FileUploadException {
+		if (request == null) {
+			throw new IllegalArgumentException("Illegal request:" + request);
+		}
+		if (uploader == null) {
+			throw new IllegalArgumentException("Illegal uploader:" + uploader);
+		}
 		List<?> items = uploader.parseRequest(request);
 		Map<String, Object> parameters = new HashMap<String, Object>(items.size());
 		for (int i = 0; i < items.size(); i++) {
@@ -606,6 +654,9 @@ public final class Https {
 	 */
 	@SuppressWarnings("unchecked")
 	public static Map<String, Object> getStreamParameters(HttpServletRequest request) throws IOException {
+		if (request == null) {
+			throw new IllegalArgumentException("Illegal request:" + request);
+		}
 		byte[] bytes = null;
 		InputStream is = request.getInputStream();
 		try {
@@ -630,10 +681,25 @@ public final class Https {
 	 *             IO操作异常
 	 */
 	public static HttpEntity getHttpEntity(Map<String, Object> parameters) throws IOException {
+		if (parameters == null || parameters.isEmpty()) {
+			return null;
+		}
 		Collection<?> values = parameters.values();
 		for (Object value : values) {
 			if (value instanceof File || value instanceof Nfile) {
 				return getUploadEntity(parameters);
+			} else if (value instanceof Object[]) {
+				for (Object object : (Object[]) value) {
+					if (object instanceof File || object instanceof Nfile) {
+						return getUploadEntity(parameters);
+					}
+				}
+			} else if (value instanceof Collection) {
+				for (Object object : (Collection<?>) value) {
+					if (object instanceof File || object instanceof Nfile) {
+						return getUploadEntity(parameters);
+					}
+				}
 			}
 		}
 		return getPostEntity(parameters);
@@ -644,11 +710,14 @@ public final class Https {
 	 * 
 	 * @param parameters
 	 *            请求参数
-	 * @return Get请求参数
+	 * @return 参数字符串形式
 	 * @throws IOException
 	 *             IO操作异常
 	 */
 	public static String getGetEntity(Map<String, Object> parameters) throws IOException {
+		if (parameters == null || parameters.isEmpty()) {
+			return null;
+		}
 		String charset = Charset.defaultCharset().name();
 		StringBuilder buffer = new StringBuilder();
 		for (Entry<String, Object> entry : parameters.entrySet()) {
@@ -666,7 +735,7 @@ public final class Https {
 				buffer.append(key);
 				buffer.append('=');
 				if (object != null) {
-					buffer.append(URLEncoder.encode(object.toString(), charset));
+					buffer.append(URLEncoder.encode(Strings.toString(object), charset));
 				}
 			}
 		}
@@ -683,7 +752,7 @@ public final class Https {
 	 *             IO操作异常
 	 */
 	public static UrlEncodedFormEntity getPostEntity(Map<String, Object> parameters) throws IOException {
-		if (parameters.isEmpty()) {
+		if (parameters == null || parameters.isEmpty()) {
 			return null;
 		}
 		List<NameValuePair> nameValues = new LinkedList<NameValuePair>();
@@ -693,7 +762,8 @@ public final class Https {
 			Collection<?> collection = value instanceof Collection ? (Collection<?>) value
 					: value instanceof Object[] ? Arrays.asList((Object[]) value) : Arrays.asList(value);
 			for (Object object : collection) {
-				nameValues.add(new BasicNameValuePair(key, object == null ? Strings.EMPTY_STRING : object.toString()));
+				nameValues.add(
+						new BasicNameValuePair(key, object == null ? Strings.EMPTY_STRING : Strings.toString(object)));
 			}
 		}
 		return new UrlEncodedFormEntity(nameValues, Charset.defaultCharset());
@@ -709,7 +779,7 @@ public final class Https {
 	 *             IO操作异常
 	 */
 	public static MultipartEntity getUploadEntity(Map<String, Object> parameters) throws IOException {
-		if (parameters.isEmpty()) {
+		if (parameters == null || parameters.isEmpty()) {
 			return null;
 		}
 		Charset charset = Charset.defaultCharset();
@@ -717,56 +787,39 @@ public final class Https {
 		for (Entry<String, Object> entry : parameters.entrySet()) {
 			String key = entry.getKey();
 			Object value = entry.getValue();
-			Collection<?> collection = value instanceof Collection ? (Collection<?>) value
-					: value instanceof Object[] ? Arrays.asList((Object[]) value) : Arrays.asList(value);
-			for (Object object : collection) {
-				if (object == null) {
-					entity.addPart(key, new StringBody(Strings.EMPTY_STRING));
-				} else if (object instanceof File) {
-					entity.addPart(key, new FileBody((File) object));
-				} else if (object instanceof Nfile) {
-					Nfile file = (Nfile) object;
-					if (file.isFile()) {
-						entity.addPart(key, new FileBody(file.getFile(), file.getName()));
-					} else {
-						entity.addPart(key, new ByteArrayBody(file.getBytes(), file.getName()));
-					}
+			if (value == null) {
+				entity.addPart(key, new StringBody(Strings.EMPTY_STRING));
+			} else if (value instanceof File) {
+				entity.addPart(key, new FileBody((File) value));
+			} else if (value instanceof Nfile) {
+				Nfile file = (Nfile) value;
+				if (file.isFile()) {
+					entity.addPart(key, new FileBody(file.getFile(), file.getName()));
 				} else {
-					entity.addPart(key, new StringBody(object.toString(), charset));
+					entity.addPart(key, new ByteArrayBody(file.getBytes(), file.getName()));
 				}
+			} else if (value instanceof Collection || value instanceof Object[]) {
+				Collection<?> collection = value instanceof Collection ? (Collection<?>) value
+						: Arrays.asList((Object[]) value);
+				for (Object object : collection) {
+					if (object instanceof File) {
+						entity.addPart(key, new FileBody((File) object));
+					} else if (object instanceof Nfile) {
+						Nfile file = (Nfile) object;
+						if (file.isFile()) {
+							entity.addPart(key, new FileBody(file.getFile(), file.getName()));
+						} else {
+							entity.addPart(key, new ByteArrayBody(file.getBytes(), file.getName()));
+						}
+					} else {
+						entity.addPart(key, new StringBody(Strings.toString(object), charset));
+					}
+				}
+			} else {
+				entity.addPart(key, new StringBody(Strings.toString(value), charset));
 			}
 		}
 		return entity;
-	}
-
-	/**
-	 * 获取Http资源请求对象
-	 * 
-	 * @param url
-	 *            请求地址
-	 * @param method
-	 *            请求方式
-	 * @param entity
-	 *            Http请求实体
-	 * @return Http资源请求对象
-	 * @throws IOException
-	 *             IO操作异常
-	 */
-	public static HttpUriRequest getHttpUriRequest(String url, Method method, HttpEntity entity) throws IOException {
-		if (method == Method.POST) {
-			HttpPost httpPost = new HttpPost(url);
-			httpPost.setEntity(entity);
-			return httpPost;
-		} else if (method == Method.GET) {
-			return new HttpGet(url);
-		} else if (method == Method.PUT) {
-			HttpPut httpPut = new HttpPut(url);
-			httpPut.setEntity(entity);
-			return httpPut;
-		} else if (method == Method.DELETE) {
-			return new HttpDelete(url);
-		}
-		throw new RuntimeException("Not support method:" + method);
 	}
 
 	/**
@@ -799,14 +852,34 @@ public final class Https {
 	 */
 	public static HttpUriRequest getHttpUriRequest(String url, Method method, Map<String, Object> parameters)
 			throws IOException {
+		if (url == null) {
+			throw new IllegalArgumentException("Illegal url:" + url);
+		}
+		if (method == null) {
+			throw new IllegalArgumentException("Illegal method:" + method);
+		}
 		if (method == Method.GET) {
-			if (parameters == null || parameters.isEmpty()) {
+			String entity = getGetEntity(parameters);
+			if (entity == null) {
 				return new HttpGet(url);
 			}
-			return new HttpGet(new StringBuilder(url).append('?').append(getGetEntity(parameters)).toString());
+			return new HttpGet(new StringBuilder(url).append('?').append(entity).toString());
+		} else if (method == Method.DELETE) {
+			String entity = getGetEntity(parameters);
+			if (entity == null) {
+				return new HttpDelete(url);
+			}
+			return new HttpDelete(new StringBuilder(url).append('?').append(entity).toString());
+		} else if (method == Method.POST) {
+			HttpPost httpPost = new HttpPost(url);
+			httpPost.setEntity(getHttpEntity(parameters));
+			return httpPost;
+		} else if (method == Method.PUT) {
+			HttpPut httpPut = new HttpPut(url);
+			httpPut.setEntity(getHttpEntity(parameters));
+			return httpPut;
 		}
-		HttpEntity httpEntity = parameters == null || parameters.isEmpty() ? null : getHttpEntity(parameters);
-		return getHttpUriRequest(url, method, httpEntity);
+		throw new RuntimeException("Not support method:" + method);
 	}
 
 	/**
@@ -819,6 +892,9 @@ public final class Https {
 	 *             IO操作异常
 	 */
 	public static byte[] getBytes(HttpServletRequest request) throws IOException {
+		if (request == null) {
+			throw new IllegalArgumentException("Illegal request:" + request);
+		}
 		InputStream is = request.getInputStream();
 		try {
 			return Streams.getBytes(is);
@@ -839,6 +915,12 @@ public final class Https {
 	 *             IO操作异常
 	 */
 	public static byte[] getBytes(HttpClient client, HttpUriRequest request) throws IOException {
+		if (client == null) {
+			throw new IllegalArgumentException("Illegal client:" + client);
+		}
+		if (request == null) {
+			throw new IllegalArgumentException("Illegal request:" + request);
+		}
 		HttpEntity entity = null;
 		try {
 			entity = client.execute(request).getEntity();
@@ -913,6 +995,12 @@ public final class Https {
 	 *             IO操作异常
 	 */
 	public static String getString(HttpClient client, HttpUriRequest request) throws IOException {
+		if (client == null) {
+			throw new IllegalArgumentException("Illegal client:" + client);
+		}
+		if (request == null) {
+			throw new IllegalArgumentException("Illegal request:" + request);
+		}
 		HttpEntity entity = null;
 		try {
 			entity = client.execute(request).getEntity();
@@ -981,6 +1069,12 @@ public final class Https {
 	 */
 	public static String render(HttpServletRequest request, HttpServletResponse response, String template,
 			Map<String, Object> context) throws IOException, ServletException {
+		if (request == null) {
+			throw new IllegalArgumentException("Illegal request:" + request);
+		}
+		if (response == null) {
+			throw new IllegalArgumentException("Illegal response:" + response);
+		}
 		template = Strings.replace(template, "\\", "/");
 		if (template != null && template.charAt(0) != '/') {
 			template = new StringBuilder("/").append(template).toString();
@@ -1046,6 +1140,12 @@ public final class Https {
 	 */
 	public static String render(HttpRequester requester, String template, Object content, Map<String, Object> context)
 			throws IOException, ServletException {
+		if (requester == null) {
+			throw new IllegalArgumentException("Illegal requester:" + requester);
+		}
+		if (template == null) {
+			throw new IllegalArgumentException("Illegal template:" + template);
+		}
 		Date datetime = new Date();
 		HttpServletRequest request = requester.getHttpServletRequest();
 		HttpServletResponse response = requester.getHttpServletResponse();
@@ -1083,6 +1183,15 @@ public final class Https {
 	 */
 	public static void forward(HttpServletRequest request, HttpServletResponse response, String path)
 			throws IOException, ServletException {
+		if (request == null) {
+			throw new IllegalArgumentException("Illegal request:" + request);
+		}
+		if (response == null) {
+			throw new IllegalArgumentException("Illegal response:" + response);
+		}
+		if (path == null) {
+			throw new IllegalArgumentException("Illegal path:" + path);
+		}
 		String context = request.getContextPath();
 		if (context == null) {
 			request.getRequestDispatcher(path).forward(request, response);
@@ -1107,6 +1216,15 @@ public final class Https {
 	 */
 	public static void redirect(HttpServletRequest request, HttpServletResponse response, String path)
 			throws IOException, ServletException {
+		if (request == null) {
+			throw new IllegalArgumentException("Illegal request:" + request);
+		}
+		if (response == null) {
+			throw new IllegalArgumentException("Illegal response:" + response);
+		}
+		if (path == null) {
+			throw new IllegalArgumentException("Illegal path:" + path);
+		}
 		String context = request.getContextPath();
 		if (context == null) {
 			response.sendRedirect(path);
@@ -1126,43 +1244,49 @@ public final class Https {
 	 *             IO操作异常
 	 */
 	public static void response(HttpServletResponse response, Object object) throws IOException {
-		if (object != null) {
-			OutputStream os = response.getOutputStream();
-			try {
-				if (object instanceof File || object instanceof Nfile) {
-					String name = object instanceof File ? ((File) object).getName() : ((Nfile) object).getName();
-					long length = object instanceof File ? ((File) object).length() : ((Nfile) object).getSize();
-					response.setContentType("application/octet-stream");
-					response.setHeader("Content-Disposition",
-							"attachment; filename=" + new String(name.getBytes(), "ISO-8859-1"));
-					response.setHeader("Content-Length", String.valueOf(length));
-					if (object instanceof File) {
-						Streams.write((File) object, os);
-					} else {
-						Streams.write((Nfile) object, os);
-					}
-				} else if (object instanceof byte[]) {
-					os.write((byte[]) object);
-				} else if (object instanceof InputStream) {
-					InputStream is = (InputStream) object;
-					try {
-						Streams.write(is, os);
-					} finally {
-						is.close();
-					}
-				} else if (object instanceof ReadableByteChannel) {
-					ReadableByteChannel channel = (ReadableByteChannel) object;
-					try {
-						Streams.write(channel, os);
-					} finally {
-						channel.close();
-					}
-				} else {
-					os.write(object.toString().getBytes());
+		if (response == null) {
+			throw new IllegalArgumentException("Illegal response:" + response);
+		}
+		if (object == null) {
+			return;
+		}
+		OutputStream os = response.getOutputStream();
+		try {
+			if (object instanceof File) {
+				File file = (File) object;
+				response.setContentType("application/octet-stream");
+				response.setHeader("Content-Disposition",
+						"attachment; filename=" + new String(file.getName().getBytes(), "ISO-8859-1"));
+				response.setHeader("Content-Length", String.valueOf(file.length()));
+				Streams.write(file, os);
+			} else if (object instanceof Nfile) {
+				Nfile file = (Nfile) object;
+				response.setContentType("application/octet-stream");
+				response.setHeader("Content-Disposition",
+						"attachment; filename=" + new String(file.getName().getBytes(), "ISO-8859-1"));
+				response.setHeader("Content-Length", String.valueOf(file.getSize()));
+				Streams.write(file, os);
+			} else if (object instanceof byte[]) {
+				os.write((byte[]) object);
+			} else if (object instanceof InputStream) {
+				InputStream is = (InputStream) object;
+				try {
+					Streams.write(is, os);
+				} finally {
+					is.close();
 				}
-			} finally {
-				os.close();
+			} else if (object instanceof ReadableByteChannel) {
+				ReadableByteChannel channel = (ReadableByteChannel) object;
+				try {
+					Streams.write(channel, os);
+				} finally {
+					channel.close();
+				}
+			} else {
+				os.write(Strings.toString(object).getBytes());
 			}
+		} finally {
+			os.close();
 		}
 	}
 

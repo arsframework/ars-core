@@ -1,5 +1,7 @@
 package ars.invoke.remote;
 
+import java.util.Map;
+
 import ars.util.Strings;
 import ars.invoke.remote.Node;
 import ars.invoke.remote.Remotes;
@@ -15,8 +17,8 @@ import ars.server.AbstractServer;
  */
 public class RemoteInvokeServer extends AbstractServer {
 	private Node[] nodes; // 服务节点
-	private String configure; // 配置文件路径
 	private RemoteChannel[] channels;
+	private Map<String, String> configure; // 配置映射表
 	private Ice.Communicator communicator; // 通信器
 
 	public Node[] getNodes() {
@@ -27,20 +29,20 @@ public class RemoteInvokeServer extends AbstractServer {
 		this.nodes = nodes;
 	}
 
-	public String getConfigure() {
-		return configure;
-	}
-
-	public void setConfigure(String configure) {
-		this.configure = configure;
-	}
-
 	public RemoteChannel[] getChannels() {
 		return channels;
 	}
 
 	public void setChannels(RemoteChannel... channels) {
 		this.channels = channels;
+	}
+
+	public Map<String, String> getConfigure() {
+		return configure;
+	}
+
+	public void setConfigure(Map<String, String> configure) {
+		this.configure = configure;
 	}
 
 	@Override

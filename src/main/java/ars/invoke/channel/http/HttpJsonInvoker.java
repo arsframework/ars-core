@@ -3,7 +3,6 @@ package ars.invoke.channel.http;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
-import org.apache.http.conn.ClientConnectionManager;
 
 import ars.util.Jsons;
 import ars.invoke.remote.Endpoint;
@@ -17,14 +16,6 @@ import ars.invoke.channel.http.AbstractHttpInvoker;
  *
  */
 public class HttpJsonInvoker extends AbstractHttpInvoker {
-
-	public HttpJsonInvoker() {
-		super();
-	}
-
-	public HttpJsonInvoker(ClientConnectionManager manager) {
-		super(manager);
-	}
 
 	@Override
 	protected Object response(Requester requester, Endpoint endpoint, HttpResponse response) throws Exception {

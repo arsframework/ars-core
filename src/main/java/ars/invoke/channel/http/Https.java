@@ -46,6 +46,10 @@ import org.apache.http.NameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpGet;
@@ -89,6 +93,11 @@ public final class Https {
 	 * 应用根路径
 	 */
 	public static final String ROOT_PATH;
+
+	/**
+	 * 客户端连接管理器
+	 */
+	private static ClientConnectionManager manager;
 
 	static {
 		ROOT_PATH = new File(Strings.CURRENT_PATH).getParentFile().getParentFile().getPath();
@@ -227,6 +236,66 @@ public final class Https {
 	 * 请求耗时上下文标识
 	 */
 	public static final String CONTEXT_TIMESPEND = "timespend";
+
+	/**
+	 * 获取客户端连接管理器
+	 * 
+	 * @return 客户端连接管理器
+	 */
+	public static ClientConnectionManager getManager() {
+		if (manager == null) {
+			synchronized (Https.class) {
+				if (manager == null) {
+					manager = new PoolingClientConnectionManager();
+				}
+			}
+		}
+		return manager;
+	}
+
+	/**
+	 * 设置客户端连接管理器
+	 * 
+	 * @param manager
+	 *            客户端连接管理器
+	 */
+	public static void setManager(ClientConnectionManager manager) {
+		if (manager == null) {
+			throw new IllegalArgumentException("Illegal manager:" + manager);
+		}
+		if (Https.manager == null) {
+			synchronized (Https.class) {
+				if (Https.manager == null) {
+					Https.manager = manager;
+				}
+			}
+		}
+	}
+
+	/**
+	 * 获取Http客户端对象
+	 * 
+	 * @return Http客户端对象
+	 */
+	public static HttpClient getClient() {
+		return getClient(false);
+	}
+
+	/**
+	 * 获取Http客户端对象
+	 * 
+	 * @param encrypt
+	 *            是否为加密协议
+	 * @return Http客户端对象
+	 */
+	public static HttpClient getClient(boolean encrypt) {
+		DefaultHttpClient client = new DefaultHttpClient(getManager());
+		if (encrypt) {
+			bindSSL(client);
+		}
+		client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(0, false));
+		return client;
+	}
 
 	/**
 	 * 绑定SSL,默认使用443端口
@@ -906,6 +975,19 @@ public final class Https {
 	/**
 	 * 获取Http请求结果字节数组
 	 * 
+	 * @param request
+	 *            Http请求对象
+	 * @return 字节数组
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static byte[] getBytes(HttpUriRequest request) throws IOException {
+		return getBytes(getClient(), request);
+	}
+
+	/**
+	 * 获取Http请求结果字节数组
+	 * 
 	 * @param client
 	 *            Http客户端对象
 	 * @param request
@@ -921,6 +1003,9 @@ public final class Https {
 		if (request == null) {
 			throw new IllegalArgumentException("Illegal request:" + request);
 		}
+		if (request.getURI().getScheme().equalsIgnoreCase(Protocol.https.toString())) {
+			bindSSL(client);
+		}
 		HttpEntity entity = null;
 		try {
 			entity = client.execute(request).getEntity();
@@ -931,6 +1016,21 @@ public final class Https {
 				EntityUtils.consumeQuietly(entity);
 			}
 		}
+	}
+
+	/**
+	 * 获取Http请求结果字节数组
+	 * 
+	 * @param url
+	 *            请求地址
+	 * @param method
+	 *            请求方式
+	 * @return 字节数组
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static byte[] getBytes(String url, Method method) throws IOException {
+		return getBytes(getClient(), url, method);
 	}
 
 	/**
@@ -948,6 +1048,23 @@ public final class Https {
 	 */
 	public static byte[] getBytes(HttpClient client, String url, Method method) throws IOException {
 		return getBytes(client, url, method, Collections.<String, Object>emptyMap());
+	}
+
+	/**
+	 * 获取Http请求结果字节数组
+	 * 
+	 * @param url
+	 *            请求地址
+	 * @param method
+	 *            请求方式
+	 * @param parameters
+	 *            请求参数
+	 * @return 字节数组
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static byte[] getBytes(String url, Method method, Map<String, Object> parameters) throws IOException {
+		return getBytes(getClient(), url, method, parameters);
 	}
 
 	/**
@@ -986,6 +1103,19 @@ public final class Https {
 	/**
 	 * 获取Http请求结果字符串
 	 * 
+	 * @param request
+	 *            Http请求对象
+	 * @return 字符串
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static String getString(HttpUriRequest request) throws IOException {
+		return getString(getClient(), request);
+	}
+
+	/**
+	 * 获取Http请求结果字符串
+	 * 
 	 * @param client
 	 *            Http客户端对象
 	 * @param request
@@ -1001,6 +1131,9 @@ public final class Https {
 		if (request == null) {
 			throw new IllegalArgumentException("Illegal request:" + request);
 		}
+		if (request.getURI().getScheme().equalsIgnoreCase(Protocol.https.toString())) {
+			bindSSL(client);
+		}
 		HttpEntity entity = null;
 		try {
 			entity = client.execute(request).getEntity();
@@ -1011,6 +1144,21 @@ public final class Https {
 				EntityUtils.consumeQuietly(entity);
 			}
 		}
+	}
+
+	/**
+	 * 获取Http请求结果字符串
+	 * 
+	 * @param url
+	 *            请求地址
+	 * @param method
+	 *            请求方式
+	 * @return 字符串
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static String getString(String url, Method method) throws IOException {
+		return getString(getClient(), url, method);
 	}
 
 	/**
@@ -1028,6 +1176,23 @@ public final class Https {
 	 */
 	public static String getString(HttpClient client, String url, Method method) throws IOException {
 		return getString(client, url, method, Collections.<String, Object>emptyMap());
+	}
+
+	/**
+	 * 获取Http请求结果字符串
+	 * 
+	 * @param url
+	 *            请求地址
+	 * @param method
+	 *            请求方式
+	 * @param parameters
+	 *            请求参数
+	 * @return 字符串
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static String getString(String url, Method method, Map<String, Object> parameters) throws IOException {
+		return getString(getClient(), url, method, parameters);
 	}
 
 	/**
@@ -1312,6 +1477,20 @@ public final class Https {
 			return stringBean.getStrings();
 		} catch (ParserException e) {
 			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * 销毁Http调用资源
+	 */
+	public static void destroy() {
+		if (manager != null) {
+			synchronized (Https.class) {
+				if (manager != null) {
+					manager.shutdown();
+					manager = null;
+				}
+			}
 		}
 	}
 

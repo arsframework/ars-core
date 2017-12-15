@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
-import org.apache.http.conn.ClientConnectionManager;
 
 import ars.util.Streams;
 import ars.invoke.remote.Remotes;
@@ -21,14 +20,6 @@ import ars.invoke.channel.http.AbstractHttpInvoker;
  *
  */
 public class HttpFileInvoker extends AbstractHttpInvoker {
-
-	public HttpFileInvoker() {
-		super();
-	}
-
-	public HttpFileInvoker(ClientConnectionManager manager) {
-		super(manager);
-	}
 
 	@Override
 	protected Object response(Requester requester, Endpoint endpoint, HttpResponse response) throws Exception {

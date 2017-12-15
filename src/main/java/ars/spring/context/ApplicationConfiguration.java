@@ -1,6 +1,9 @@
 package ars.spring.context;
 
+import java.util.Map;
 import java.util.Locale;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Collection;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
@@ -34,6 +37,7 @@ import ars.invoke.local.Function;
 import ars.invoke.remote.Remotes;
 import ars.invoke.cache.Cache;
 import ars.invoke.event.InvokeListener;
+import ars.file.office.Converts;
 
 /**
  * 基于Spring系统配置
@@ -47,12 +51,7 @@ public class ApplicationConfiguration extends StandardRouter
 	private Invoker invoker; // 资源调用对象
 	private Messager messager; // 消息处理对象
 	private String pattern; // 资源地址匹配模式
-	private String client; // 应用标识
-	private String directory; // 文件目录
-	private String configure; // 应用配置文件
-	private String dateFormat; // 日期格式
-	private String datetimeFormat; // 日期时间格式
-	private String datenanoFormat; // 日期时间毫秒格式
+	private Map<String, String> configure;
 	private ApplicationContext applicationContext; // 应用上下文对象
 	private boolean initialized, destroied; // Spring容器启动/销毁标记
 
@@ -72,84 +71,57 @@ public class ApplicationConfiguration extends StandardRouter
 		this.pattern = pattern;
 	}
 
-	public String getClient() {
-		return client;
-	}
-
-	public void setClient(String client) {
-		this.client = client;
-	}
-
-	public String getDirectory() {
-		return directory;
-	}
-
-	public void setDirectory(String directory) {
-		this.directory = directory;
-	}
-
-	public String getConfigure() {
+	public Map<String, String> getConfigure() {
 		return configure;
 	}
 
-	public void setConfigure(String configure) {
+	public void setConfigure(Map<String, String> configure) {
 		this.configure = configure;
-	}
-
-	public String getDateFormat() {
-		return dateFormat;
-	}
-
-	public void setDateFormat(String dateFormat) {
-		this.dateFormat = dateFormat;
-	}
-
-	public String getDatetimeFormat() {
-		return datetimeFormat;
-	}
-
-	public void setDatetimeFormat(String datetimeFormat) {
-		this.datetimeFormat = datetimeFormat;
-	}
-
-	public String getDatenanoFormat() {
-		return datenanoFormat;
-	}
-
-	public void setDatenanoFormat(String datenanoFormat) {
-		this.datenanoFormat = datenanoFormat;
 	}
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 
-		// 设置日期格式
-		if (this.dateFormat != null) {
-			Dates.setDateFormat(new SimpleDateFormat(this.dateFormat));
-		}
-		if (this.datetimeFormat != null) {
-			Dates.setDatetimeFormat(new SimpleDateFormat(this.datetimeFormat));
-		}
-		if (this.datenanoFormat != null) {
-			Dates.setDatenanoFormat(new SimpleDateFormat(this.datenanoFormat));
+		// 初始化系统配置
+		Map<String, String> iceItems = new HashMap<String, String>();
+		if (this.configure != null && !this.configure.isEmpty()) {
+			for (Entry<String, String> entry : this.configure.entrySet()) {
+				String key = entry.getKey().toLowerCase().trim();
+				String value = entry.getValue();
+				if (value == null || (value = value.trim()).isEmpty()) {
+					continue;
+				}
+				if (key.equals("remote.client")) { // 客户端标识
+					Remotes.setClient(value);
+				} else if (key.equals("remote.directory")) { // 远程操作文件读取目录
+					Remotes.setDirectory(value);
+				} else if (key.startsWith("remote.ice.")) { // ice配置项前缀
+					String item = key.substring(11).trim();
+					if (!item.isEmpty()) {
+						iceItems.put(item, value);
+					}
+				} else if (key.equals("format.date")) { // 日期格式
+					Dates.setDateFormat(new SimpleDateFormat(value));
+				} else if (key.equals("format.datetime")) { // 日期时间格式
+					Dates.setDatetimeFormat(new SimpleDateFormat(value));
+				} else if (key.equals("format.datenano")) { // 日期时间毫秒格式
+					Dates.setDatenanoFormat(new SimpleDateFormat(value));
+				} else if (key.equals("openoffice.host")) { // openoffice服务器地址
+					Converts.setOpenOfficeHost(value);
+				} else if (key.equals("openoffice.port")) { // openoffice服务器端口
+					Converts.setOpenOfficePort(Integer.parseInt(value));
+				}
+			}
+			if (!iceItems.isEmpty()) {
+				Remotes.setConfigure(iceItems);
+			}
 		}
 
 		// 设置json序列化对象适配器
 		ObjectAdapter[] objectAdapters = applicationContext.getBeansOfType(ObjectAdapter.class).values()
 				.toArray(new ObjectAdapter[0]);
 		Jsons.setObjectAdapters(objectAdapters);
-
-		// 初始化远程调用工具类
-		if (this.client != null) {
-			Remotes.setClient(this.client);
-		}
-		if (this.directory != null) {
-			Remotes.setDirectory(this.directory);
-		}
-		if (this.configure != null) {
-			Remotes.setConfigure(this.configure);
-		}
 
 		// 设置缓存对象
 		try {

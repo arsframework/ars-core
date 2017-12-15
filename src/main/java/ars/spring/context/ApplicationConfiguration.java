@@ -37,6 +37,7 @@ import ars.invoke.local.Function;
 import ars.invoke.remote.Remotes;
 import ars.invoke.cache.Cache;
 import ars.invoke.event.InvokeListener;
+import ars.invoke.channel.http.Https;
 import ars.file.office.Converts;
 
 /**
@@ -182,6 +183,7 @@ public class ApplicationConfiguration extends StandardRouter
 			if (this.cache != null) {
 				this.cache.destroy();
 			}
+			Https.destroy();
 			Servers.shutdown();
 			Remotes.destroy();
 		}

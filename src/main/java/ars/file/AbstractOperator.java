@@ -3,10 +3,12 @@ package ars.file;
 import java.io.File;
 import java.util.Map;
 import java.util.List;
+import java.util.UUID;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import ars.util.Nfile;
+import ars.util.Streams;
 import ars.util.Strings;
 import ars.file.Describe;
 import ars.file.Operator;
@@ -14,6 +16,7 @@ import ars.file.query.Query;
 import ars.file.NameGenerator;
 import ars.file.AbstractOperator;
 import ars.file.DirectoryGenerator;
+import ars.file.office.Converts;
 
 /**
  * 文件操作抽象实现
@@ -91,6 +94,39 @@ public abstract class AbstractOperator implements Operator {
 			trees.add(describe);
 		}
 		return trees;
+	}
+
+	@Override
+	public Nfile preview(String path) throws Exception {
+		if (!this.exists(path)) {
+			return null;
+		}
+		if (path.toLowerCase().endsWith(".swf")) {
+			return this.read(path);
+		}
+		String swf = path + ".temp.swf";
+		if (!this.exists(swf)) {
+			synchronized (swf.intern()) {
+				if (!this.exists(swf)) {
+					Nfile input = this.read(path);
+					if (input.isFile()) {
+						Converts.file2swf(input.getFile(), new File(this.workingDirectory, swf));
+					} else {
+						File source = new File(Strings.TEMP_PATH, UUID.randomUUID().toString() + input.getName());
+						File target = new File(Strings.TEMP_PATH, UUID.randomUUID().toString() + input.getName());
+						try {
+							Streams.write(input, source);
+							Converts.file2swf(source, target);
+							this.write(new Nfile(target), swf);
+						} finally {
+							source.delete();
+							target.delete();
+						}
+					}
+				}
+			}
+		}
+		return this.read(swf);
 	}
 
 	@Override

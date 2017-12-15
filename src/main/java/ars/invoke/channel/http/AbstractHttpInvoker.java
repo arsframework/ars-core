@@ -5,11 +5,8 @@ import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
 
 import ars.invoke.Invoker;
 import ars.invoke.Resource;
@@ -26,23 +23,6 @@ import ars.invoke.channel.http.Https;
  *
  */
 public abstract class AbstractHttpInvoker implements Invoker {
-	private ClientConnectionManager manager;
-
-	public AbstractHttpInvoker() {
-		this(new PoolingClientConnectionManager());
-	}
-
-	public AbstractHttpInvoker(ClientConnectionManager manager) {
-		if (manager == null) {
-			throw new IllegalArgumentException("Illegal manager:" + manager);
-		}
-		this.manager = manager;
-	}
-
-	public ClientConnectionManager getManager() {
-		return manager;
-	}
-
 	/**
 	 * 获取响应结果
 	 * 
@@ -77,11 +57,8 @@ public abstract class AbstractHttpInvoker implements Invoker {
 					httpUriRequest.setHeader(header, httpServletRequest.getHeader(header));
 				}
 			}
-			DefaultHttpClient client = new DefaultHttpClient(this.manager);
-			if (node.getProtocol() == Protocol.https) {
-				Https.bindSSL(client);
-			}
-			client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(0, false));
+
+			HttpClient client = Https.getClient(node.getProtocol() == Protocol.https);
 			try {
 				return this.response(requester, endpoint, client.execute(httpUriRequest));
 			} catch (Exception e) {

@@ -59,9 +59,9 @@ public final class Remotes {
 	private static String directory = Strings.TEMP_PATH;
 
 	/**
-	 * 客户端配置文件路径
+	 * 客户端配置
 	 */
-	private static String configure;
+	private static Map<String, String> configure;
 
 	/**
 	 * ICE通信器
@@ -93,11 +93,11 @@ public final class Remotes {
 		}
 	}
 
-	public static String getConfigure() {
+	public static Map<String, String> getConfigure() {
 		return configure;
 	}
 
-	public static void setConfigure(String configure) {
+	public static void setConfigure(Map<String, String> configure) {
 		Remotes.configure = configure;
 	}
 
@@ -133,6 +133,30 @@ public final class Remotes {
 			Ice.InitializationData data = new Ice.InitializationData();
 			Ice.Properties properties = Ice.Util.createProperties();
 			properties.load(Strings.getRealPath(configure));
+			Ice.StringSeqHolder holder = new Ice.StringSeqHolder(args);
+			data.properties = Ice.Util.createProperties(holder, properties);
+			return Ice.Util.initialize(holder, data);
+		}
+	}
+
+	/**
+	 * 初始化远程通信配置
+	 * 
+	 * @param configure
+	 *            配置想映射表
+	 * @param args
+	 *            通信器运行参数
+	 * @return ICE通信器对象
+	 */
+	public static Ice.Communicator initializeCommunicator(Map<String, String> configure, String... args) {
+		if (configure == null || configure.isEmpty()) {
+			return Ice.Util.initialize(args);
+		} else {
+			Ice.InitializationData data = new Ice.InitializationData();
+			Ice.Properties properties = Ice.Util.createProperties();
+			for (Entry<String, String> entry : configure.entrySet()) {
+				properties.setProperty(entry.getKey(), entry.getValue());
+			}
 			Ice.StringSeqHolder holder = new Ice.StringSeqHolder(args);
 			data.properties = Ice.Util.createProperties(holder, properties);
 			return Ice.Util.initialize(holder, data);

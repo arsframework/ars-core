@@ -118,6 +118,25 @@ public final class Remotes {
 	}
 
 	/**
+	 * 设置 ICE通信器
+	 * 
+	 * @param communicator
+	 *            ICE通信器
+	 */
+	public static void setCommunicator(Ice.Communicator communicator) {
+		if (communicator == null) {
+			throw new IllegalArgumentException("Illegal communicator:" + communicator);
+		}
+		if (Remotes.communicator == null) {
+			synchronized (Remotes.class) {
+				if (Remotes.communicator == null) {
+					Remotes.communicator = communicator;
+				}
+			}
+		}
+	}
+
+	/**
 	 * 初始化远程通信配置
 	 * 
 	 * @param configure
@@ -587,6 +606,7 @@ public final class Remotes {
 				if (communicator != null) {
 					communicator.shutdown();
 					communicator.destroy();
+					communicator = null;
 				}
 			}
 		}

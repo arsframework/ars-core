@@ -195,15 +195,19 @@ public final class Excels {
 	 *            目标单元格对象
 	 */
 	public static void copy(Cell source, Cell target) {
-		if (source != null && target != null) {
-			int type = source.getCellType();
-			if (type == Cell.CELL_TYPE_BOOLEAN) {
-				target.setCellValue(source.getBooleanCellValue());
-			} else if (type == Cell.CELL_TYPE_NUMERIC) {
-				target.setCellValue(source.getNumericCellValue());
-			} else {
-				target.setCellValue(source.getStringCellValue());
-			}
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
+		int type = source.getCellType();
+		if (type == Cell.CELL_TYPE_BOOLEAN) {
+			target.setCellValue(source.getBooleanCellValue());
+		} else if (type == Cell.CELL_TYPE_NUMERIC) {
+			target.setCellValue(source.getNumericCellValue());
+		} else {
+			target.setCellValue(source.getStringCellValue());
 		}
 	}
 
@@ -216,10 +220,14 @@ public final class Excels {
 	 *            目标行对象
 	 */
 	public static void copy(Row source, Row target) {
-		if (source != null && target != null) {
-			for (int i = 0; i < source.getLastCellNum(); i++) {
-				copy(source.getCell(i), target.createCell(i));
-			}
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
+		for (int i = 0; i < source.getLastCellNum(); i++) {
+			copy(source.getCell(i), target.createCell(i));
 		}
 	}
 
@@ -317,6 +325,12 @@ public final class Excels {
 	 * @return 值数组
 	 */
 	public static <T> T[] getValues(Row row, Class<T> type) {
+		if (row == null) {
+			throw new IllegalArgumentException("Illegal row:" + row);
+		}
+		if (type == null) {
+			throw new IllegalArgumentException("Illegal type:" + type);
+		}
 		boolean empty = true;
 		int columns = row.getLastCellNum(); // 从1开始
 		T[] values = Beans.getArray(type, columns);
@@ -416,6 +430,9 @@ public final class Excels {
 	 *            值
 	 */
 	public static void setValue(Cell cell, Object value) {
+		if (cell == null) {
+			throw new IllegalArgumentException("Illegal cell:" + cell);
+		}
 		if (!Beans.isEmpty(value)) {
 			if (value instanceof Object[]) {
 				value = Strings.join((Object[]) value, ',');
@@ -435,6 +452,9 @@ public final class Excels {
 	 *            单元格值数组
 	 */
 	public static void setValues(Row row, Object... values) {
+		if (row == null) {
+			throw new IllegalArgumentException("Illegal row:" + row);
+		}
 		for (int i = 0; i < values.length; i++) {
 			setValue(row.createCell(i), values[i]);
 		}
@@ -449,6 +469,9 @@ public final class Excels {
 	 *            标题数组
 	 */
 	public static void setTitles(Row row, String... titles) {
+		if (row == null) {
+			throw new IllegalArgumentException("Illegal row:" + row);
+		}
 		if (titles.length > 0) {
 			Workbook workbook = row.getSheet().getWorkbook();
 			Font font = workbook.createFont();

@@ -5,6 +5,7 @@ import java.util.List;
 import ars.invoke.Invoker;
 import ars.invoke.Resource;
 import ars.invoke.request.Requester;
+import ars.invoke.event.InvokeEvent;
 import ars.invoke.event.InvokeListener;
 
 /**
@@ -85,9 +86,25 @@ public interface Router {
 	/**
 	 * 设置事件监听器
 	 * 
+	 * @param <E>
+	 *            事件类型
+	 * @param type
+	 *            事件类型对象
 	 * @param listeners
 	 *            事件监听器数组
 	 */
-	public void setListeners(InvokeListener<?>... listeners);
+	public <E extends InvokeEvent> void setListeners(Class<E> type, InvokeListener<E>... listeners);
+
+	/**
+	 * 添加事件监听器
+	 * 
+	 * @param <E>
+	 *            事件类型
+	 * @param type
+	 *            事件类型对象
+	 * @param listeners
+	 *            事件监听器数组
+	 */
+	public <E extends InvokeEvent> void addListeners(Class<E> type, InvokeListener<E>... listeners);
 
 }

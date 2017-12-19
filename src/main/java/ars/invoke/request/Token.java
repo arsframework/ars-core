@@ -58,6 +58,7 @@ public class Token implements Map<String, Object>, Formable, Serializable {
 			throw new IllegalArgumentException("Illegal code:" + code);
 		}
 		this.code = code;
+		this.attributes = new HashMap<String, Object>(0);
 	}
 
 	public Token(String code, int timeout) {
@@ -75,6 +76,7 @@ public class Token implements Map<String, Object>, Formable, Serializable {
 			throw new IllegalArgumentException("Illegal attributes:" + attributes);
 		}
 		this.code = code;
+		this.timeout = timeout;
 		this.attributes = attributes;
 		this.validated = !attributes.isEmpty();
 	}
@@ -159,6 +161,15 @@ public class Token implements Map<String, Object>, Formable, Serializable {
 		SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 		Key key = new SecretKeySpec(SECRET, signatureAlgorithm.getJcaName());
 		return new Token(builder.signWith(signatureAlgorithm, key).compact(), timeout, _attributes);
+	}
+
+	/**
+	 * 判断令牌是否已验证
+	 * 
+	 * @return true/false
+	 */
+	public boolean isValidated() {
+		return this.validated;
 	}
 
 	/**

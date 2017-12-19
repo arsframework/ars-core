@@ -34,8 +34,9 @@ import ars.invoke.StandardRouter;
 import ars.invoke.local.Api;
 import ars.invoke.local.Apis;
 import ars.invoke.local.Function;
-import ars.invoke.remote.Remotes;
 import ars.invoke.cache.Cache;
+import ars.invoke.remote.Remotes;
+import ars.invoke.event.InvokeEvent;
 import ars.invoke.event.InvokeListener;
 import ars.invoke.channel.http.Https;
 import ars.file.office.Converts;
@@ -80,6 +81,7 @@ public class ApplicationConfiguration extends StandardRouter
 		this.configure = configure;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
@@ -147,19 +149,24 @@ public class ApplicationConfiguration extends StandardRouter
 		}
 
 		// 注册事件监听器
-		InvokeListener<?>[] listeners = applicationContext.getBeansOfType(InvokeListener.class).values()
-				.toArray(new InvokeListener[0]);
+		Collection<InvokeListener> listeners = applicationContext.getBeansOfType(InvokeListener.class).values();
 		try {
-			for (int i = 0; i < listeners.length; i++) {
-				InvokeListener<?> listener = listeners[i];
+			for (InvokeListener<?> listener : listeners) {
+				InvokeListener<?> target = null;
 				if (AopUtils.isAopProxy(listener)) {
-					listeners[i] = (InvokeListener<?>) ((Advised) listener).getTargetSource().getTarget();
+					target = (InvokeListener<?>) ((Advised) listener).getTargetSource().getTarget();
 				}
+				Class type = null;
+				for (Method method : (target == null ? listener : target).getClass().getMethods()) {
+					if (method.getName().equals("onInvokeEvent") && (type == null || type == InvokeEvent.class)) {
+						type = method.getParameterTypes()[0];
+					}
+				}
+				this.addListeners(type, listener);
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		this.setListeners(listeners);
 
 		// 设置请求通道上下文
 		Collection<Channel> channels = applicationContext.getBeansOfType(Channel.class).values();

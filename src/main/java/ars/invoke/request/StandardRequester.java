@@ -51,6 +51,7 @@ public class StandardRequester implements Requester {
 		if (Strings.isEmpty(uri)) {
 			throw new IllegalArgumentException("Illegal uri:" + uri);
 		}
+		this.id = UUID.randomUUID().toString();
 		this.uri = uri;
 		this.host = host;
 		this.token = token;
@@ -78,13 +79,6 @@ public class StandardRequester implements Requester {
 
 	@Override
 	public String getId() {
-		if (this.id == null) {
-			synchronized (this) {
-				if (this.id == null) {
-					this.id = UUID.randomUUID().toString();
-				}
-			}
-		}
 		return this.id;
 	}
 

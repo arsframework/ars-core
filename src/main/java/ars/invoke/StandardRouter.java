@@ -2,12 +2,12 @@ package ars.invoke;
 
 import java.util.Map;
 import java.util.List;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Collections;
-import java.lang.reflect.Method;
 
 import ars.util.Beans;
 import ars.util.Strings;
@@ -274,31 +274,46 @@ public class StandardRouter implements Router {
 	}
 
 	@Override
-	public void setListeners(InvokeListener<?>... listeners) {
-		this.invokeBeforeListeners.clear();
-		this.invokeAfterListeners.clear();
-		this.invokeErrorListeners.clear();
-		for (InvokeListener<?> listener : listeners) {
-			Class<?> eventType = null;
-			for (Method method : listener.getClass().getMethods()) {
-				if (method.getName().equals("onInvokeEvent") && (eventType == null || eventType == InvokeEvent.class)) {
-					eventType = method.getParameterTypes()[0];
-				}
-			}
-			if (eventType == InvokeBeforeEvent.class) {
-				this.invokeBeforeListeners.add(listener);
-			} else if (eventType == InvokeAfterEvent.class) {
-				this.invokeAfterListeners.add(listener);
-			} else if (eventType == InvokeErrorEvent.class) {
-				this.invokeErrorListeners.add(listener);
-			} else if (eventType == InvokeCompleteEvent.class) {
-				this.invokeCompleteListeners.add(listener);
-			} else {
-				this.invokeBeforeListeners.add(listener);
-				this.invokeAfterListeners.add(listener);
-				this.invokeErrorListeners.add(listener);
-				this.invokeCompleteListeners.add(listener);
-			}
+	public <E extends InvokeEvent> void setListeners(Class<E> type, InvokeListener<E>... listeners) {
+		if (InvokeBeforeEvent.class.isAssignableFrom(type)) {
+			this.invokeBeforeListeners.clear();
+			this.invokeBeforeListeners.addAll(Arrays.asList(listeners));
+		} else if (InvokeAfterEvent.class.isAssignableFrom(type)) {
+			this.invokeAfterListeners.clear();
+			this.invokeAfterListeners.addAll(Arrays.asList(listeners));
+		} else if (InvokeErrorEvent.class.isAssignableFrom(type)) {
+			this.invokeErrorListeners.clear();
+			this.invokeErrorListeners.addAll(Arrays.asList(listeners));
+		} else if (InvokeCompleteEvent.class.isAssignableFrom(type)) {
+			this.invokeCompleteListeners.clear();
+			this.invokeCompleteListeners.addAll(Arrays.asList(listeners));
+		} else {
+			this.invokeBeforeListeners.clear();
+			this.invokeAfterListeners.clear();
+			this.invokeErrorListeners.clear();
+			this.invokeCompleteListeners.clear();
+			this.invokeBeforeListeners.addAll(Arrays.asList(listeners));
+			this.invokeAfterListeners.addAll(Arrays.asList(listeners));
+			this.invokeErrorListeners.addAll(Arrays.asList(listeners));
+			this.invokeCompleteListeners.addAll(Arrays.asList(listeners));
+		}
+	}
+
+	@Override
+	public <E extends InvokeEvent> void addListeners(Class<E> type, InvokeListener<E>... listeners) {
+		if (InvokeBeforeEvent.class.isAssignableFrom(type)) {
+			this.invokeBeforeListeners.addAll(Arrays.asList(listeners));
+		} else if (InvokeAfterEvent.class.isAssignableFrom(type)) {
+			this.invokeAfterListeners.addAll(Arrays.asList(listeners));
+		} else if (InvokeErrorEvent.class.isAssignableFrom(type)) {
+			this.invokeErrorListeners.addAll(Arrays.asList(listeners));
+		} else if (InvokeCompleteEvent.class.isAssignableFrom(type)) {
+			this.invokeCompleteListeners.addAll(Arrays.asList(listeners));
+		} else {
+			this.invokeBeforeListeners.addAll(Arrays.asList(listeners));
+			this.invokeAfterListeners.addAll(Arrays.asList(listeners));
+			this.invokeErrorListeners.addAll(Arrays.asList(listeners));
+			this.invokeCompleteListeners.addAll(Arrays.asList(listeners));
 		}
 	}
 

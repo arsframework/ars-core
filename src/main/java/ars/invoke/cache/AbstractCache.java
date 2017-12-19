@@ -38,7 +38,7 @@ public abstract class AbstractCache implements Cache, InvokeListener<InvokeAfter
 	@Override
 	public void initialize(Context context) {
 		if (!this.initialized) {
-			synchronized (AbstractCache.class) {
+			synchronized (this) {
 				if (!this.initialized) {
 					this.initialized = true;
 					List<String> apis = context.getRouter().getApis();

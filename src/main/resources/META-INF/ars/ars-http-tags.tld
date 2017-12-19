@@ -6,7 +6,7 @@
 	<description>Ars Framework JSP Tag Library</description>
 	<tlib-version>2.0</tlib-version>
 	<short-name>ars</short-name>
-	<uri>http://www.ars.com/tags</uri>
+	<uri>http://www.arsframework.com/tags</uri>
 	<tag>
 		<name>resource</name>
 		<description>Resource invoke</description>

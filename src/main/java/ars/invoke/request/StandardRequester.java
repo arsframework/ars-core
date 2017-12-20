@@ -73,6 +73,11 @@ public class StandardRequester implements Requester {
 	}
 
 	@Override
+	public Session getSession() {
+		return this.channel.getContext().getSessionFactory().getSession(this);
+	}
+
+	@Override
 	public Date getCreated() {
 		return this.created;
 	}

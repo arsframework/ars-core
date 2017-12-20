@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 import ars.invoke.Channel;
 import ars.invoke.request.Token;
+import ars.invoke.request.Session;
 
 /**
  * 请求对象接口
@@ -29,6 +30,13 @@ public interface Requester extends Serializable {
 	 * @return 请求对象
 	 */
 	public Requester getParent();
+
+	/**
+	 * 获取回话对象
+	 * 
+	 * @return 会话对象
+	 */
+	public Session getSession();
 
 	/**
 	 * 获取请求时间

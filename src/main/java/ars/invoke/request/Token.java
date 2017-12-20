@@ -50,7 +50,7 @@ public class Token implements Map<String, Object>, Formable, Serializable {
 
 	private String code; // 令牌标识
 	private int timeout; // 过期时间（秒）
-	private boolean validated; // 是否已验证
+	private boolean valid; // 是否有效
 	private Map<String, Object> attributes;
 
 	public Token(String code) {
@@ -62,7 +62,15 @@ public class Token implements Map<String, Object>, Formable, Serializable {
 	}
 
 	public Token(String code, int timeout) {
-		this(code, timeout, new HashMap<String, Object>(0));
+		if (code == null) {
+			throw new IllegalArgumentException("Illegal code:" + code);
+		}
+		if (timeout < 1) {
+			throw new IllegalArgumentException("Illegal timeout:" + timeout);
+		}
+		this.code = code;
+		this.timeout = timeout;
+		this.attributes = new HashMap<String, Object>(0);
 	}
 
 	public Token(String code, int timeout, Map<String, Object> attributes) {
@@ -76,9 +84,9 @@ public class Token implements Map<String, Object>, Formable, Serializable {
 			throw new IllegalArgumentException("Illegal attributes:" + attributes);
 		}
 		this.code = code;
+		this.valid = true;
 		this.timeout = timeout;
 		this.attributes = attributes;
-		this.validated = !attributes.isEmpty();
 	}
 
 	/**
@@ -164,12 +172,12 @@ public class Token implements Map<String, Object>, Formable, Serializable {
 	}
 
 	/**
-	 * 判断令牌是否已验证
+	 * 判断令牌是否有效
 	 * 
 	 * @return true/false
 	 */
-	public boolean isValidated() {
-		return this.validated;
+	public boolean isValid() {
+		return this.valid;
 	}
 
 	/**
@@ -179,15 +187,15 @@ public class Token implements Map<String, Object>, Formable, Serializable {
 	 *             令牌无效异常
 	 */
 	public void validate() throws TokenInvalidException {
-		if (!this.validated) {
-			this.validated = true;
+		if (!this.valid) {
 			try {
 				this.attributes = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(code).getBody();
 			} catch (ExpiredJwtException e) {
-				throw new TokenInvalidException("Token expired");
+				throw new TokenInvalidException("error.token.expired");
 			} catch (Exception e) {
 				throw new TokenInvalidException(e.getMessage());
 			}
+			this.valid = true;
 		}
 	}
 

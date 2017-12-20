@@ -14,9 +14,7 @@ import ars.util.Strings;
 import ars.invoke.Router;
 import ars.invoke.Invoker;
 import ars.invoke.Resource;
-import ars.invoke.cache.Key;
-import ars.invoke.cache.Value;
-import ars.invoke.cache.Cache;
+import ars.invoke.cache.InvokeCache;
 import ars.invoke.request.Requester;
 import ars.invoke.event.InvokeEvent;
 import ars.invoke.event.InvokeListener;
@@ -221,18 +219,18 @@ public class StandardRouter implements Router {
 		Object result = null;
 		try {
 			this.beforeInvoke(requester);
-			Cache cache = requester.getChannel().getContext().getCache();
-			Key key = cache == null ? null : cache.getKey(requester);
+			InvokeCache cache = requester.getChannel().getContext().getCache();
+			InvokeCache.Key key = cache == null ? null : cache.key(requester);
 			if (key == null) {
 				result = this.access(requester);
 			} else {
 				synchronized (key.getId().intern()) {
-					Value value = cache.getCache(key);
+					InvokeCache.Value value = cache.get(key);
 					if (value.isCached()) {
 						result = value.getContent();
 					} else {
 						result = this.access(requester);
-						cache.setCache(key, result);
+						cache.set(key, result);
 					}
 				}
 			}

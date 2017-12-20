@@ -2,7 +2,8 @@ package ars.invoke;
 
 import ars.invoke.Router;
 import ars.invoke.Messager;
-import ars.invoke.cache.Cache;
+import ars.invoke.cache.InvokeCache;
+import ars.invoke.request.SessionFactory;
 
 /**
  * 请求调用上下文接口
@@ -11,13 +12,6 @@ import ars.invoke.cache.Cache;
  * 
  */
 public interface Context {
-	/**
-	 * 获取缓存对象
-	 * 
-	 * @return 缓存对象
-	 */
-	public Cache getCache();
-
 	/**
 	 * 获取资源路由对象
 	 * 
@@ -31,5 +25,19 @@ public interface Context {
 	 * @return 消息国际化处理对象
 	 */
 	public Messager getMessager();
+
+	/**
+	 * 获取系统缓存处理对象
+	 * 
+	 * @return 缓存处理对象
+	 */
+	public InvokeCache getCache();
+
+	/**
+	 * 获取会话工厂对象
+	 * 
+	 * @return 会话工厂对象
+	 */
+	public SessionFactory getSessionFactory();
 
 }

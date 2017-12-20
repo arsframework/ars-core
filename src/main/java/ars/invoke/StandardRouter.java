@@ -164,7 +164,7 @@ public class StandardRouter implements Router {
 					return wrapper;
 				}
 			}
-			throw new AccessDeniedException("Resource does not exist");
+			throw new AccessDeniedException("error.resource.nonexistent");
 		}
 		return wrapper;
 	}
@@ -275,16 +275,16 @@ public class StandardRouter implements Router {
 
 	@Override
 	public <E extends InvokeEvent> void setListeners(Class<E> type, InvokeListener<E>... listeners) {
-		if (InvokeBeforeEvent.class.isAssignableFrom(type)) {
+		if (type == InvokeBeforeEvent.class) {
 			this.invokeBeforeListeners.clear();
 			this.invokeBeforeListeners.addAll(Arrays.asList(listeners));
-		} else if (InvokeAfterEvent.class.isAssignableFrom(type)) {
+		} else if (type == InvokeAfterEvent.class) {
 			this.invokeAfterListeners.clear();
 			this.invokeAfterListeners.addAll(Arrays.asList(listeners));
-		} else if (InvokeErrorEvent.class.isAssignableFrom(type)) {
+		} else if (type == InvokeErrorEvent.class) {
 			this.invokeErrorListeners.clear();
 			this.invokeErrorListeners.addAll(Arrays.asList(listeners));
-		} else if (InvokeCompleteEvent.class.isAssignableFrom(type)) {
+		} else if (type == InvokeCompleteEvent.class) {
 			this.invokeCompleteListeners.clear();
 			this.invokeCompleteListeners.addAll(Arrays.asList(listeners));
 		} else {
@@ -301,13 +301,13 @@ public class StandardRouter implements Router {
 
 	@Override
 	public <E extends InvokeEvent> void addListeners(Class<E> type, InvokeListener<E>... listeners) {
-		if (InvokeBeforeEvent.class.isAssignableFrom(type)) {
+		if (type == InvokeBeforeEvent.class) {
 			this.invokeBeforeListeners.addAll(Arrays.asList(listeners));
-		} else if (InvokeAfterEvent.class.isAssignableFrom(type)) {
+		} else if (type == InvokeAfterEvent.class) {
 			this.invokeAfterListeners.addAll(Arrays.asList(listeners));
-		} else if (InvokeErrorEvent.class.isAssignableFrom(type)) {
+		} else if (type == InvokeErrorEvent.class) {
 			this.invokeErrorListeners.addAll(Arrays.asList(listeners));
-		} else if (InvokeCompleteEvent.class.isAssignableFrom(type)) {
+		} else if (type == InvokeCompleteEvent.class) {
 			this.invokeCompleteListeners.addAll(Arrays.asList(listeners));
 		} else {
 			this.invokeBeforeListeners.addAll(Arrays.asList(listeners));

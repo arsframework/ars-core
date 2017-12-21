@@ -8,9 +8,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Collection;
 
-import ars.util.Cache;
 import ars.util.Beans;
+import ars.util.Cache;
+import ars.util.Caches;
 import ars.util.Strings;
+import ars.util.SimpleCache;
 import ars.invoke.cache.Rule;
 import ars.invoke.cache.InvokeCache;
 import ars.invoke.request.Requester;
@@ -28,6 +30,10 @@ public class InvokeCacheWrapper implements InvokeCache, InvokeListener<InvokeAft
 	protected final Rule[] rules;
 	private Map<String, Rule> targets;
 	private Map<String, Set<String>> refreshs;
+
+	public InvokeCacheWrapper(Rule... rules) {
+		this(new SimpleCache(), rules);
+	}
 
 	public InvokeCacheWrapper(Cache cache, Rule... rules) {
 		if (cache == null) {
@@ -90,92 +96,61 @@ public class InvokeCacheWrapper implements InvokeCache, InvokeListener<InvokeAft
 		Set<String> refresh = this.refreshs.get(requester.getUri());
 		if (refresh != null) {
 			for (final String uri : refresh) {
-				this.remove(new Key() {
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public String getId() {
-						return new StringBuilder("{").append(uri).append("}*").toString();
-					}
-
-					@Override
-					public int getTimeout() {
-						return 0;
-					}
-
-				});
+				this.remove(Caches.key(new StringBuilder("{").append(uri).append("}*").toString()));
 			}
 		}
 	}
 
 	@Override
-	public Key key(final Requester requester) {
+	public Key key(Requester requester) {
 		this.initialize(requester);
-		final Rule rule = this.targets.get(requester.getUri());
+		Rule rule = this.targets.get(requester.getUri());
 		if (rule == null) {
 			return null;
 		}
-		return new Key() {
-			private static final long serialVersionUID = 1L;
-
-			private String id;
-
-			@Override
-			public String getId() {
-				if (this.id == null) {
-					StringBuilder buffer = new StringBuilder();
-					if (requester.getUri() != null) {
-						buffer.append('{').append(requester.getUri()).append('}');
-					}
-					if (requester.getUser() != null && rule.getScope() == Rule.Scope.USER) {
-						buffer.append('{').append(requester.getUser()).append('}');
-					}
-					Set<String> condtions = requester.getParameterNames();
-					if (!condtions.isEmpty()) {
-						int i = 0;
-						buffer.append('{');
-						for (String key : Beans.sort(condtions)) {
-							if (key == null || key.isEmpty()) {
-								continue;
-							}
-							if (i++ > 0) {
-								buffer.append(',');
-							}
-							Object value = requester.getParameter(key);
-							if (value instanceof Collection) {
-								for (Object v : Beans.sort((Collection<?>) value)) {
-									buffer.append(key).append('=');
-									if (!Beans.isEmpty(v)) {
-										buffer.append(Strings.toString(v));
-									}
-								}
-							} else if (value instanceof Object[]) {
-								for (Object v : Beans.sort(Arrays.asList((Object[]) value))) {
-									buffer.append(key).append('=');
-									if (!Beans.isEmpty(v)) {
-										buffer.append(Strings.toString(v));
-									}
-								}
-							} else {
-								buffer.append(key).append('=');
-								if (!Beans.isEmpty(value)) {
-									buffer.append(Strings.toString(value));
-								}
-							}
-						}
-						buffer.append('}');
-					}
-					this.id = buffer.toString();
+		StringBuilder buffer = new StringBuilder();
+		if (requester.getUri() != null) {
+			buffer.append('{').append(requester.getUri()).append('}');
+		}
+		if (requester.getUser() != null && rule.getScope() == Rule.Scope.USER) {
+			buffer.append('{').append(requester.getUser()).append('}');
+		}
+		Set<String> condtions = requester.getParameterNames();
+		if (!condtions.isEmpty()) {
+			int i = 0;
+			buffer.append('{');
+			for (String key : Beans.sort(condtions)) {
+				if (key == null || key.isEmpty()) {
+					continue;
 				}
-				return this.id;
+				if (i++ > 0) {
+					buffer.append(',');
+				}
+				Object value = requester.getParameter(key);
+				if (value instanceof Collection) {
+					for (Object v : Beans.sort((Collection<?>) value)) {
+						buffer.append(key).append('=');
+						if (!Beans.isEmpty(v)) {
+							buffer.append(Strings.toString(v));
+						}
+					}
+				} else if (value instanceof Object[]) {
+					for (Object v : Beans.sort(Arrays.asList((Object[]) value))) {
+						buffer.append(key).append('=');
+						if (!Beans.isEmpty(v)) {
+							buffer.append(Strings.toString(v));
+						}
+					}
+				} else {
+					buffer.append(key).append('=');
+					if (!Beans.isEmpty(value)) {
+						buffer.append(Strings.toString(value));
+					}
+				}
 			}
-
-			@Override
-			public int getTimeout() {
-				return rule.getTimeout();
-			}
-
-		};
+			buffer.append('}');
+		}
+		return Caches.key(buffer.toString(), rule.getTimeout());
 	}
 
 	@Override

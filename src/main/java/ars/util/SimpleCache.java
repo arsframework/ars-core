@@ -7,6 +7,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import ars.util.Cache;
+import ars.util.Caches;
 import ars.server.Server;
 import ars.server.task.AbstractTaskServer;
 
@@ -53,11 +54,10 @@ public class SimpleCache implements Cache {
 			protected void execute() throws Exception {
 				lock.writeLock().lock();
 				try {
-					System.out.println(values);
 					Iterator<String> iterator = values.keySet().iterator();
 					while (iterator.hasNext()) {
 						ValueWrapper wrapper = values.get(iterator.next());
-						if (System.currentTimeMillis() >= wrapper.deadline) {
+						if (wrapper.deadline > 0 && System.currentTimeMillis() >= wrapper.deadline) {
 							iterator.remove();
 						}
 					}
@@ -79,25 +79,12 @@ public class SimpleCache implements Cache {
 		}
 		int timeout = key.getTimeout();
 		long timestamp = System.currentTimeMillis();
-		final ValueWrapper wrapper = this.values.get(key.getId());
-		final boolean expired = wrapper == null || timeout > 0 && timestamp >= wrapper.deadline;
-		if (!expired) {
+		ValueWrapper wrapper = this.values.get(key.getId());
+		boolean expired = wrapper == null || (timeout > 0 && timestamp >= wrapper.deadline);
+		if (!expired && timeout > 0) {
 			wrapper.deadline = timestamp + timeout * 1000;
 		}
-		return new Value() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public boolean isCached() {
-				return !expired;
-			}
-
-			@Override
-			public Object getContent() {
-				return expired ? null : wrapper.value;
-			}
-
-		};
+		return Caches.value(expired ? null : wrapper.value, !expired);
 	}
 
 	@Override

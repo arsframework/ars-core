@@ -7,6 +7,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import ars.util.Cache;
+import ars.util.Caches;
 
 /**
  * 基于Redis的数据缓存实现
@@ -51,22 +52,7 @@ public class RedisCache implements Cache {
 			jedis.close();
 		}
 		try {
-			final boolean cached = bytes != null;
-			final Object value = bytes == null || bytes.length == 0 ? null : Streams.deserialize(bytes);
-			return new Value() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public boolean isCached() {
-					return cached;
-				}
-
-				@Override
-				public Object getContent() {
-					return value;
-				}
-
-			};
+			return Caches.value(bytes == null || bytes.length == 0 ? null : Streams.deserialize(bytes), bytes != null);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} catch (ClassNotFoundException e) {

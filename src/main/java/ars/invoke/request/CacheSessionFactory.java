@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Collections;
 
 import ars.util.Cache;
+import ars.util.Caches;
 import ars.util.SimpleCache;
 import ars.invoke.request.SessionFactory;
 
@@ -55,54 +56,35 @@ public class CacheSessionFactory implements SessionFactory {
 			private Set<String> names; // 所有属性名称集合
 
 			/**
-			 * 获取所有属性名称对应缓存标识对象
+			 * 获取缓存标识对象
 			 * 
 			 * @return 缓存标识对象
 			 */
-			public Cache.Key getNamesKey() {
-				return new Cache.Key() {
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public int getTimeout() {
-						return timeout;
-					}
-
-					@Override
-					public String getId() {
-						return new StringBuilder("session_names_").append(requester.getClient()).toString();
-					}
-				};
+			private Cache.Key key() {
+				return this.key(null);
 			}
 
 			/**
-			 * 获取属性名称对应缓存标识对象
+			 * 获取属性名称缓存标识对象
 			 * 
 			 * @param name
 			 *            属性名称
 			 * @return 缓存标识对象
 			 */
-			private Cache.Key getAttributeKey(final String name) {
-				return new Cache.Key() {
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public int getTimeout() {
-						return timeout;
-					}
-
-					@Override
-					public String getId() {
-						return new StringBuilder("session_attribute_").append(requester.getClient()).append("_")
-								.append(name).toString();
-					}
-				};
+			private Cache.Key key(String name) {
+				StringBuilder buffer = new StringBuilder();
+				if (name == null) {
+					buffer.append("session_").append(this.getId());
+				} else {
+					buffer.append("session_name_").append(this.getId()).append(name);
+				}
+				return Caches.key(buffer.toString(), timeout);
 			}
 
 			@SuppressWarnings("unchecked")
 			private void initializeNames() {
 				if (this.names == null) {
-					this.names = (Set<String>) cache.get(this.getNamesKey()).getContent();
+					this.names = (Set<String>) cache.get(this.key()).getContent();
 					if (this.names == null) {
 						this.names = new HashSet<String>(0);
 					}
@@ -135,7 +117,7 @@ public class CacheSessionFactory implements SessionFactory {
 				if (name == null) {
 					throw new IllegalArgumentException("Illegal name:" + name);
 				}
-				return cache.get(this.getAttributeKey(name)).getContent();
+				return cache.get(this.key(name)).getContent();
 			}
 
 			@Override
@@ -143,10 +125,10 @@ public class CacheSessionFactory implements SessionFactory {
 				if (name == null) {
 					throw new IllegalArgumentException("Illegal name:" + name);
 				}
-				cache.set(this.getAttributeKey(name), value);
+				cache.set(this.key(name), value);
 				this.initializeNames();
 				if (this.names.add(name)) {
-					cache.set(this.getNamesKey(), this.names);
+					cache.set(this.key(), this.names);
 				}
 			}
 
@@ -155,10 +137,10 @@ public class CacheSessionFactory implements SessionFactory {
 				if (name == null) {
 					throw new IllegalArgumentException("Illegal name:" + name);
 				}
-				cache.remove(this.getAttributeKey(name));
+				cache.remove(this.key(name));
 				this.initializeNames();
 				if (this.names.remove(name)) {
-					cache.set(this.getNamesKey(), this.names);
+					cache.set(this.key(), this.names);
 				}
 			}
 

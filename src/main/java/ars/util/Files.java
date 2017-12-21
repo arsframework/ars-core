@@ -270,11 +270,9 @@ class BytesEncoding extends Encoding {
 	int KRFreq[][];
 
 	int JPFreq[][];
-	public boolean debug;
 
 	public BytesEncoding() {
 		super();
-		debug = false;
 		GBFreq = new int[94][94];
 		GBKFreq = new int[126][191];
 		Big5Freq = new int[94][158];
@@ -315,8 +313,6 @@ class BytesEncoding extends Encoding {
 		scores[OTHER] = 0;
 		// Tabulate Scores
 		for (index = 0; index < TOTALTYPES; index++) {
-			if (debug)
-				System.err.println("Encoding " + nicename[index] + " score " + scores[index]);
 			if (scores[index] > maxscore) {
 				encoding_guess = index;
 				maxscore = scores[index];
@@ -342,7 +338,6 @@ class BytesEncoding extends Encoding {
 		// Stage 1: Check to see if characters fit into acceptable ranges
 		rawtextlen = rawtext.length;
 		for (i = 0; i < rawtextlen - 1; i++) {
-			// System.err.println(rawtext[i]);
 			if (rawtext[i] >= 0) {
 				// asciichars++;
 			} else {
@@ -381,7 +376,6 @@ class BytesEncoding extends Encoding {
 		// Stage 1: Check to see if characters fit into acceptable ranges
 		rawtextlen = rawtext.length;
 		for (i = 0; i < rawtextlen - 1; i++) {
-			// System.err.println(rawtext[i]);
 			if (rawtext[i] >= 0) {
 				// asciichars++;
 			} else {
@@ -435,7 +429,6 @@ class BytesEncoding extends Encoding {
 		// Stage 1: Check to see if characters fit into acceptable ranges
 		rawtextlen = rawtext.length;
 		for (i = 0; i < rawtextlen - 1; i++) {
-			// System.err.println(rawtext[i]);
 			if (rawtext[i] >= 0) {
 				// asciichars++;
 			} else {
@@ -610,7 +603,6 @@ class BytesEncoding extends Encoding {
 		// Stage 1: Check to see if characters fit into acceptable ranges
 		rawtextlen = rawtext.length;
 		for (i = 0; i < rawtextlen - 1; i++) {
-			// System.err.println(rawtext[i]);
 			if (rawtext[i] >= 128) {
 				// asciichars++;
 			} else {
@@ -883,7 +875,6 @@ class BytesEncoding extends Encoding {
 		// Stage 1: Check to see if characters fit into acceptable ranges
 		rawtextlen = rawtext.length;
 		for (i = 0; i < rawtextlen - 1; i++) {
-			// System.err.println(rawtext[i]);
 			if (rawtext[i] >= 0) {
 				// asciichars++;
 			} else {
@@ -921,7 +912,6 @@ class BytesEncoding extends Encoding {
 		// Stage 1: Check to see if characters fit into acceptable ranges
 		rawtextlen = rawtext.length;
 		for (i = 0; i < rawtextlen - 1; i++) {
-			// System.err.println(rawtext[i]);
 			if (rawtext[i] >= 0) {
 				// asciichars++;
 			} else {
@@ -973,7 +963,6 @@ class BytesEncoding extends Encoding {
 		// Stage 1: Check to see if characters fit into acceptable ranges
 		rawtextlen = rawtext.length;
 		for (i = 0; i < rawtextlen - 1; i++) {
-			// System.err.println(rawtext[i]);
 			if (rawtext[i] >= 0) {
 				// asciichars++;
 			} else {
@@ -1022,7 +1011,6 @@ class BytesEncoding extends Encoding {
 		// Stage 1: Check to see if characters fit into acceptable ranges
 		rawtextlen = rawtext.length;
 		for (i = 0; i < rawtextlen - 1; i++) {
-			// System.err.println(rawtext[i]);
 			if (rawtext[i] >= 0) {
 				// asciichars++;
 			} else {

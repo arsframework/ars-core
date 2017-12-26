@@ -33,8 +33,8 @@ import ars.invoke.StandardRouter;
 import ars.invoke.local.Api;
 import ars.invoke.local.Apis;
 import ars.invoke.local.Function;
-import ars.invoke.cache.InvokeCache;
 import ars.invoke.remote.Remotes;
+import ars.invoke.cache.InvokeCache;
 import ars.invoke.event.InvokeEvent;
 import ars.invoke.event.InvokeListener;
 import ars.invoke.request.SessionFactory;
@@ -53,7 +53,6 @@ public class ApplicationConfiguration extends StandardRouter
 	private Invoker invoker; // 资源调用对象
 	private Messager messager; // 消息处理对象
 	private String pattern; // 资源地址匹配模式
-	private InvokeCache cache; // 请求调用缓存
 	private Map<String, String> configure; // 系统配置
 	private SessionFactory sessionFactory = new CacheSessionFactory(); // 会话工厂
 	private ApplicationContext applicationContext; // 应用上下文对象
@@ -81,10 +80,6 @@ public class ApplicationConfiguration extends StandardRouter
 
 	public void setConfigure(Map<String, String> configure) {
 		this.configure = configure;
-	}
-
-	public void setCache(InvokeCache cache) {
-		this.cache = cache;
 	}
 
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -191,10 +186,11 @@ public class ApplicationConfiguration extends StandardRouter
 			Https.destroy();
 			Servers.shutdown();
 			Remotes.destroy();
-			if (this.cache != null) {
-				this.cache.destroy();
-			}
 			this.sessionFactory.destroy();
+			InvokeCache cache = this.getCache();
+			if (cache != null) {
+				cache.destroy();
+			}
 		}
 	}
 
@@ -225,11 +221,6 @@ public class ApplicationConfiguration extends StandardRouter
 			}
 		}
 		return this.messager;
-	}
-
-	@Override
-	public InvokeCache getCache() {
-		return cache;
 	}
 
 	@Override

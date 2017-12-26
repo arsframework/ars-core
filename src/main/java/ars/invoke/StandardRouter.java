@@ -32,6 +32,7 @@ import ars.invoke.request.AccessDeniedException;
  */
 public class StandardRouter implements Router {
 	private List<String> apis;
+	private InvokeCache cache;
 	private Map<String, InvokeWrapper> wrappers = new HashMap<String, InvokeWrapper>(0);
 	private List<InvokeListener<?>> invokeBeforeListeners = new LinkedList<InvokeListener<?>>();
 	private List<InvokeListener<?>> invokeAfterListeners = new LinkedList<InvokeListener<?>>();
@@ -72,6 +73,14 @@ public class StandardRouter implements Router {
 			return this.invoker.execute(requester, this.resource);
 		}
 
+	}
+
+	public InvokeCache getCache() {
+		return cache;
+	}
+
+	public void setCache(InvokeCache cache) {
+		this.cache = cache;
 	}
 
 	/**
@@ -194,22 +203,6 @@ public class StandardRouter implements Router {
 	}
 
 	@Override
-	public List<String> getApis(String pattern) {
-		if (pattern == null) {
-			return new ArrayList<String>(0);
-		}
-		List<String> apis = this.getApis();
-		List<String> matches = new LinkedList<String>();
-		for (int i = 0; i < apis.size(); i++) {
-			String api = apis.get(i);
-			if (Strings.matches(api, pattern)) {
-				matches.add(api);
-			}
-		}
-		return matches;
-	}
-
-	@Override
 	public boolean isRegistered(String api) {
 		return this.wrappers.containsKey(api);
 	}
@@ -219,18 +212,16 @@ public class StandardRouter implements Router {
 		Object result = null;
 		try {
 			this.beforeInvoke(requester);
-			InvokeCache cache = requester.getChannel().getContext().getCache();
-			InvokeCache.Key key = cache == null ? null : cache.key(requester);
+			String key = this.cache == null ? null : this.cache.key(requester);
 			if (key == null) {
 				result = this.access(requester);
 			} else {
-				synchronized (key.getId().intern()) {
-					InvokeCache.Value value = cache.get(key);
-					if (value.isCached()) {
-						result = value.getContent();
+				synchronized (key.intern()) {
+					if (this.cache.exists(key)) {
+						result = this.cache.get(key);
 					} else {
 						result = this.access(requester);
-						cache.set(key, result);
+						this.cache.set(key, result);
 					}
 				}
 			}

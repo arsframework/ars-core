@@ -23,15 +23,6 @@ public interface Router {
 	public List<String> getApis();
 
 	/**
-	 * 获取接口地址
-	 * 
-	 * @param pattern
-	 *            匹配模式
-	 * @return 接口地址集合
-	 */
-	public List<String> getApis(String pattern);
-
-	/**
 	 * 接口是否已注册
 	 * 
 	 * @param api

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.PipedInputStream;
@@ -57,7 +58,7 @@ public final class Streams {
 	 * @throws IOException
 	 *             IO操作异常
 	 */
-	public static byte[] serialize(Object object) throws IOException {
+	public static byte[] serialize(Serializable object) throws IOException {
 		if (object == null) {
 			return null;
 		}
@@ -82,9 +83,9 @@ public final class Streams {
 	 * @throws ClassNotFoundException
 	 *             类不存在异常
 	 */
-	public static Object deserialize(byte[] bytes) throws IOException, ClassNotFoundException {
+	public static Serializable deserialize(byte[] bytes) throws IOException, ClassNotFoundException {
 		return bytes == null || bytes.length == 0 ? null
-				: new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject();
+				: (Serializable) new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject();
 	}
 
 	/**
@@ -98,8 +99,8 @@ public final class Streams {
 	 * @throws ClassNotFoundException
 	 *             类不存在异常
 	 */
-	public static Object deserialize(InputStream input) throws IOException, ClassNotFoundException {
-		return new ObjectInputStream(input).readObject();
+	public static Serializable deserialize(InputStream input) throws IOException, ClassNotFoundException {
+		return (Serializable) new ObjectInputStream(input).readObject();
 	}
 
 	/**
@@ -113,7 +114,7 @@ public final class Streams {
 	 * @throws ClassNotFoundException
 	 *             类不存在异常
 	 */
-	public static Object deserialize(ReadableByteChannel channel) throws IOException, ClassNotFoundException {
+	public static Serializable deserialize(ReadableByteChannel channel) throws IOException, ClassNotFoundException {
 		int n = 0;
 		PipedOutputStream pos = new PipedOutputStream();
 		PipedInputStream pis = new PipedInputStream(pos);
@@ -122,7 +123,7 @@ public final class Streams {
 			while ((n = channel.read(buffer)) > 0) {
 				pos.write(buffer.array(), 0, n);
 			}
-			return new ObjectInputStream(pis).readObject();
+			return (Serializable) new ObjectInputStream(pis).readObject();
 		} finally {
 			pis.close();
 		}

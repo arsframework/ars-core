@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.io.Serializable;
 
 import ars.util.Cache;
-import ars.util.Caches;
 import ars.server.Server;
 import ars.server.task.AbstractTaskServer;
 
@@ -18,6 +18,7 @@ import ars.server.task.AbstractTaskServer;
  *
  */
 public class SimpleCache implements Cache {
+	private boolean destroyed;
 	private final Server cleanup = this.initializeCleanupServer();
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 	private final Map<String, ValueWrapper> values = new HashMap<String, ValueWrapper>();
@@ -29,16 +30,28 @@ public class SimpleCache implements Cache {
 	/**
 	 * 缓存值包装类
 	 * 
-	 * @author wuyq
+	 * @author yongqiangwu
 	 *
 	 */
-	class ValueWrapper {
-		public final Object value; // 令牌标识
-		public long deadline; // 过期时间戳（毫秒）
+	class ValueWrapper implements Serializable {
+		private static final long serialVersionUID = 1L;
 
-		public ValueWrapper(Object value, long deadline) {
+		public final Object value; // 缓存值
+		public final int timeout; // 超时时间（秒）
+		public volatile long timestamp = System.currentTimeMillis(); // 时间戳（毫秒）
+
+		public ValueWrapper(Object value, int timeout) {
 			this.value = value;
-			this.deadline = deadline;
+			this.timeout = timeout;
+		}
+
+		/**
+		 * 判断缓存值是否过期
+		 * 
+		 * @return true/false
+		 */
+		public boolean isExpired() {
+			return this.timeout > 0 && System.currentTimeMillis() - this.timestamp >= this.timeout * 1000;
 		}
 	}
 
@@ -57,7 +70,7 @@ public class SimpleCache implements Cache {
 					Iterator<String> iterator = values.keySet().iterator();
 					while (iterator.hasNext()) {
 						ValueWrapper wrapper = values.get(iterator.next());
-						if (wrapper.deadline > 0 && System.currentTimeMillis() >= wrapper.deadline) {
+						if (wrapper.isExpired()) {
 							iterator.remove();
 						}
 					}
@@ -73,45 +86,77 @@ public class SimpleCache implements Cache {
 	}
 
 	@Override
-	public Value get(Key key) {
+	public Object get(String key) {
 		if (key == null) {
 			throw new IllegalArgumentException("Illegal key:" + key);
 		}
-		int timeout = key.getTimeout();
-		long timestamp = System.currentTimeMillis();
-		ValueWrapper wrapper = this.values.get(key.getId());
-		boolean expired = wrapper == null || (timeout > 0 && timestamp >= wrapper.deadline);
-		if (!expired && timeout > 0) {
-			wrapper.deadline = timestamp + timeout * 1000;
+		this.lock.readLock().lock();
+		try {
+			if (this.destroyed) {
+				throw new RuntimeException("The cache has been destroyed");
+			}
+			ValueWrapper wrapper = this.values.get(key);
+			if (wrapper == null || wrapper.isExpired()) {
+				return null;
+			}
+			wrapper.timestamp = System.currentTimeMillis();
+			return wrapper.value;
+		} finally {
+			this.lock.readLock().unlock();
 		}
-		return Caches.value(expired ? null : wrapper.value, !expired);
 	}
 
 	@Override
-	public void set(Key key, Object value) {
+	public void set(String key, Object value) {
+		this.set(key, value, 0);
+	}
+
+	@Override
+	public void set(String key, Object value, int timeout) {
 		if (key == null) {
 			throw new IllegalArgumentException("Illegal key:" + key);
 		}
-		int timeout = key.getTimeout();
-		long deadline = timeout > 0 ? System.currentTimeMillis() + timeout * 1000 : 0;
 		this.lock.writeLock().lock();
 		try {
-			this.values.put(key.getId(), new ValueWrapper(value, deadline));
+			if (this.destroyed) {
+				throw new RuntimeException("The cache has been destroyed");
+			}
+			this.values.put(key, new ValueWrapper(value, timeout));
 		} finally {
 			this.lock.writeLock().unlock();
 		}
 	}
 
 	@Override
-	public void remove(Key key) {
+	public void remove(String key) {
 		if (key == null) {
 			throw new IllegalArgumentException("Illegal key:" + key);
 		}
 		this.lock.writeLock().lock();
 		try {
-			this.values.remove(key.getId());
+			if (this.destroyed) {
+				throw new RuntimeException("The cache has been destroyed");
+			}
+			this.values.remove(key);
 		} finally {
 			this.lock.writeLock().unlock();
+		}
+	}
+
+	@Override
+	public boolean exists(String key) {
+		if (key == null) {
+			throw new IllegalArgumentException("Illegal key:" + key);
+		}
+		this.lock.readLock().lock();
+		try {
+			if (this.destroyed) {
+				throw new RuntimeException("The cache has been destroyed");
+			}
+			ValueWrapper wrapper = this.values.get(key);
+			return wrapper != null && !wrapper.isExpired();
+		} finally {
+			this.lock.readLock().unlock();
 		}
 	}
 
@@ -119,6 +164,9 @@ public class SimpleCache implements Cache {
 	public void clear() {
 		this.lock.writeLock().lock();
 		try {
+			if (this.destroyed) {
+				throw new RuntimeException("The cache has been destroyed");
+			}
 			this.values.clear();
 		} finally {
 			this.lock.writeLock().unlock();
@@ -127,7 +175,22 @@ public class SimpleCache implements Cache {
 
 	@Override
 	public void destroy() {
-		this.cleanup.stop();
+		if (!this.destroyed) {
+			this.lock.writeLock().lock();
+			try {
+				if (!this.destroyed) {
+					this.cleanup.stop();
+					this.destroyed = true;
+				}
+			} finally {
+				this.lock.writeLock().unlock();
+			}
+		}
+	}
+
+	@Override
+	public boolean isDestroyed() {
+		return this.destroyed;
 	}
 
 }

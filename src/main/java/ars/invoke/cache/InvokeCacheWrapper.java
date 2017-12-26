@@ -10,7 +10,6 @@ import java.util.Collection;
 
 import ars.util.Beans;
 import ars.util.Cache;
-import ars.util.Caches;
 import ars.util.Strings;
 import ars.util.SimpleCache;
 import ars.invoke.cache.Rule;
@@ -26,16 +25,30 @@ import ars.invoke.event.InvokeAfterEvent;
  *
  */
 public class InvokeCacheWrapper implements InvokeCache, InvokeListener<InvokeAfterEvent> {
+	/**
+	 * 默认缓存超时时间（秒）
+	 */
+	public static final int DEFAULT_TIMEOUT = 30 * 60;
+
 	protected final Cache cache;
+	protected final int timeout;
 	protected final Rule[] rules;
 	private Map<String, Rule> targets;
 	private Map<String, Set<String>> refreshs;
 
 	public InvokeCacheWrapper(Rule... rules) {
-		this(new SimpleCache(), rules);
+		this(new SimpleCache(), DEFAULT_TIMEOUT, rules);
+	}
+
+	public InvokeCacheWrapper(int timeout, Rule... rules) {
+		this(new SimpleCache(), timeout, rules);
 	}
 
 	public InvokeCacheWrapper(Cache cache, Rule... rules) {
+		this(cache, DEFAULT_TIMEOUT, rules);
+	}
+
+	public InvokeCacheWrapper(Cache cache, int timeout, Rule... rules) {
 		if (cache == null) {
 			throw new IllegalArgumentException("Illegal cache:" + cache);
 		}
@@ -44,6 +57,7 @@ public class InvokeCacheWrapper implements InvokeCache, InvokeListener<InvokeAft
 		}
 		this.cache = cache;
 		this.rules = rules;
+		this.timeout = timeout;
 	}
 
 	/**
@@ -96,61 +110,58 @@ public class InvokeCacheWrapper implements InvokeCache, InvokeListener<InvokeAft
 		Set<String> refresh = this.refreshs.get(requester.getUri());
 		if (refresh != null) {
 			for (final String uri : refresh) {
-				this.remove(Caches.key(new StringBuilder("{").append(uri).append("}*").toString()));
+				this.remove(new StringBuilder("{").append(uri).append("}*").toString());
 			}
 		}
 	}
 
 	@Override
-	public Key key(Requester requester) {
+	public String key(Requester requester) {
 		this.initialize(requester);
 		Rule rule = this.targets.get(requester.getUri());
 		if (rule == null) {
 			return null;
 		}
-		StringBuilder buffer = new StringBuilder();
-		if (requester.getUri() != null) {
-			buffer.append('{').append(requester.getUri()).append('}');
-		}
-		if (requester.getUser() != null && rule.getScope() == Rule.Scope.USER) {
+		StringBuilder buffer = new StringBuilder().append('{').append(requester.getUri()).append('}');
+		if (requester.getUser() != null && rule.getScope() == Scope.USER) {
 			buffer.append('{').append(requester.getUser()).append('}');
 		}
 		Set<String> condtions = requester.getParameterNames();
-		if (!condtions.isEmpty()) {
-			int i = 0;
-			buffer.append('{');
-			for (String key : Beans.sort(condtions)) {
-				if (key == null || key.isEmpty()) {
-					continue;
-				}
-				if (i++ > 0) {
-					buffer.append(',');
-				}
-				Object value = requester.getParameter(key);
-				if (value instanceof Collection) {
-					for (Object v : Beans.sort((Collection<?>) value)) {
-						buffer.append(key).append('=');
-						if (!Beans.isEmpty(v)) {
-							buffer.append(Strings.toString(v));
-						}
-					}
-				} else if (value instanceof Object[]) {
-					for (Object v : Beans.sort(Arrays.asList((Object[]) value))) {
-						buffer.append(key).append('=');
-						if (!Beans.isEmpty(v)) {
-							buffer.append(Strings.toString(v));
-						}
-					}
-				} else {
+		if (condtions.isEmpty()) {
+			return buffer.toString();
+		}
+		int i = 0;
+		buffer.append('{');
+		for (String key : Beans.sort(condtions)) {
+			if (key == null || key.isEmpty()) {
+				continue;
+			}
+			if (i++ > 0) {
+				buffer.append(',');
+			}
+			Object value = requester.getParameter(key);
+			if (value instanceof Collection) {
+				for (Object v : Beans.sort((Collection<?>) value)) {
 					buffer.append(key).append('=');
-					if (!Beans.isEmpty(value)) {
-						buffer.append(Strings.toString(value));
+					if (!Beans.isEmpty(v)) {
+						buffer.append(Strings.toString(v));
 					}
+				}
+			} else if (value instanceof Object[]) {
+				for (Object v : Beans.sort(Arrays.asList((Object[]) value))) {
+					buffer.append(key).append('=');
+					if (!Beans.isEmpty(v)) {
+						buffer.append(Strings.toString(v));
+					}
+				}
+			} else {
+				buffer.append(key).append('=');
+				if (!Beans.isEmpty(value)) {
+					buffer.append(Strings.toString(value));
 				}
 			}
-			buffer.append('}');
 		}
-		return Caches.key(buffer.toString(), rule.getTimeout());
+		return buffer.append('}').toString();
 	}
 
 	@Override
@@ -160,18 +171,28 @@ public class InvokeCacheWrapper implements InvokeCache, InvokeListener<InvokeAft
 	}
 
 	@Override
-	public Value get(Key key) {
+	public Object get(String key) {
 		return this.cache.get(key);
 	}
 
 	@Override
-	public void set(Key key, Object value) {
-		this.cache.set(key, value);
+	public void set(String key, Object value) {
+		this.set(key, value, this.timeout);
 	}
 
 	@Override
-	public void remove(Key key) {
+	public void set(String key, Object value, int timeout) {
+		this.cache.set(key, value, timeout);
+	}
+
+	@Override
+	public void remove(String key) {
 		this.cache.remove(key);
+	}
+
+	@Override
+	public boolean exists(String key) {
+		return this.cache.exists(key);
 	}
 
 	@Override
@@ -182,6 +203,11 @@ public class InvokeCacheWrapper implements InvokeCache, InvokeListener<InvokeAft
 	@Override
 	public void destroy() {
 		this.cache.destroy();
+	}
+
+	@Override
+	public boolean isDestroyed() {
+		return this.cache.isDestroyed();
 	}
 
 }

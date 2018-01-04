@@ -516,6 +516,10 @@ public final class Streams {
 	 *             IO操作异常
 	 */
 	public static void write(InputStream source, File target) throws IOException {
+		File path = target.getParentFile();
+		if (path != null && !path.exists()) {
+			path.mkdirs();
+		}
 		OutputStream os = new FileOutputStream(target);
 		try {
 			write(source, os);

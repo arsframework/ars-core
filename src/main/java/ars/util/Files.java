@@ -23,7 +23,7 @@ import ars.util.Strings;
  */
 public final class Files {
 	/**
-	 * 删除文件/文件目录
+	 * 递归删除文件/文件目录
 	 * 
 	 * @param file
 	 *            源文件/文件目录
@@ -41,12 +41,12 @@ public final class Files {
 	}
 
 	/**
-	 * 拷贝文件/文件目录
+	 * 递归拷贝文件/文件目录
 	 * 
 	 * @param source
 	 *            源文件/文件目录
 	 * @param target
-	 *            目标文件/文件目录
+	 *            目标文件目录
 	 * @throws IOException
 	 *             IO操作异常
 	 */
@@ -54,14 +54,49 @@ public final class Files {
 		if (source != null && source.exists()) {
 			if (source.isDirectory()) {
 				File path = new File(target, source.getName());
-				path.mkdirs();
+				if (!path.exists()) {
+					synchronized (path.getPath().intern()) {
+						if (!path.exists()) {
+							path.mkdirs();
+						}
+					}
+				}
 				for (File child : source.listFiles()) {
 					copy(child, path);
 				}
-			} else if (target.isDirectory()) {
-				Streams.write(source, new File(target, source.getName()));
 			} else {
-				Streams.write(source, target);
+				Streams.write(source, new File(target, source.getName()));
+			}
+		}
+	}
+
+	/**
+	 * 递归移动文件/文件目录
+	 * 
+	 * @param source
+	 *            源文件/文件目录
+	 * @param target
+	 *            目标文件目录
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static void move(File source, File target) throws IOException {
+		if (source != null && source.exists()) {
+			if (source.isDirectory()) {
+				File path = new File(target, source.getName());
+				if (!path.exists()) {
+					synchronized (path.getPath().intern()) {
+						if (!path.exists()) {
+							path.mkdirs();
+						}
+					}
+				}
+				for (File child : source.listFiles()) {
+					move(child, path);
+				}
+				source.delete();
+			} else {
+				source.renameTo(new File(target, source.getName()));
 			}
 		}
 	}

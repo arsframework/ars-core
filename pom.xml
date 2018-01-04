@@ -4,7 +4,7 @@
 
 	<groupId>com.arsframework</groupId>
 	<artifactId>ars-core</artifactId>
-	<version>1.2.5</version>
+	<version>1.2.6</version>
 	<packaging>jar</packaging>
 
 	<name>ars-core</name>
@@ -178,13 +178,21 @@
 			<artifactId>spring-web</artifactId>
 			<version>4.3.13.RELEASE</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/com.artofsolving/jodconverter -->
 		<dependency>
 			<groupId>com.artofsolving</groupId>
 			<artifactId>jodconverter</artifactId>
 			<version>2.2.1</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/commons-net/commons-net -->
+		<dependency>
+			<groupId>commons-net</groupId>
+			<artifactId>commons-net</artifactId>
+			<version>3.3</version>
+		</dependency>
+
 	</dependencies>
 
 	<licenses>

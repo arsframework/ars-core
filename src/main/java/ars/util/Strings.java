@@ -125,6 +125,8 @@ public final class Strings {
 	 */
 	public static final Pattern PATTERN_LETTER = Pattern.compile("[a-zA-Z]+");
 
+	private static Map<String, Pattern> patterns; // 正则表达式匹配模式缓存
+
 	static {
 		TEMP_PATH = System.getProperty("java.io.tmpdir");
 		CURRENT_PATH = Strings.class.getResource("/").getPath();
@@ -1922,6 +1924,34 @@ public final class Strings {
 			}
 		}
 		return buffer.toString();
+	}
+
+	/**
+	 * 获取正则表达式匹配模式
+	 * 
+	 * @param regex
+	 *            正则表达式
+	 * @return 匹配模式
+	 */
+	public static Pattern getPattern(String regex) {
+		if (patterns == null) {
+			synchronized (Strings.class) {
+				if (patterns == null) {
+					patterns = new HashMap<String, Pattern>();
+				}
+			}
+		}
+		Pattern pattern = patterns.get(regex);
+		if (pattern == null) {
+			synchronized (regex.intern()) {
+				pattern = patterns.get(regex);
+				if (pattern == null) {
+					pattern = Pattern.compile(regex);
+					patterns.put(regex, pattern);
+				}
+			}
+		}
+		return pattern;
 	}
 
 }

@@ -1,6 +1,8 @@
 package ars.file;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 import java.util.Map;
 import java.util.List;
 import java.util.UUID;
@@ -13,9 +15,7 @@ import ars.util.Strings;
 import ars.file.Describe;
 import ars.file.Operator;
 import ars.file.query.Query;
-import ars.file.NameGenerator;
 import ars.file.AbstractOperator;
-import ars.file.DirectoryGenerator;
 import ars.file.office.Converts;
 
 /**
@@ -25,57 +25,16 @@ import ars.file.office.Converts;
  * 
  */
 public abstract class AbstractOperator implements Operator {
-	private String workingDirectory; // 工作目录
-	private NameGenerator nameGenerator; // 文件名称生成器
-	private DirectoryGenerator directoryGenerator; // 文件目录生成器
-
-	public AbstractOperator() {
-		this.workingDirectory = Strings.TEMP_PATH;
-	}
-
-	public AbstractOperator(String workingDirectory) {
-		this.workingDirectory = Strings.getRealPath(workingDirectory);
-	}
-
-	public NameGenerator getNameGenerator() {
-		return nameGenerator;
-	}
-
-	public void setNameGenerator(NameGenerator nameGenerator) {
-		this.nameGenerator = nameGenerator;
-	}
-
-	public DirectoryGenerator getDirectoryGenerator() {
-		return directoryGenerator;
-	}
-
-	public void setDirectoryGenerator(DirectoryGenerator directoryGenerator) {
-		this.directoryGenerator = directoryGenerator;
-	}
-
-	/**
-	 * 获取文件存储实际路径
-	 * 
-	 * @param path
-	 *            文件相对路径
-	 * @return 实际文件路径
-	 */
-	protected String getActualPath(String path) {
-		File file = new File(path);
-		if (this.directoryGenerator != null && this.nameGenerator != null) {
-			return new File(this.directoryGenerator.generate(file.getParent()),
-					this.nameGenerator.generate(file.getName())).getPath();
-		} else if (this.directoryGenerator != null) {
-			return new File(this.directoryGenerator.generate(file.getParent()), file.getName()).getPath();
-		} else if (this.nameGenerator != null) {
-			return new File(file.getParent(), this.nameGenerator.generate(file.getName())).getPath();
-		}
-		return path;
-	}
+	private String workingDirectory = Strings.TEMP_PATH; // 工作目录
 
 	@Override
 	public String getWorkingDirectory() {
 		return this.workingDirectory;
+	}
+
+	@Override
+	public void setWorkingDirectory(String workingDirectory) {
+		this.workingDirectory = Strings.getRealPath(workingDirectory);
 	}
 
 	@Override
@@ -130,8 +89,18 @@ public abstract class AbstractOperator implements Operator {
 	}
 
 	@Override
-	public String write(Nfile file) throws Exception {
-		return this.write(file, null);
+	public void write(Nfile file, String path) throws Exception {
+		InputStream is = file.getInputStream();
+		try {
+			this.write(is, path);
+		} finally {
+			is.close();
+		}
+	}
+
+	@Override
+	public void write(byte[] bytes, String path) throws Exception {
+		this.write(new ByteArrayInputStream(bytes), path);
 	}
 
 }

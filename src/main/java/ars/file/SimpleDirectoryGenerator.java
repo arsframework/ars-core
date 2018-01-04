@@ -9,17 +9,13 @@ import ars.file.DirectoryGenerator;
  * 
  */
 public class SimpleDirectoryGenerator implements DirectoryGenerator {
-	private String name; // 路径名称
+	protected final String name; // 路径名称
 
 	public SimpleDirectoryGenerator(String name) {
 		if (name == null) {
 			throw new IllegalArgumentException("Illegal name:" + name);
 		}
 		this.name = name;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	@Override

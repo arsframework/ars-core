@@ -15,13 +15,13 @@ public class RandomNameGenerator implements NameGenerator {
 			'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
 			'w', 'x', 'y', 'z' };
 
-	private int length = 4; // 随机数长度
+	protected final int length; // 随机数长度
 
-	public int getLength() {
-		return length;
+	public RandomNameGenerator() {
+		this(4);
 	}
 
-	public void setLength(int length) {
+	public RandomNameGenerator(int length) {
 		if (length < 1) {
 			throw new IllegalArgumentException("Illegal length:" + length);
 		}

@@ -39,6 +39,7 @@ public class SVGReplacedElement implements ITextReplacedElement {
 
 	@Override
 	public void detach(LayoutContext c) {
+
 	}
 
 	@Override
@@ -81,13 +82,13 @@ public class SVGReplacedElement implements ITextReplacedElement {
 	@Override
 	public void paint(RenderingContext renderingContext, ITextOutputDevice outputDevice, BlockBox blockBox) {
 		PdfContentByte cb = outputDevice.getWriter().getDirectContent();
-		float width = (float) (cssWidth / outputDevice.getDotsPerPoint());
-		float height = (float) (cssHeight / outputDevice.getDotsPerPoint());
+		float width = (float) (this.cssWidth / outputDevice.getDotsPerPoint());
+		float height = (float) (this.cssHeight / outputDevice.getDotsPerPoint());
 
 		PdfTemplate template = cb.createTemplate(width, height);
 		Graphics2D g2d = template.createGraphics(width, height);
 		PrintTranscoder prm = new PrintTranscoder();
-		TranscoderInput ti = new TranscoderInput(svg);
+		TranscoderInput ti = new TranscoderInput(this.svg);
 		prm.transcode(ti, null);
 		PageFormat pg = new PageFormat();
 		Paper pp = new Paper();
@@ -99,7 +100,7 @@ public class SVGReplacedElement implements ITextReplacedElement {
 
 		PageBox page = renderingContext.getPage();
 		float x = blockBox.getAbsX() + page.getMarginBorderPadding(renderingContext, CalculatedStyle.LEFT);
-		float y = (page.getBottom() - (blockBox.getAbsY() + cssHeight))
+		float y = (page.getBottom() - (blockBox.getAbsY() + this.cssHeight))
 				+ page.getMarginBorderPadding(renderingContext, CalculatedStyle.BOTTOM);
 		x /= outputDevice.getDotsPerPoint();
 		y /= outputDevice.getDotsPerPoint();

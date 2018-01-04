@@ -45,14 +45,17 @@ public class SVGReplacedElementFactory implements ReplacedElementFactory {
 
 	@Override
 	public void reset() {
+
 	}
 
 	@Override
 	public void remove(Element e) {
+
 	}
 
 	@Override
 	public void setFormSubmissionListener(FormSubmissionListener listener) {
+
 	}
 
 }

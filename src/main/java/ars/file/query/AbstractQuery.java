@@ -27,20 +27,19 @@ import ars.file.query.condition.Like.Position;
  * 
  */
 public abstract class AbstractQuery implements Query {
+	protected final String workingDirectory; // 工作目录
+
 	private String path; // 查询操作相对路径
-	private int page, size; // 分页参数
 	private boolean loaded; // 集合是否已加载
 	private boolean spread; // 是否展开
-	private String workingDirectory; // 工作目录
 	private List<Order> orders = new LinkedList<Order>(); // 排序条件
-	private List<Describe> cache = Collections.emptyList(); // 缓存数据
+	private List<Describe> describes = Collections.emptyList(); // 缓存数据
 	private List<Condition> conditions = new LinkedList<Condition>(); // 查询条件
 
-	public AbstractQuery() {
-		this.workingDirectory = Strings.TEMP_PATH;
-	}
-
 	public AbstractQuery(String workingDirectory) {
+		if (workingDirectory == null) {
+			throw new IllegalArgumentException("Illegal workingDirectory:" + workingDirectory);
+		}
 		this.workingDirectory = Strings.getRealPath(workingDirectory);
 	}
 
@@ -54,10 +53,8 @@ public abstract class AbstractQuery implements Query {
 	 * @param conditions
 	 *            查询条件数组
 	 * @return 文件描述列表
-	 * @throws Exception
-	 *             操作异常
 	 */
-	protected abstract List<Describe> execute(String path, boolean spread, Condition... conditions) throws Exception;
+	protected abstract List<Describe> execute(String path, boolean spread, Condition... conditions);
 
 	@Override
 	public Iterator<Describe> iterator() {
@@ -66,11 +63,6 @@ public abstract class AbstractQuery implements Query {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	@Override
-	public String getWorkingDirectory() {
-		return this.workingDirectory;
 	}
 
 	@Override
@@ -165,11 +157,7 @@ public abstract class AbstractQuery implements Query {
 		if (value == null) {
 			return this;
 		}
-		if (key.equalsIgnoreCase(PAGE)) {
-			this.page = Integer.parseInt(value.toString());
-		} else if (key.equalsIgnoreCase(SIZE)) {
-			this.size = Integer.parseInt(value.toString());
-		} else if (key.equalsIgnoreCase(ORDER)) {
+		if (key.equalsIgnoreCase(ORDER)) {
 			Collection<String> collection = value instanceof Collection ? (Collection<String>) value
 					: value instanceof String[] ? Arrays.asList((String[]) value) : Arrays.asList(value.toString());
 			for (String order : collection) {
@@ -251,37 +239,21 @@ public abstract class AbstractQuery implements Query {
 	}
 
 	@Override
-	public Query paging(int page, int size) {
-		if (page < 1) {
-			throw new IllegalArgumentException("Illegal page:" + page);
-		}
-		if (size < 1) {
-			throw new IllegalArgumentException("Illegal size:" + size);
-		}
-		this.page = page;
-		this.size = size;
-		return this;
-	}
-
-	@Override
 	public Query spread(boolean spread) {
 		this.spread = spread;
 		return this;
 	}
 
 	@Override
-	public List<Describe> list() throws Exception {
+	public List<Describe> list() {
 		if (!this.loaded) {
-			Condition[] conditions = this.conditions.toArray(new Condition[0]);
-			List<Describe> describes = this.execute(this.path, this.spread, conditions);
+			this.describes = this.execute(this.path, this.spread, this.conditions.toArray(new Condition[0]));
 			if (!this.orders.isEmpty()) {
-				Conditions.sort(describes, this.orders.toArray(new Order[0]));
+				Conditions.sort(this.describes, this.orders.toArray(new Order[0]));
 			}
-			this.cache = this.page > 0 && this.size > 0 ? Conditions.paging(describes, this.page, this.size)
-					: describes;
 			this.loaded = true;
 		}
-		return this.cache;
+		return this.describes;
 	}
 
 }

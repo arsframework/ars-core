@@ -9,17 +9,13 @@ import ars.file.NameGenerator;
  * 
  */
 public class SimpleNameGenerator implements NameGenerator {
-	private String name; // 文件名称
+	protected final String name; // 文件名称
 
 	public SimpleNameGenerator(String name) {
 		if (name == null) {
 			throw new IllegalArgumentException("Illegal name:" + name);
 		}
 		this.name = name;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	@Override

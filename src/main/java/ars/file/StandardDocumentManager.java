@@ -1,5 +1,6 @@
 package ars.file;
 
+import java.io.File;
 import java.util.Map;
 import java.util.List;
 
@@ -7,7 +8,10 @@ import ars.util.Files;
 import ars.util.Nfile;
 import ars.util.Streams;
 import ars.file.Operator;
+import ars.file.NameGenerator;
 import ars.file.DocumentManager;
+import ars.file.DirectoryGenerator;
+import ars.file.disk.DiskOperator;
 import ars.invoke.request.Requester;
 import ars.invoke.request.ParameterInvalidException;
 
@@ -18,23 +22,51 @@ import ars.invoke.request.ParameterInvalidException;
  * 
  */
 public class StandardDocumentManager implements DocumentManager {
-	private Operator operator;
-
-	public StandardDocumentManager(Operator operator) {
-		if (operator == null) {
-			throw new IllegalArgumentException("Illegal operator:" + operator);
-		}
-		this.operator = operator;
-	}
+	private Operator operator = new DiskOperator();
+	private NameGenerator nameGenerator; // 文件名称生成器
+	private DirectoryGenerator directoryGenerator; // 文件目录生成器
 
 	public Operator getOperator() {
 		return operator;
 	}
 
+	public void setOperator(Operator operator) {
+		this.operator = operator;
+	}
+
+	public NameGenerator getNameGenerator() {
+		return nameGenerator;
+	}
+
+	public void setNameGenerator(NameGenerator nameGenerator) {
+		this.nameGenerator = nameGenerator;
+	}
+
+	public DirectoryGenerator getDirectoryGenerator() {
+		return directoryGenerator;
+	}
+
+	public void setDirectoryGenerator(DirectoryGenerator directoryGenerator) {
+		this.directoryGenerator = directoryGenerator;
+	}
+
 	@Override
 	public String upload(Requester requester, String path, Nfile file, Map<String, Object> parameters)
 			throws Exception {
-		return this.operator.write(file, path);
+		String name = file.getName();
+		if (this.directoryGenerator != null) {
+			if (path == null) {
+				path = this.directoryGenerator.generate(name);
+			} else {
+				path = new StringBuilder(path).append('/').append(this.directoryGenerator.generate(name)).toString();
+			}
+		}
+		if (this.nameGenerator != null) {
+			name = this.nameGenerator.generate(name);
+		}
+		path = path == null ? name : new StringBuilder(path).append('/').append(name).toString();
+		this.operator.write(file, path);
+		return path;
 	}
 
 	@Override
@@ -62,9 +94,7 @@ public class StandardDocumentManager implements DocumentManager {
 	public void copy(Requester requester, String[] sources, String target, Map<String, Object> parameters)
 			throws Exception {
 		for (String source : sources) {
-			if (!source.equalsIgnoreCase(target)) {
-				this.operator.copy(source, target);
-			}
+			this.operator.copy(source, target);
 		}
 	}
 
@@ -72,10 +102,7 @@ public class StandardDocumentManager implements DocumentManager {
 	public void move(Requester requester, String[] sources, String target, Map<String, Object> parameters)
 			throws Exception {
 		for (String source : sources) {
-			String path = new StringBuilder(target).append('/').append(Files.getName(source)).toString();
-			if (!source.equalsIgnoreCase(path)) {
-				this.operator.move(source, path);
-			}
+			this.operator.move(source, target);
 		}
 	}
 
@@ -104,12 +131,11 @@ public class StandardDocumentManager implements DocumentManager {
 	@Override
 	public void rename(Requester requester, String path, String name, Map<String, Object> parameters) throws Exception {
 		if (!Files.getName(path).equalsIgnoreCase(name)) {
-			String directory = Files.getDirectory(path);
-			String target = directory == null ? name : new StringBuilder(directory).append('/').append(name).toString();
+			String target = new File(new File(path).getParent(), name).getPath();
 			if (this.operator.exists(target)) {
 				throw new ParameterInvalidException("name", "exist");
 			}
-			this.operator.move(path, target);
+			this.operator.rename(path, name);
 		}
 	}
 

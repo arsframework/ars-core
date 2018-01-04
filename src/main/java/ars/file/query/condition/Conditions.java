@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.Arrays;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Collections;
 
@@ -605,29 +604,6 @@ public final class Conditions {
 			}
 
 		});
-	}
-
-	/**
-	 * 文件描述对象列表分页
-	 * 
-	 * @param describes
-	 *            文件描述对象列表
-	 * @param page
-	 *            页码
-	 * @param size
-	 *            长度
-	 * @return 分页后文件描述对象列表
-	 */
-	public static List<Describe> paging(List<Describe> describes, int page, int size) {
-		int begin = (page - 1) * size; // 开始下标
-		if (begin >= describes.size()) {
-			return new ArrayList<Describe>(0);
-		}
-		int end = begin + size; // 结束下标
-		if (end > describes.size()) {
-			end = describes.size();
-		}
-		return describes.subList(begin, end);
 	}
 
 }

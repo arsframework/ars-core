@@ -64,26 +64,9 @@ public interface Query extends Iterable<Describe> {
 	public static final String NE = "ne";
 
 	/**
-	 * 页码
-	 */
-	public static final String PAGE = "__page";
-
-	/**
-	 * 分页大小
-	 */
-	public static final String SIZE = "__size";
-
-	/**
 	 * 排序
 	 */
 	public static final String ORDER = "__order";
-
-	/**
-	 * 获取文件操作工作目录
-	 * 
-	 * @return 文件目录
-	 */
-	public String getWorkingDirectory();
 
 	/**
 	 * 设置查询操作相对路径
@@ -245,17 +228,6 @@ public interface Query extends Iterable<Describe> {
 	public Query desc(Property... properties);
 
 	/**
-	 * 文件集合分页
-	 * 
-	 * @param page
-	 *            页码
-	 * @param size
-	 *            每页数据量
-	 * @return 文件集合
-	 */
-	public Query paging(int page, int size);
-
-	/**
 	 * 设置是否展开
 	 * 
 	 * @param spread
@@ -268,9 +240,7 @@ public interface Query extends Iterable<Describe> {
 	 * 将文件集合对象转换成List对象
 	 * 
 	 * @return 列表对象
-	 * @throws Exception
-	 *             操作异常
 	 */
-	public List<Describe> list() throws Exception;
+	public List<Describe> list();
 
 }

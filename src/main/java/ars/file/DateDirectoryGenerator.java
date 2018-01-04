@@ -1,6 +1,5 @@
 package ars.file;
 
-import java.io.File;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
@@ -13,7 +12,7 @@ import ars.file.DirectoryGenerator;
  * 
  */
 public class DateDirectoryGenerator implements DirectoryGenerator {
-	private String format;
+	protected final String format;
 	private SimpleDateFormat formater;
 
 	public DateDirectoryGenerator() {
@@ -28,14 +27,9 @@ public class DateDirectoryGenerator implements DirectoryGenerator {
 		this.formater = new SimpleDateFormat(this.format);
 	}
 
-	public String getFormat() {
-		return format;
-	}
-
 	@Override
-	public String generate(String path) {
-		String directory = this.formater.format(new Date());
-		return path == null ? directory : new File(path, directory).getPath();
+	public String generate(String name) {
+		return this.formater.format(new Date());
 	}
 
 }

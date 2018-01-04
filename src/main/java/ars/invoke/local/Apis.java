@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.regex.Pattern;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -32,35 +31,6 @@ import ars.invoke.request.ParameterInvalidException;
  * 
  */
 public final class Apis {
-	private static Map<String, Pattern> patterns;
-
-	/**
-	 * 获取参数匹配模式
-	 * 
-	 * @param regex
-	 *            正则表达式
-	 * @return 匹配模式
-	 */
-	public static Pattern getPattern(String regex) {
-		if (patterns == null) {
-			synchronized (Apis.class) {
-				if (patterns == null) {
-					patterns = new HashMap<String, Pattern>();
-				}
-			}
-		}
-		Pattern pattern = patterns.get(regex);
-		if (pattern == null) {
-			synchronized (regex.intern()) {
-				if (pattern == null) {
-					pattern = Pattern.compile(regex);
-					patterns.put(regex, pattern);
-				}
-			}
-		}
-		return pattern;
-	}
-
 	/**
 	 * 获取所有使用了Api注解的公共类
 	 * 
@@ -315,7 +285,7 @@ public final class Apis {
 							value = condition.getValue();
 						}
 						if (regex != null && value instanceof String
-								&& !getPattern(regex).matcher((String) value).matches()) {
+								&& !Strings.getPattern(regex).matcher((String) value).matches()) {
 							throw new ParameterInvalidException(name, "invalid");
 						}
 						_parameters[i] = Beans.toObject(type, value);

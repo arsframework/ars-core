@@ -4,7 +4,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import ars.util.Strings;
 import ars.invoke.Router;
 import ars.invoke.Invoker;
 import ars.invoke.Invokes;
@@ -22,7 +21,7 @@ import ars.invoke.remote.Protocol;
  * 
  */
 public class SimpleApiRegister implements ApplicationContextAware {
-	private String api; // 接口地址（多个地址之间采用“,”号隔开）
+	private String api; // 接口地址
 	private boolean cover; // 是否覆盖
 	private Invoker invoker; // 资源调用器
 	private Resource resource; // 服务资源
@@ -89,14 +88,7 @@ public class SimpleApiRegister implements ApplicationContextAware {
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		String[] apis = Strings.split(this.api, ',');
-		Router router = applicationContext.getBean(Router.class);
-		for (String resource : apis) {
-			resource = resource.trim();
-			if (!resource.isEmpty()) {
-				router.register(resource, this.invoker, this.resource, this.cover);
-			}
-		}
+		applicationContext.getBean(Router.class).register(this.api, this.invoker, this.resource, this.cover);
 	}
 
 }

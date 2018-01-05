@@ -20,9 +20,10 @@ import ars.invoke.local.Function;
  */
 public class AnnotationMethodApiRegister implements ApplicationContextAware {
 	private boolean cover; // 是否覆盖
-	private String prefix; // 资源地址前缀（多个前缀之间采用“,”号隔开）
+	private String prefix; // 资源地址前缀
 	private Object target; // 目标对象
 	private Invoker invoker; // 资源调用对象
+	private String pattern; // 匹配模式
 
 	public AnnotationMethodApiRegister(String prefix, Object target) {
 		this(prefix, target, true);
@@ -32,11 +33,23 @@ public class AnnotationMethodApiRegister implements ApplicationContextAware {
 		this(prefix, target, Invokes.getSingleLocalInvoker(), cover);
 	}
 
+	public AnnotationMethodApiRegister(String prefix, Object target, String pattern) {
+		this(prefix, target, Invokes.getSingleLocalInvoker(), pattern);
+	}
+
 	public AnnotationMethodApiRegister(String prefix, Object target, Invoker invoker) {
-		this(prefix, target, invoker, true);
+		this(prefix, target, invoker, true, null);
 	}
 
 	public AnnotationMethodApiRegister(String prefix, Object target, Invoker invoker, boolean cover) {
+		this(prefix, target, invoker, cover, null);
+	}
+
+	public AnnotationMethodApiRegister(String prefix, Object target, Invoker invoker, String pattern) {
+		this(prefix, target, invoker, true, pattern);
+	}
+
+	public AnnotationMethodApiRegister(String prefix, Object target, Invoker invoker, boolean cover, String pattern) {
 		if (prefix == null) {
 			throw new IllegalArgumentException("Illegal prefix:" + prefix);
 		}
@@ -50,6 +63,7 @@ public class AnnotationMethodApiRegister implements ApplicationContextAware {
 		this.prefix = prefix;
 		this.target = target;
 		this.invoker = invoker;
+		this.pattern = pattern;
 	}
 
 	public boolean isCover() {
@@ -70,17 +84,12 @@ public class AnnotationMethodApiRegister implements ApplicationContextAware {
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) {
-		String[] prefixs = Strings.split(this.prefix, ',');
 		Router router = applicationContext.getBean(Router.class);
 		Method[] methods = Apis.getApiMethods(this.target.getClass());
 		for (Method method : methods) {
 			String methodApi = Apis.getApi(method);
-			for (String p : prefixs) {
-				p = p.trim();
-				if (p.isEmpty()) {
-					continue;
-				}
-				String api = Strings.replace(new StringBuilder(p).append('/').append(methodApi), "//", "/");
+			if (this.pattern == null || Strings.matches(methodApi, this.pattern)) {
+				String api = Strings.replace(new StringBuilder(this.prefix).append('/').append(methodApi), "//", "/");
 				router.register(api, this.invoker, new Function(this.target, method, Apis.getConditions(method)),
 						this.cover);
 			}

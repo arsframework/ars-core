@@ -264,45 +264,51 @@ public class StandardRouter implements Router {
 
 	@Override
 	public <E extends InvokeEvent> void setListeners(Class<E> type, InvokeListener<E>... listeners) {
-		if (type == InvokeBeforeEvent.class) {
-			this.invokeBeforeListeners.clear();
-			this.invokeBeforeListeners.addAll(Arrays.asList(listeners));
-		} else if (type == InvokeAfterEvent.class) {
-			this.invokeAfterListeners.clear();
-			this.invokeAfterListeners.addAll(Arrays.asList(listeners));
-		} else if (type == InvokeErrorEvent.class) {
-			this.invokeErrorListeners.clear();
-			this.invokeErrorListeners.addAll(Arrays.asList(listeners));
-		} else if (type == InvokeCompleteEvent.class) {
-			this.invokeCompleteListeners.clear();
-			this.invokeCompleteListeners.addAll(Arrays.asList(listeners));
-		} else {
-			this.invokeBeforeListeners.clear();
-			this.invokeAfterListeners.clear();
-			this.invokeErrorListeners.clear();
-			this.invokeCompleteListeners.clear();
-			this.invokeBeforeListeners.addAll(Arrays.asList(listeners));
-			this.invokeAfterListeners.addAll(Arrays.asList(listeners));
-			this.invokeErrorListeners.addAll(Arrays.asList(listeners));
-			this.invokeCompleteListeners.addAll(Arrays.asList(listeners));
+		if (listeners.length > 0) {
+			List<InvokeListener<E>> list = Arrays.asList(listeners);
+			if (type == InvokeBeforeEvent.class) {
+				this.invokeBeforeListeners.clear();
+				this.invokeBeforeListeners.addAll(list);
+			} else if (type == InvokeAfterEvent.class) {
+				this.invokeAfterListeners.clear();
+				this.invokeAfterListeners.addAll(list);
+			} else if (type == InvokeErrorEvent.class) {
+				this.invokeErrorListeners.clear();
+				this.invokeErrorListeners.addAll(list);
+			} else if (type == InvokeCompleteEvent.class) {
+				this.invokeCompleteListeners.clear();
+				this.invokeCompleteListeners.addAll(list);
+			} else {
+				this.invokeBeforeListeners.clear();
+				this.invokeAfterListeners.clear();
+				this.invokeErrorListeners.clear();
+				this.invokeCompleteListeners.clear();
+				this.invokeBeforeListeners.addAll(list);
+				this.invokeAfterListeners.addAll(list);
+				this.invokeErrorListeners.addAll(list);
+				this.invokeCompleteListeners.addAll(list);
+			}
 		}
 	}
 
 	@Override
 	public <E extends InvokeEvent> void addListeners(Class<E> type, InvokeListener<E>... listeners) {
-		if (type == InvokeBeforeEvent.class) {
-			this.invokeBeforeListeners.addAll(Arrays.asList(listeners));
-		} else if (type == InvokeAfterEvent.class) {
-			this.invokeAfterListeners.addAll(Arrays.asList(listeners));
-		} else if (type == InvokeErrorEvent.class) {
-			this.invokeErrorListeners.addAll(Arrays.asList(listeners));
-		} else if (type == InvokeCompleteEvent.class) {
-			this.invokeCompleteListeners.addAll(Arrays.asList(listeners));
-		} else {
-			this.invokeBeforeListeners.addAll(Arrays.asList(listeners));
-			this.invokeAfterListeners.addAll(Arrays.asList(listeners));
-			this.invokeErrorListeners.addAll(Arrays.asList(listeners));
-			this.invokeCompleteListeners.addAll(Arrays.asList(listeners));
+		if (listeners.length > 0) {
+			List<InvokeListener<E>> list = Arrays.asList(listeners);
+			if (type == InvokeBeforeEvent.class) {
+				this.invokeBeforeListeners.addAll(list);
+			} else if (type == InvokeAfterEvent.class) {
+				this.invokeAfterListeners.addAll(list);
+			} else if (type == InvokeErrorEvent.class) {
+				this.invokeErrorListeners.addAll(list);
+			} else if (type == InvokeCompleteEvent.class) {
+				this.invokeCompleteListeners.addAll(list);
+			} else {
+				this.invokeBeforeListeners.addAll(list);
+				this.invokeAfterListeners.addAll(list);
+				this.invokeErrorListeners.addAll(list);
+				this.invokeCompleteListeners.addAll(list);
+			}
 		}
 	}
 

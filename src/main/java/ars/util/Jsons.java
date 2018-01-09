@@ -47,9 +47,14 @@ public final class Jsons {
 	};
 
 	/**
-	 * GSON对象
+	 * 完整的JSON解析处理对象
 	 */
-	public static final Gson gson = new GsonBuilder().registerTypeAdapterFactory(new TypeAdapterFactory() {
+	private static final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+
+	/**
+	 * 最小化JSON解析处理对象
+	 */
+	private static final Gson minGson = new GsonBuilder().registerTypeAdapterFactory(new TypeAdapterFactory() {
 
 		@SuppressWarnings("unchecked")
 		@Override
@@ -225,7 +230,23 @@ public final class Jsons {
 	 * @return JSON字符串
 	 */
 	public static String format(Object object) {
-		return object == null || object instanceof String ? (String) object : gson.toJson(object);
+		return format(object, true);
+	}
+
+	/**
+	 * 将对象转换成JSON字符串
+	 * 
+	 * 对象向下关联一级
+	 * 
+	 * @param object
+	 *            被转换对象
+	 * @param min
+	 *            是否最小化转换
+	 * @return JSON字符串
+	 */
+	public static String format(Object object, boolean min) {
+		return object == null || object instanceof String ? (String) object
+				: min ? minGson.toJson(object) : gson.toJson(object);
 	}
 
 	/**

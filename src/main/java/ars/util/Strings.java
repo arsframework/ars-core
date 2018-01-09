@@ -1580,6 +1580,50 @@ public final class Strings {
 	}
 
 	/**
+	 * 过滤字符串集合
+	 * 
+	 * @param collection
+	 *            字符串集合
+	 * @param pattern
+	 *            过滤模式
+	 * @return 过滤结果列表
+	 */
+	public static List<String> filter(Collection<String> collection, String pattern) {
+		List<String> strings = new LinkedList<String>();
+		if (collection == null || collection.isEmpty()) {
+			return strings;
+		}
+		for (String string : collection) {
+			if (pattern == null || matches(string, pattern)) {
+				strings.add(string);
+			}
+		}
+		return strings;
+	}
+
+	/**
+	 * 过滤字符串集合
+	 * 
+	 * @param collection
+	 *            字符串集合
+	 * @param pattern
+	 *            过滤模式
+	 * @return 过滤结果列表
+	 */
+	public static List<String> filter(Collection<String> collection, Pattern pattern) {
+		List<String> strings = new LinkedList<String>();
+		if (collection == null || collection.isEmpty()) {
+			return strings;
+		}
+		for (String string : collection) {
+			if (pattern == null || pattern.matcher(string).matches()) {
+				strings.add(string);
+			}
+		}
+		return strings;
+	}
+
+	/**
 	 * 判断字符串是否为列表格式；如[1,3]
 	 * 
 	 * @param source

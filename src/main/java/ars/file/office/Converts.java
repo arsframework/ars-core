@@ -5,10 +5,12 @@ import java.io.Reader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.ByteArrayInputStream;
 import java.nio.charset.Charset;
 
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.DocumentException;
 import com.artofsolving.jodconverter.DocumentConverter;
 import com.artofsolving.jodconverter.openoffice.connection.OpenOfficeConnection;
 import com.artofsolving.jodconverter.openoffice.connection.SocketOpenOfficeConnection;
@@ -17,6 +19,8 @@ import com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConv
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.fop.svg.PDFTranscoder;
+import org.xhtmlrenderer.pdf.ITextFontResolver;
+import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.apache.batik.transcoder.Transcoder;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
@@ -26,6 +30,8 @@ import org.apache.batik.transcoder.image.JPEGTranscoder;
 
 import ars.util.Files;
 import ars.util.Strings;
+import ars.file.office.SVGReplacedElementFactory;
+import ars.file.office.ChainingReplacedElementFactory;
 
 /**
  * 文件转换工具类
@@ -36,6 +42,10 @@ import ars.util.Strings;
 public final class Converts {
 	private static String openOfficeHost = Strings.DEFAULT_LOCALHOST_ADDRESS;
 	private static int openOfficePort = SocketOpenOfficeConnection.DEFAULT_PORT;
+
+	private Converts() {
+
+	}
 
 	public static String getOpenOfficeHost() {
 		return openOfficeHost;
@@ -296,10 +306,10 @@ public final class Converts {
 	}
 
 	/**
-	 * 将SVG文件转换成PDF文件
+	 * 将SVG数据转换成PDF文件
 	 * 
-	 * @param source
-	 *            SVG文件
+	 * @param svg
+	 *            SVG字符串
 	 * @param target
 	 *            PDF文件
 	 * @throws IOException
@@ -307,24 +317,33 @@ public final class Converts {
 	 * @throws TranscoderException
 	 *             转换异常
 	 */
-	public static void svg2pdf(File source, File target) throws IOException, TranscoderException {
-		FileInputStream input = null;
-		FileOutputStream output = null;
-		try {
-			input = new FileInputStream(source);
-			output = new FileOutputStream(target);
-			svg2pdf(input, output);
-		} finally {
-			try {
-				if (output != null) {
-					output.close();
-				}
-			} finally {
-				if (input != null) {
-					input.close();
-				}
-			}
+	public static void svg2pdf(String svg, File target) throws IOException, TranscoderException {
+		File path = target.getParentFile();
+		if (path != null && !path.exists()) {
+			path.mkdirs();
 		}
+		OutputStream output = new FileOutputStream(target);
+		try {
+			svg2pdf(svg, output);
+		} finally {
+			output.close();
+		}
+	}
+
+	/**
+	 * 将SVG数据转换成PDF文件
+	 * 
+	 * @param svg
+	 *            SVG字符串
+	 * @param output
+	 *            PDF文件输出流
+	 * @throws IOException
+	 *             IO操作异常
+	 * @throws TranscoderException
+	 *             转换异常
+	 */
+	public static void svg2pdf(String svg, OutputStream output) throws IOException, TranscoderException {
+		svg2pdf(new ByteArrayInputStream(svg.getBytes()), output);
 	}
 
 	/**
@@ -358,10 +377,10 @@ public final class Converts {
 	}
 
 	/**
-	 * 将SVG文件转换成PNG文件
+	 * 将SVG数据转换成PNG文件
 	 * 
-	 * @param source
-	 *            SVG文件
+	 * @param svg
+	 *            SVG字符串
 	 * @param target
 	 *            PNG文件
 	 * @throws IOException
@@ -369,24 +388,33 @@ public final class Converts {
 	 * @throws TranscoderException
 	 *             转换异常
 	 */
-	public static void svg2png(File source, File target) throws IOException, TranscoderException {
-		FileInputStream input = null;
-		FileOutputStream output = null;
-		try {
-			input = new FileInputStream(source);
-			output = new FileOutputStream(target);
-			svg2png(input, output);
-		} finally {
-			try {
-				if (output != null) {
-					output.close();
-				}
-			} finally {
-				if (input != null) {
-					input.close();
-				}
-			}
+	public static void svg2png(String svg, File target) throws IOException, TranscoderException {
+		File path = target.getParentFile();
+		if (path != null && !path.exists()) {
+			path.mkdirs();
 		}
+		OutputStream output = new FileOutputStream(target);
+		try {
+			svg2png(svg, output);
+		} finally {
+			output.close();
+		}
+	}
+
+	/**
+	 * 将SVG数据转换成PNG文件
+	 * 
+	 * @param svg
+	 *            SVG字符串
+	 * @param output
+	 *            PNG文件输出流
+	 * @throws IOException
+	 *             IO操作异常
+	 * @throws TranscoderException
+	 *             转换异常
+	 */
+	public static void svg2png(String svg, OutputStream output) throws IOException, TranscoderException {
+		svg2png(new ByteArrayInputStream(svg.getBytes()), output);
 	}
 
 	/**
@@ -420,10 +448,10 @@ public final class Converts {
 	}
 
 	/**
-	 * 将SVG文件转换成JPEG文件
+	 * 将SVG数据转换成JPEG文件
 	 * 
-	 * @param source
-	 *            SVG文件
+	 * @param svg
+	 *            SVG字符串
 	 * @param target
 	 *            JPEG文件
 	 * @throws IOException
@@ -431,24 +459,33 @@ public final class Converts {
 	 * @throws TranscoderException
 	 *             转换异常
 	 */
-	public static void svg2jpeg(File source, File target) throws IOException, TranscoderException {
-		FileInputStream input = null;
-		FileOutputStream output = null;
-		try {
-			input = new FileInputStream(source);
-			output = new FileOutputStream(target);
-			svg2jpeg(input, output);
-		} finally {
-			try {
-				if (output != null) {
-					output.close();
-				}
-			} finally {
-				if (input != null) {
-					input.close();
-				}
-			}
+	public static void svg2jpeg(String svg, File target) throws IOException, TranscoderException {
+		File path = target.getParentFile();
+		if (path != null && !path.exists()) {
+			path.mkdirs();
 		}
+		OutputStream output = new FileOutputStream(target);
+		try {
+			svg2jpeg(svg, output);
+		} finally {
+			output.close();
+		}
+	}
+
+	/**
+	 * 将SVG数据转换成JPEG文件
+	 * 
+	 * @param svg
+	 *            SVG字符串
+	 * @param output
+	 *            JPEG文件输出流
+	 * @throws IOException
+	 *             IO操作异常
+	 * @throws TranscoderException
+	 *             转换异常
+	 */
+	public static void svg2jpeg(String svg, OutputStream output) throws IOException, TranscoderException {
+		svg2jpeg(new ByteArrayInputStream(svg.getBytes()), output);
 	}
 
 	/**
@@ -479,6 +516,126 @@ public final class Converts {
 	public static void svg2jpeg(InputStream input, OutputStream output) throws TranscoderException {
 		Transcoder transcoder = new JPEGTranscoder();
 		transcoder.transcode(new TranscoderInput(input), new TranscoderOutput(output));
+	}
+
+	/**
+	 * 将html转换成PDF文件
+	 * 
+	 * @param html
+	 *            Html数据
+	 * @param target
+	 *            PDF文件
+	 * @param fonts
+	 *            样式文件路径数据
+	 * @throws DocumentException
+	 *             文档操作异常
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static void html2pdf(String html, File target, String... fonts) throws DocumentException, IOException {
+		File path = target.getParentFile();
+		if (path != null && !path.exists()) {
+			path.mkdirs();
+		}
+		OutputStream output = new FileOutputStream(target);
+		try {
+			html2pdf(html, output, fonts);
+		} finally {
+			output.close();
+		}
+	}
+
+	/**
+	 * 将html转换成PDF文件
+	 * 
+	 * @param html
+	 *            Html数据
+	 * @param output
+	 *            PDF文件输出流
+	 * @param fonts
+	 *            样式文件路径数据
+	 * @throws DocumentException
+	 *             文档操作异常
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static void html2pdf(String html, OutputStream output, String... fonts)
+			throws DocumentException, IOException {
+		ITextRenderer renderer = new ITextRenderer();
+		ChainingReplacedElementFactory chainingReplacedElementFactory = new ChainingReplacedElementFactory();
+		chainingReplacedElementFactory.addReplacedElementFactory(new SVGReplacedElementFactory());
+		renderer.getSharedContext().setReplacedElementFactory(chainingReplacedElementFactory);
+		renderer.setDocumentFromString(html);
+		ITextFontResolver fontResolver = renderer.getFontResolver();
+		for (String font : fonts) {
+			fontResolver.addFont(Strings.getRealPath(font), BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+		}
+		renderer.layout();
+		try {
+			renderer.createPDF(output);
+		} finally {
+			output.close();
+		}
+	}
+
+	/**
+	 * 将html转换成PDF文件
+	 * 
+	 * @param source
+	 *            Html源文件
+	 * @param target
+	 *            PDF文件
+	 * @param fonts
+	 *            样式文件路径数据
+	 * @throws DocumentException
+	 *             文档操作异常
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static void html2pdf(File source, File target, String... fonts) throws DocumentException, IOException {
+		File path = target.getParentFile();
+		if (path != null && !path.exists()) {
+			path.mkdirs();
+		}
+		OutputStream output = new FileOutputStream(target);
+		try {
+			html2pdf(source, output, fonts);
+		} finally {
+			output.close();
+		}
+	}
+
+	/**
+	 * 将html转换成PDF文件
+	 * 
+	 * @param source
+	 *            Html源文件
+	 * @param output
+	 *            PDF文件输出流
+	 * @param fonts
+	 *            样式文件路径数据
+	 * @throws DocumentException
+	 *             文档操作异常
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static void html2pdf(File source, OutputStream output, String... fonts)
+			throws DocumentException, IOException {
+		ITextRenderer renderer = new ITextRenderer();
+		ChainingReplacedElementFactory chainingReplacedElementFactory = new ChainingReplacedElementFactory();
+		chainingReplacedElementFactory.addReplacedElementFactory(new SVGReplacedElementFactory());
+		renderer.getSharedContext().setReplacedElementFactory(chainingReplacedElementFactory);
+		renderer.setDocument(source);
+		ITextFontResolver fontResolver = renderer.getFontResolver();
+		for (String font : fonts) {
+			fontResolver.addFont(Strings.getRealPath(font), BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+		}
+		renderer.layout();
+		try {
+			renderer.createPDF(output);
+		} finally {
+			output.close();
+		}
 	}
 
 }

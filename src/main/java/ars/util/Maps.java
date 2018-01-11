@@ -12,6 +12,10 @@ public final class Maps {
 	 */
 	public static double EARTH_RADIUS = 6378137;
 
+	private Maps() {
+
+	}
+
 	private static double rad(double d) {
 		return d * Math.PI / 180.0;
 	}

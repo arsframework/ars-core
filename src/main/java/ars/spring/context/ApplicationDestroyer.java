@@ -19,7 +19,7 @@ public abstract class ApplicationDestroyer implements ApplicationListener<Applic
 	 * @param event
 	 *            Spring上下文关闭事件
 	 */
-	public abstract void execute(ContextClosedEvent event);
+	protected abstract void execute(ContextClosedEvent event);
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {

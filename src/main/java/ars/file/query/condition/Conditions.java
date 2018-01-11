@@ -31,6 +31,10 @@ import ars.file.query.condition.LargeEqual;
  * 
  */
 public final class Conditions {
+	private Conditions() {
+
+	}
+
 	/**
 	 * 等于
 	 * 

@@ -14,6 +14,10 @@ import java.net.SocketAddress;
  * 
  */
 public final class Sockets {
+	private Sockets() {
+
+	}
+
 	/**
 	 * TCP方式发送请求
 	 * 

@@ -64,6 +64,10 @@ public final class Jsons {
 
 	}).disableHtmlEscaping().create();
 
+	private Jsons() {
+
+	}
+
 	public static ObjectAdapter[] getObjectAdapters() {
 		return objectAdapters;
 	}

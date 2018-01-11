@@ -20,6 +20,10 @@ import ars.util.Beans;
  * 
  */
 public final class Trees {
+	private Trees() {
+
+	}
+
 	/**
 	 * 获取树最大深度
 	 * 

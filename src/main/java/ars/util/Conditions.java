@@ -14,6 +14,10 @@ import ars.util.Strings;
  * 
  */
 public final class Conditions {
+	private Conditions() {
+
+	}
+
 	/**
 	 * 查询逻辑接口
 	 * 

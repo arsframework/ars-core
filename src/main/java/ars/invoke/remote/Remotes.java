@@ -68,6 +68,10 @@ public final class Remotes {
 	 */
 	private static Ice.Communicator communicator;
 
+	private Remotes() {
+
+	}
+
 	/**
 	 * 获取客户端标识
 	 * 

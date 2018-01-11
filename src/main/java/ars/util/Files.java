@@ -22,6 +22,10 @@ import ars.util.Strings;
  * 
  */
 public final class Files {
+	private Files() {
+
+	}
+
 	/**
 	 * 递归删除文件/文件目录
 	 * 

@@ -19,6 +19,10 @@ public final class Dates {
 	private static DateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static DateFormat datenanoFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
+	private Dates() {
+
+	}
+
 	public static DateFormat getDateFormat() {
 		return dateFormat;
 	}

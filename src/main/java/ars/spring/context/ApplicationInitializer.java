@@ -19,7 +19,7 @@ public abstract class ApplicationInitializer implements ApplicationListener<Appl
 	 * @param event
 	 *            Spring上下文加载完成事件
 	 */
-	public abstract void execute(ContextRefreshedEvent event);
+	protected abstract void execute(ContextRefreshedEvent event);
 
 	@Override
 	public final void onApplicationEvent(ApplicationEvent event) {

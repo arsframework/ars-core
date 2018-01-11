@@ -57,6 +57,10 @@ public final class Beans {
 	 */
 	public static final DecimalFormat DEFAULT_DECIMAL_FORMAT = new DecimalFormat("0.##");
 
+	private Beans() {
+
+	}
+
 	/**
 	 * 获取对象类型
 	 * 

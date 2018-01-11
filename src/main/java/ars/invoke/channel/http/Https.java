@@ -244,6 +244,10 @@ public final class Https {
 	 */
 	public static final String CONTEXT_TIMESPEND = "timespend";
 
+	private Https() {
+
+	}
+
 	/**
 	 * 获取客户端连接管理器
 	 * 

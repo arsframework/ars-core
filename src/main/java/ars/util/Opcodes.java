@@ -16,6 +16,9 @@ import java.util.Random;
  * 
  */
 public final class Opcodes {
+	private Opcodes() {
+
+	}
 
 	private static Color getRandomColor(int fc, int bc) {
 		if (fc > 255) {

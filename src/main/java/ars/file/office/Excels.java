@@ -36,6 +36,10 @@ import ars.util.Strings;
  * 
  */
 public final class Excels {
+	private Excels() {
+
+	}
+
 	/**
 	 * Excel读对象接口
 	 * 

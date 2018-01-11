@@ -31,6 +31,10 @@ import ars.invoke.request.ParameterInvalidException;
  * 
  */
 public final class Apis {
+	private Apis() {
+
+	}
+
 	/**
 	 * 获取所有使用了Api注解的公共类
 	 * 

@@ -46,6 +46,10 @@ public final class Invokes {
 	private static RemoteInvoker remoteInvoker;
 	private static final ThreadLocal<Requester> currentRequester = new ThreadLocal<Requester>();
 
+	private Invokes() {
+
+	}
+
 	/**
 	 * 获取本地资源调用器实例（单例）
 	 * 

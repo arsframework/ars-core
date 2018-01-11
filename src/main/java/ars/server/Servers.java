@@ -30,6 +30,10 @@ public final class Servers {
 	private static ExecutorService executor;
 	private static final List<Server> servers = new LinkedList<Server>();
 
+	private Servers() {
+
+	}
+
 	/**
 	 * 系统服务注册
 	 * 

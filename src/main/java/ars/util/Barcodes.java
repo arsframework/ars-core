@@ -27,6 +27,10 @@ import ars.util.Strings;
  * 
  */
 public final class Barcodes {
+	private Barcodes() {
+
+	}
+
 	/**
 	 * 将内容编码
 	 * 

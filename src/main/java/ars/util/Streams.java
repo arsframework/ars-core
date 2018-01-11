@@ -37,6 +37,10 @@ public final class Streams {
 	 */
 	public static final int DEFAULT_BUFFER_SIZE = 2048;
 
+	private Streams() {
+
+	}
+
 	/**
 	 * 判断对象是否为流数据
 	 * 

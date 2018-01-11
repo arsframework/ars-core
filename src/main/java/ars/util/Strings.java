@@ -165,6 +165,10 @@ public final class Strings {
 		}
 	}
 
+	private Strings() {
+
+	}
+
 	/**
 	 * MD5加密
 	 * 

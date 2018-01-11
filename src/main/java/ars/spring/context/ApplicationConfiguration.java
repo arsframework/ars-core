@@ -50,7 +50,7 @@ import ars.file.office.Converts;
  */
 public class ApplicationConfiguration extends StandardRouter
 		implements Context, ApplicationContextAware, ApplicationListener<ApplicationEvent> {
-	private Invoker invoker; // 资源调用对象
+	private Invoker invoker = Invokes.getSingleLocalInvoker(); // 资源调用对象
 	private Messager messager; // 消息处理对象
 	private String pattern; // 资源地址匹配模式
 	private Map<String, String> configure; // 系统配置
@@ -132,7 +132,6 @@ public class ApplicationConfiguration extends StandardRouter
 		Jsons.setObjectAdapters(objectAdapters);
 
 		// 注册系统接口资源
-		Invoker invoker = this.invoker == null ? Invokes.getSingleLocalInvoker() : this.invoker;
 		Collection<?> entities = applicationContext.getBeansWithAnnotation(Api.class).values();
 		for (Object entity : entities) {
 			Class<?> type = entity.getClass();
@@ -142,7 +141,7 @@ public class ApplicationConfiguration extends StandardRouter
 				String methodApi = Apis.getApi(method);
 				String api = Strings.replace(new StringBuilder(classApi).append('/').append(methodApi), "//", "/");
 				if (this.pattern == null || Strings.matches(api, this.pattern)) {
-					this.register(api, invoker, new Function(entity, method, Apis.getConditions(method)));
+					this.register(api, this.invoker, new Function(entity, method, Apis.getConditions(method)));
 				}
 			}
 		}

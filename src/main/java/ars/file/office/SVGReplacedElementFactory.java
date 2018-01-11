@@ -1,4 +1,4 @@
-package ars.file.xhtml;
+package ars.file.office;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;

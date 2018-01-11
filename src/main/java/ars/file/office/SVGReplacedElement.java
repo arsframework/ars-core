@@ -1,4 +1,4 @@
-package ars.file.xhtml;
+package ars.file.office;
 
 import java.awt.Point;
 import java.awt.print.Paper;

@@ -1400,20 +1400,7 @@ public final class Https {
 
 			@Override
 			public String toString() {
-				Set<String> names = session.getAttributeNames();
-				if (names.isEmpty()) {
-					return "{}";
-				}
-				int i = 0;
-				StringBuilder sb = new StringBuilder();
-				sb.append('{');
-				for (String name : names) {
-					if (i++ > 0) {
-						sb.append(", ");
-					}
-					sb.append(name).append('=').append(session.getAttribute(name));
-				}
-				return sb.append('}').toString();
+				return session.toString();
 			}
 
 		});

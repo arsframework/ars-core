@@ -143,6 +143,24 @@ public class CacheSessionFactory implements SessionFactory {
 				}
 			}
 
+			@Override
+			public String toString() {
+				this.initializeNames();
+				if (this.names.isEmpty()) {
+					return "{}";
+				}
+				int i = 0;
+				StringBuilder sb = new StringBuilder();
+				sb.append('{');
+				for (String name : this.names) {
+					if (i++ > 0) {
+						sb.append(", ");
+					}
+					sb.append(name).append('=').append(this.getAttribute(name));
+				}
+				return sb.append('}').toString();
+			}
+
 		};
 	}
 

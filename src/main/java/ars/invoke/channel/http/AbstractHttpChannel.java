@@ -1,10 +1,9 @@
 package ars.invoke.channel.http;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.io.IOException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -12,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import ars.util.Beans;
-import ars.util.Files;
 import ars.util.Streams;
 import ars.util.Strings;
 import ars.invoke.Context;
@@ -20,6 +18,7 @@ import ars.invoke.Invokes;
 import ars.invoke.request.Requester;
 import ars.invoke.convert.Converter;
 import ars.invoke.channel.http.Https;
+import ars.invoke.channel.http.Render;
 import ars.invoke.channel.http.HttpChannel;
 import ars.invoke.channel.http.HttpRequester;
 
@@ -31,18 +30,10 @@ import ars.invoke.channel.http.HttpRequester;
  */
 public abstract class AbstractHttpChannel implements HttpChannel {
 	private Context context;
-	private String templateDirectory;
 	private Redirector[] redirectors = new Redirector[0];
+	private Map<String, Render> renders = new HashMap<String, Render>(0);
 	private Map<String, String> templates = new HashMap<String, String>(0);
 	private Map<String, Converter> converters = new HashMap<String, Converter>(0);
-
-	public String getTemplateDirectory() {
-		return templateDirectory;
-	}
-
-	public void setTemplateDirectory(String templateDirectory) {
-		this.templateDirectory = templateDirectory;
-	}
 
 	public Redirector[] getRedirectors() {
 		return redirectors;
@@ -50,6 +41,14 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 
 	public void setRedirectors(Redirector... redirectors) {
 		this.redirectors = redirectors;
+	}
+
+	public Map<String, Render> getRenders() {
+		return renders;
+	}
+
+	public void setRenders(Map<String, Render> renders) {
+		this.renders = renders;
 	}
 
 	public Map<String, String> getTemplates() {
@@ -112,13 +111,13 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 	}
 
 	/**
-	 * 获取请求资源模板
+	 * 查找请求资源模板
 	 * 
 	 * @param requester
 	 *            请求对象
 	 * @return 模板路径
 	 */
-	protected String getTemplate(HttpRequester requester) {
+	protected String lookupTemplate(HttpRequester requester) {
 		String uri = requester.getUri();
 		if (uri.indexOf('.') >= 0) {
 			return uri;
@@ -134,13 +133,33 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 	}
 
 	/**
-	 * 获取请求转换处理对象
+	 * 查找视图渲染器
+	 * 
+	 * @param requester
+	 *            请求对象
+	 * @param template
+	 *            视图模板
+	 * @return 视图渲染器
+	 */
+	protected Render loolupRender(HttpRequester requester, String template) {
+		if (!this.renders.isEmpty()) {
+			for (Entry<String, Render> entry : this.renders.entrySet()) {
+				if (Strings.matches(template, entry.getKey())) {
+					return entry.getValue();
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * 查找请求转换处理对象
 	 * 
 	 * @param requester
 	 *            请求对象
 	 * @return 数据转换处理对象
 	 */
-	protected Converter getConverter(HttpRequester requester) {
+	protected Converter lookupConverter(HttpRequester requester) {
 		if (!this.converters.isEmpty()) {
 			for (Entry<String, Converter> entry : this.converters.entrySet()) {
 				if (Strings.matches(requester.getUri(), entry.getKey())) {
@@ -161,23 +180,19 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 	 * @param content
 	 *            数据内容
 	 * @return 模板内容
-	 * @throws IOException
-	 *             IO操作异常
-	 * @throws ServletException
-	 *             Servlet操作异常
+	 * @throws Exception
+	 *             操作异常
 	 */
-	protected String render(HttpRequester requester, String template, Object content)
-			throws IOException, ServletException {
+	protected String render(HttpRequester requester, String template, Object content) throws Exception {
 		int index = template.indexOf('?');
-		String suffix = Files.getSuffix(index < 0 ? template : template.substring(0, index));
-		if (suffix.equalsIgnoreCase("jsp")) {
-			if (this.templateDirectory == null) {
-				return Https.render(requester, template, content);
-			}
-			return Https.render(requester, new StringBuilder(this.templateDirectory).append(template).toString(),
-					content);
+		if (index > 0) {
+			template = template.substring(0, index);
 		}
-		return new String(Streams.getBytes(new File(Https.ROOT_PATH, template)));
+		Render render = this.loolupRender(requester, template);
+		if (render == null) {
+			return Https.render(requester, template, content);
+		}
+		return render.execute(requester, template, content);
 	}
 
 	/**
@@ -188,12 +203,10 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 	 * @param content
 	 *            重定向内容
 	 * @return 是否重定向成功
-	 * @throws IOException
-	 *             IO操作异常
-	 * @throws ServletException
-	 *             Servlet操作异常
+	 * @throws Exception
+	 *             操作异常
 	 */
-	protected boolean redirect(HttpRequester requester, Object content) throws IOException, ServletException {
+	protected boolean redirect(HttpRequester requester, Object content) throws Exception {
 		for (Redirector redirector : this.redirectors) {
 			String redirect = redirector.getRedirect(requester, content);
 			if (redirect == null) {
@@ -249,7 +262,7 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 		Invokes.setCurrentRequester(requester);
 
 		Object value = null;
-		String template = this.getTemplate(requester);
+		String template = this.lookupTemplate(requester);
 		if (template == null) {
 			value = this.dispatch(requester);
 		} else {
@@ -262,7 +275,7 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 
 		Converter converter = null;
 		if (!Streams.isStream(value) && !Strings.isEmpty(request.getContentType())
-				&& (converter = this.getConverter(requester)) != null) {
+				&& (converter = this.lookupConverter(requester)) != null) {
 			value = converter.serialize(value);
 		}
 		if (converter != null || !this.redirect((HttpRequester) requester, value)) {

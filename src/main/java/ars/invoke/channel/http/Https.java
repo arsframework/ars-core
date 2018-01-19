@@ -9,12 +9,12 @@ import java.io.OutputStreamWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
+import java.util.Set;
 import java.util.List;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Collection;
@@ -1227,6 +1227,204 @@ public final class Https {
 	}
 
 	/**
+	 * 获取视图渲染上下文
+	 * 
+	 * @param requester
+	 *            请求对象
+	 * @param content
+	 *            渲染内容
+	 * @return 上下文键/值映射表
+	 */
+	public static Map<String, Object> getRenderContext(final HttpRequester requester, Object content) {
+		return getRenderContext(requester, content, new Map<String, Object>() {
+
+			@Override
+			public int size() {
+				return 0;
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return false;
+			}
+
+			@Override
+			public boolean containsKey(Object key) {
+				return false;
+			}
+
+			@Override
+			public boolean containsValue(Object value) {
+				return false;
+			}
+
+			@Override
+			public Object get(Object key) {
+				return key == null ? null : requester.getParameter(Strings.toString(key));
+			}
+
+			@Override
+			public Object put(String key, Object value) {
+				return null;
+			}
+
+			@Override
+			public Object remove(Object key) {
+				return null;
+			}
+
+			@Override
+			public void putAll(Map<? extends String, ? extends Object> m) {
+
+			}
+
+			@Override
+			public void clear() {
+
+			}
+
+			@Override
+			public Set<String> keySet() {
+				return null;
+			}
+
+			@Override
+			public Collection<Object> values() {
+				return null;
+			}
+
+			@Override
+			public Set<Entry<String, Object>> entrySet() {
+				return null;
+			}
+
+			@Override
+			public String toString() {
+				return requester.getParameters().toString();
+			}
+
+		});
+	}
+
+	/**
+	 * 获取视图渲染上下文
+	 * 
+	 * @param requester
+	 *            请求对象
+	 * @param content
+	 *            渲染内容
+	 * @param parameters
+	 *            请求参数
+	 * @return 上下文键/值映射表
+	 */
+	public static Map<String, Object> getRenderContext(HttpRequester requester, Object content,
+			final Map<String, Object> parameters) {
+		if (requester == null) {
+			throw new IllegalArgumentException("Illegal requester:" + requester);
+		}
+		Date datetime = new Date();
+		final Session session = requester.getSession();
+		HttpServletRequest request = requester.getHttpServletRequest();
+		Map<String, Object> context = new HashMap<String, Object>();
+		context.put(CONTEXT_URI, requester.getUri());
+		context.put(CONTEXT_URL, Https.getUrl(request));
+		context.put(CONTEXT_HOST, requester.getHost());
+		context.put(CONTEXT_PATH, request.getContextPath());
+		context.put(CONTEXT_PORT, request.getServerPort());
+		context.put(CONTEXT_TOKEN, requester.getToken());
+		context.put(CONTEXT_SCHEME, request.getScheme());
+		context.put(CONTEXT_DOMAIN, request.getServerName());
+		context.put(CONTEXT_SERVER, Strings.LOCALHOST_ADDRESS);
+		context.put(CONTEXT_REQUEST, parameters);
+		context.put(CONTEXT_SESSION, new Map<String, Object>() {
+
+			@Override
+			public int size() {
+				return 0;
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return false;
+			}
+
+			@Override
+			public boolean containsKey(Object key) {
+				return false;
+			}
+
+			@Override
+			public boolean containsValue(Object value) {
+				return false;
+			}
+
+			@Override
+			public Object get(Object key) {
+				return key == null ? null : session.getAttribute(Strings.toString(key));
+			}
+
+			@Override
+			public Object put(String key, Object value) {
+				return null;
+			}
+
+			@Override
+			public Object remove(Object key) {
+				return null;
+			}
+
+			@Override
+			public void putAll(Map<? extends String, ? extends Object> m) {
+
+			}
+
+			@Override
+			public void clear() {
+
+			}
+
+			@Override
+			public Set<String> keySet() {
+				return null;
+			}
+
+			@Override
+			public Collection<Object> values() {
+				return null;
+			}
+
+			@Override
+			public Set<Entry<String, Object>> entrySet() {
+				return null;
+			}
+
+			@Override
+			public String toString() {
+				Set<String> names = session.getAttributeNames();
+				if (names.isEmpty()) {
+					return "{}";
+				}
+				int i = 0;
+				StringBuilder sb = new StringBuilder();
+				sb.append('{');
+				for (String name : names) {
+					if (i++ > 0) {
+						sb.append(", ");
+					}
+					sb.append(name).append('=').append(session.getAttribute(name));
+				}
+				return sb.append('}').toString();
+			}
+
+		});
+		context.put(CONTEXT_RESPONSE, content);
+		context.put(CONTEXT_DATETIME, datetime);
+		context.put(CONTEXT_EXECUTOR, requester);
+		context.put(CONTEXT_TIMESPEND, datetime.getTime() - requester.getCreated().getTime());
+		return context;
+	}
+
+	/**
 	 * 视图渲染
 	 * 
 	 * @param request
@@ -1294,7 +1492,14 @@ public final class Https {
 	 */
 	public static String render(HttpRequester requester, String template, Object content)
 			throws IOException, ServletException {
-		return render(requester, template, content, requester.getParameters());
+		if (requester == null) {
+			throw new IllegalArgumentException("Illegal requester:" + requester);
+		}
+		if (template == null) {
+			throw new IllegalArgumentException("Illegal template:" + template);
+		}
+		return render(requester.getHttpServletRequest(), requester.getHttpServletResponse(), template,
+				getRenderContext(requester, content));
 	}
 
 	/**
@@ -1306,105 +1511,24 @@ public final class Https {
 	 *            视图模板
 	 * @param content
 	 *            渲染内容
-	 * @param context
-	 *            上下文参数
+	 * @param parameters
+	 *            请求参数
 	 * @return 渲染后的视图内容
 	 * @throws IOException
 	 *             IO操作异常
 	 * @throws ServletException
 	 *             Servlet操作异常
 	 */
-	public static String render(HttpRequester requester, String template, Object content, Map<String, Object> context)
-			throws IOException, ServletException {
+	public static String render(HttpRequester requester, String template, Object content,
+			Map<String, Object> parameters) throws IOException, ServletException {
 		if (requester == null) {
 			throw new IllegalArgumentException("Illegal requester:" + requester);
 		}
 		if (template == null) {
 			throw new IllegalArgumentException("Illegal template:" + template);
 		}
-		Date datetime = new Date();
-		final Session session = requester.getSession();
-		HttpServletRequest request = requester.getHttpServletRequest();
-		HttpServletResponse response = requester.getHttpServletResponse();
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.put(CONTEXT_URI, requester.getUri());
-		data.put(CONTEXT_URL, Https.getUrl(request));
-		data.put(CONTEXT_HOST, requester.getHost());
-		data.put(CONTEXT_PATH, request.getContextPath());
-		data.put(CONTEXT_PORT, request.getServerPort());
-		data.put(CONTEXT_TOKEN, requester.getToken());
-		data.put(CONTEXT_SCHEME, request.getScheme());
-		data.put(CONTEXT_DOMAIN, request.getServerName());
-		data.put(CONTEXT_SERVER, Strings.LOCALHOST_ADDRESS);
-		data.put(CONTEXT_REQUEST, context);
-		data.put(CONTEXT_SESSION, new Map<String, Object>() {
-
-			@Override
-			public int size() {
-				return 0;
-			}
-
-			@Override
-			public boolean isEmpty() {
-				return false;
-			}
-
-			@Override
-			public boolean containsKey(Object key) {
-				return false;
-			}
-
-			@Override
-			public boolean containsValue(Object value) {
-				return false;
-			}
-
-			@Override
-			public Object get(Object key) {
-				return session.getAttribute(Strings.toString(key));
-			}
-
-			@Override
-			public Object put(String key, Object value) {
-				return null;
-			}
-
-			@Override
-			public Object remove(Object key) {
-				return null;
-			}
-
-			@Override
-			public void putAll(Map<? extends String, ? extends Object> m) {
-
-			}
-
-			@Override
-			public void clear() {
-
-			}
-
-			@Override
-			public Set<String> keySet() {
-				return null;
-			}
-
-			@Override
-			public Collection<Object> values() {
-				return null;
-			}
-
-			@Override
-			public Set<Entry<String, Object>> entrySet() {
-				return null;
-			}
-
-		});
-		data.put(CONTEXT_RESPONSE, content);
-		data.put(CONTEXT_DATETIME, datetime);
-		data.put(CONTEXT_EXECUTOR, requester);
-		data.put(CONTEXT_TIMESPEND, datetime.getTime() - requester.getCreated().getTime());
-		return Https.render(request, response, template, data);
+		return render(requester.getHttpServletRequest(), requester.getHttpServletResponse(), template,
+				getRenderContext(requester, content, parameters));
 	}
 
 	/**

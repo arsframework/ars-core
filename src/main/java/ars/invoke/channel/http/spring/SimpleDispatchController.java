@@ -36,7 +36,8 @@ public class SimpleDispatchController extends StandardHttpChannel implements Ser
 	 * @throws Exception
 	 *             操作异常
 	 */
-	@RequestMapping(value = "/**", method = { RequestMethod.GET, RequestMethod.POST })
+	@RequestMapping(value = "/**", method = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
+			RequestMethod.DELETE })
 	public void dispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		this.dispatch(this.config, request, response);
 	}

@@ -227,13 +227,20 @@ public final class Beans {
 	 *            类对象对象
 	 * @return 泛型类型数组
 	 */
-	public static Type[] getGenericSuperTypes(Class<?> cls) {
-		Type type = cls.getGenericSuperclass();
-		if (type instanceof ParameterizedType) {
-			return ((ParameterizedType) type).getActualTypeArguments();
+	public static Class<?>[] getGenericTypes(Class<?> cls) {
+		Type genericSuperclass = cls.getGenericSuperclass();
+		if (genericSuperclass instanceof ParameterizedType) {
+			Type[] types = ((ParameterizedType) genericSuperclass).getActualTypeArguments();
+			List<Class<?>> classes = new ArrayList<Class<?>>(types.length);
+			for (Type type : types) {
+				if (type instanceof Class) {
+					classes.add((Class<?>) type);
+				}
+			}
+			return classes.toArray(new Class<?>[0]);
 		}
 		Class<?> parent = cls.getSuperclass();
-		return parent == null ? new Type[0] : getGenericSuperTypes(parent);
+		return parent == null ? new Class<?>[0] : getGenericTypes(parent);
 	}
 
 	/**
@@ -243,12 +250,19 @@ public final class Beans {
 	 *            字段对象
 	 * @return 泛型类型数组
 	 */
-	public static Type[] getGenericSuperTypes(Field field) {
-		Type type = field.getGenericType();
-		if (type instanceof ParameterizedType) {
-			return ((ParameterizedType) type).getActualTypeArguments();
+	public static Class<?>[] getGenericTypes(Field field) {
+		Type genericSuperclass = field.getGenericType();
+		if (genericSuperclass instanceof ParameterizedType) {
+			Type[] types = ((ParameterizedType) genericSuperclass).getActualTypeArguments();
+			List<Class<?>> classes = new ArrayList<Class<?>>(types.length);
+			for (Type type : types) {
+				if (type instanceof Class) {
+					classes.add((Class<?>) type);
+				}
+			}
+			return classes.toArray(new Class<?>[0]);
 		}
-		return new Type[0];
+		return new Class<?>[0];
 	}
 
 	/**
@@ -840,7 +854,7 @@ public final class Beans {
 			List<Field> fields = new LinkedList<Field>();
 			while (cls != Object.class) {
 				for (Field field : cls.getDeclaredFields()) {
-					if (!Modifier.isStatic(field.getModifiers())) {
+					if (!Modifier.isStatic(field.getModifiers()) && !field.getName().startsWith("this$")) {
 						fields.add(field);
 					}
 				}
@@ -1451,20 +1465,12 @@ public final class Beans {
 	 */
 	public static void setValue(Object object, Field field, Object value) {
 		if (object != null && field != null) {
-			Class<?> type = field.getType();
 			Class<?> meta = object instanceof Class ? (Class<?>) object : object.getClass();
 			Method method = getSetMethod(meta, field);
-			if (type != null && Modifier.isPublic(method.getModifiers())) {
-				if (Set.class.isAssignableFrom(type)) {
-					value = isEmpty(value) ? new HashSet<Object>(0) : toSet(getFieldGenericType(field), value);
-				} else if (List.class.isAssignableFrom(type)) {
-					value = isEmpty(value) ? new ArrayList<Object>(0) : toList(getFieldGenericType(field), value);
-				} else {
-					value = toObject(type, value);
-				}
+			if (Modifier.isPublic(method.getModifiers())) {
 				method.setAccessible(true);
 				try {
-					method.invoke(object, value);
+					method.invoke(object, toObject(field.getType(), value));
 				} catch (IllegalAccessException e) {
 					throw new RuntimeException(e);
 				} catch (InvocationTargetException e) {
@@ -1599,56 +1605,6 @@ public final class Beans {
 			}
 		}
 		return instance;
-	}
-
-	/**
-	 * 获取字段类型
-	 * 
-	 * @param field
-	 *            字段对象
-	 * @return 类型
-	 */
-	public static Class<?> getFieldType(Field field) {
-		Class<?> type = field.getType();
-		return Collection.class.isAssignableFrom(type) ? getFieldGenericType(field) : type;
-	}
-
-	/**
-	 * 获取集合字段的泛型类型
-	 * 
-	 * @param field
-	 *            字段对象
-	 * @return 泛型类型
-	 */
-	public static Class<?> getFieldGenericType(Field field) {
-		Type[] types = getGenericSuperTypes(field);
-		return types.length == 0 || !(types[0] instanceof Class) ? null : (Class<?>) types[0];
-	}
-
-	/**
-	 * 获取集合字段的泛型类型
-	 * 
-	 * @param cls
-	 *            对象类型
-	 * @param property
-	 *            属性名称
-	 * @return 泛型类型
-	 */
-	public static Class<?> getFieldGenericType(Class<?> cls, String property) {
-		Type[] types = getGenericSuperTypes(getField(cls, property));
-		return types.length == 0 || !(types[0] instanceof Class) ? null : (Class<?>) types[0];
-	}
-
-	/**
-	 * 获取类的泛型类型
-	 * 
-	 * @param cls
-	 *            类对象
-	 * @return 泛型类型
-	 */
-	public static Class<?> getClassGenericType(Class<?> cls) {
-		Type[] types = getGenericSuperTypes(cls);
-		return types.length == 0 || !(types[0] instanceof Class) ? null : (Class<?>) types[0];
 	}
 
 	/**

@@ -36,6 +36,7 @@ import javax.crypto.IllegalBlockSizeException;
 import org.apache.commons.codec.binary.Base64;
 
 import ars.util.Dates;
+import ars.util.Randoms;
 
 /**
  * 字符串工具类
@@ -53,6 +54,13 @@ public final class Strings {
 	 * 空字符串数组
 	 */
 	public static final String[] EMPTY_ARRAY = new String[0];
+
+	/**
+	 * 数字/英文字符数组
+	 */
+	public static final Character[] CHARS = new Character[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a',
+			'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+			'w', 'x', 'y', 'z' };
 
 	/**
 	 * GBK字符集
@@ -532,7 +540,7 @@ public final class Strings {
 	 * @return 随机数字符串
 	 */
 	public static String random(int length, int max, boolean repeat) {
-		Random random = new Random();
+		Random random = Randoms.getCurrentRandom();
 		StringBuilder buffer = new StringBuilder();
 		for (int i = 0; i < length; i++) {
 			if (repeat) {
@@ -579,7 +587,7 @@ public final class Strings {
 	 * @return 随机数组
 	 */
 	public static String random(int length, Object[] source, boolean repeat) {
-		Random random = new Random();
+		Random random = Randoms.getCurrentRandom();
 		StringBuilder buffer = new StringBuilder();
 		for (int i = 0; i < length; i++) {
 			if (repeat) {

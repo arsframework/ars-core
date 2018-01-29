@@ -2,7 +2,9 @@ package ars.util;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.List;
 import java.util.Date;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -55,6 +57,7 @@ public final class Randoms {
 	 */
 	public static class RandomBeanFactory<T> {
 		protected final Class<T> type; // 对象类型
+		private final List<String> excludes = new ArrayList<String>(0);
 		private final StringBuilder property = new StringBuilder(); // 当前属性名称
 		private final LinkedList<Class<?>> executed = new LinkedList<Class<?>>(); // 已执行对象类型
 		private final Map<Class<?>, RandomGenerator<?>> typeGenerators = new HashMap<Class<?>, RandomGenerator<?>>(0);
@@ -123,9 +126,13 @@ public final class Randoms {
 					this.property.append('.');
 				}
 				this.property.append(field.getName());
+				String fullname = this.property.toString();
+				if (!this.excludes.isEmpty() && this.excludes.contains(fullname)) {
+					continue;
+				}
 
 				Object value = null;
-				generator = this.propertyGenerators.get(this.property.toString());
+				generator = this.propertyGenerators.get(fullname);
 				if (generator != null) {
 					value = generator.generate();
 				} else if (Map.class.isAssignableFrom(field.getType())) {
@@ -163,6 +170,21 @@ public final class Randoms {
 			}
 			this.executed.removeLast();
 			return instance;
+		}
+
+		/**
+		 * 设置排除属性
+		 * 
+		 * @param properties
+		 *            属性名称数组
+		 * @return 随机对象实例生成工厂
+		 */
+		public RandomBeanFactory<T> excludes(String... properties) {
+			this.excludes.clear();
+			if (properties != null && properties.length > 0) {
+				this.excludes.addAll(Arrays.asList(properties));
+			}
+			return this;
 		}
 
 		/**

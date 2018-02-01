@@ -46,56 +46,44 @@ public final class Randoms {
 	}
 
 	/**
-	 * 随机生成属性排除策略接口
+	 * 随机生成对象属性排除策略接口
 	 * 
 	 * @author yongqiangwu
 	 *
 	 */
-	public static interface PropertyExcludeStrategy {
+	public static interface ExcludeStrategy {
 		/**
 		 * 判断是否排除
 		 * 
-		 * @param property
-		 *            属性名称
+		 * @param type
+		 *            对象类型
+		 * @param field
+		 *            字段对象
 		 * @return true/false
 		 */
-		public boolean exclude(String property);
+		public boolean exclude(Class<?> type, Field field);
 
 	}
 
 	/**
-	 * 类型随机数生成接口工厂
+	 * 对象属性随机数生成接口工厂
 	 * 
 	 * @author yongqiangwu
 	 *
 	 */
-	public static interface TypeRandomGeneratorFactory {
+	public static interface RandomGeneratorFactory {
 		/**
 		 * 获取随机数生成接口
 		 * 
-		 * @param type
+		 * @param <T>
 		 *            数据类型
+		 * @param type
+		 *            对象类型
+		 * @param field
+		 *            字段对象
 		 * @return 随机数生成接口
 		 */
-		public <T> RandomGenerator<T> getRandomGenerator(Class<T> type);
-
-	}
-
-	/**
-	 * 属性随机数生成接口工厂
-	 * 
-	 * @author yongqiangwu
-	 *
-	 */
-	public static interface PropertyRandomGeneratorFactory {
-		/**
-		 * 获取随机数生成接口
-		 * 
-		 * @param property
-		 *            属性名称
-		 * @return 随机数生成接口
-		 */
-		public RandomGenerator<?> getRandomGenerator(String property);
+		public <T> RandomGenerator<T> getRandomGenerator(Class<T> type, Field field);
 
 	}
 
@@ -109,10 +97,8 @@ public final class Randoms {
 	 */
 	public static class RandomBeanFactory<T> {
 		protected final Class<T> type; // 对象类型
-		private PropertyExcludeStrategy propertyExcludeStrategy;
-		private TypeRandomGeneratorFactory typeRandomGeneratorFactory;
-		private PropertyRandomGeneratorFactory propertyRandomGeneratorFactory;
-		private final StringBuilder property = new StringBuilder(); // 当前属性名称
+		private ExcludeStrategy excludeStrategy;
+		private RandomGeneratorFactory randomGeneratorFactory;
 		private final LinkedList<Class<?>> executed = new LinkedList<Class<?>>(); // 已执行对象类型
 
 		public RandomBeanFactory(Class<T> type) {
@@ -136,8 +122,11 @@ public final class Randoms {
 			if (type == null) {
 				throw new IllegalArgumentException("Illegal type:" + type);
 			}
-			RandomGenerator<?> generator = this.typeRandomGeneratorFactory == null ? null
-					: this.typeRandomGeneratorFactory.getRandomGenerator(type);
+			if (this.excludeStrategy != null && this.excludeStrategy.exclude(type, null)) {
+				return null;
+			}
+			RandomGenerator<?> generator = this.randomGeneratorFactory == null ? null
+					: this.randomGeneratorFactory.getRandomGenerator(type, null);
 			if (generator != null) {
 				return (M) generator.generate();
 			}
@@ -175,18 +164,12 @@ public final class Randoms {
 			this.executed.add(type);
 			M instance = Beans.getInstance(type);
 			for (Field field : Beans.getFields(type)) {
-				if (this.property.length() > 0) {
-					this.property.append('.');
-				}
-				this.property.append(field.getName());
-				String fullname = this.property.toString();
-				if (this.propertyExcludeStrategy != null && this.propertyExcludeStrategy.exclude(fullname)) {
+				if (this.excludeStrategy != null && this.excludeStrategy.exclude(type, field)) {
 					continue;
 				}
-
 				Object value = null;
-				generator = this.propertyRandomGeneratorFactory == null ? null
-						: this.propertyRandomGeneratorFactory.getRandomGenerator(fullname);
+				generator = this.randomGeneratorFactory == null ? null
+						: this.randomGeneratorFactory.getRandomGenerator(type, field);
 				if (generator != null) {
 					value = generator.generate();
 				} else if (Map.class.isAssignableFrom(field.getType())) {
@@ -216,11 +199,6 @@ public final class Randoms {
 				} finally {
 					field.setAccessible(false);
 				}
-				if (this.property.length() == field.getName().length()) {
-					this.property.delete(0, this.property.length());
-				} else {
-					this.property.delete(this.property.length() - field.getName().length() - 1, this.property.length());
-				}
 			}
 			this.executed.removeLast();
 			return instance;
@@ -229,36 +207,24 @@ public final class Randoms {
 		/**
 		 * 注册随机生成属性排除策略
 		 * 
-		 * @param propertyExcludeStrategy
+		 * @param excludeStrategy
 		 *            随机生成属性排除策略
 		 * @return 随机对象实例生成工厂
 		 */
-		public RandomBeanFactory<T> register(PropertyExcludeStrategy propertyExcludeStrategy) {
-			this.propertyExcludeStrategy = propertyExcludeStrategy;
+		public RandomBeanFactory<T> register(ExcludeStrategy excludeStrategy) {
+			this.excludeStrategy = excludeStrategy;
 			return this;
 		}
 
 		/**
 		 * 注册随机数生成接口工厂
 		 * 
-		 * @param typeRandomGeneratorFactory
-		 *            类型随机数生成接口工厂
+		 * @param randomGeneratorFactory
+		 *            随机数生成接口工厂
 		 * @return 随机对象实例生成工厂
 		 */
-		public RandomBeanFactory<T> register(TypeRandomGeneratorFactory typeRandomGeneratorFactory) {
-			this.typeRandomGeneratorFactory = typeRandomGeneratorFactory;
-			return this;
-		}
-
-		/**
-		 * 注册随机数生成接口工厂
-		 * 
-		 * @param propertyRandomGeneratorFactory
-		 *            属性随机数生成接口工厂
-		 * @return 随机对象实例生成工厂
-		 */
-		public RandomBeanFactory<T> register(PropertyRandomGeneratorFactory propertyRandomGeneratorFactory) {
-			this.propertyRandomGeneratorFactory = propertyRandomGeneratorFactory;
+		public RandomBeanFactory<T> register(RandomGeneratorFactory randomGeneratorFactory) {
+			this.randomGeneratorFactory = randomGeneratorFactory;
 			return this;
 		}
 

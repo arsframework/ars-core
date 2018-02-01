@@ -2,9 +2,7 @@ package ars.util;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.List;
 import java.util.Date;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,6 +46,60 @@ public final class Randoms {
 	}
 
 	/**
+	 * 随机生成属性排除策略接口
+	 * 
+	 * @author yongqiangwu
+	 *
+	 */
+	public static interface PropertyExcludeStrategy {
+		/**
+		 * 判断是否排除
+		 * 
+		 * @param property
+		 *            属性名称
+		 * @return true/false
+		 */
+		public boolean exclude(String property);
+
+	}
+
+	/**
+	 * 类型随机数生成接口工厂
+	 * 
+	 * @author yongqiangwu
+	 *
+	 */
+	public static interface TypeRandomGeneratorFactory {
+		/**
+		 * 获取随机数生成接口
+		 * 
+		 * @param type
+		 *            数据类型
+		 * @return 随机数生成接口
+		 */
+		public <T> RandomGenerator<T> getRandomGenerator(Class<T> type);
+
+	}
+
+	/**
+	 * 属性随机数生成接口工厂
+	 * 
+	 * @author yongqiangwu
+	 *
+	 */
+	public static interface PropertyRandomGeneratorFactory {
+		/**
+		 * 获取随机数生成接口
+		 * 
+		 * @param property
+		 *            属性名称
+		 * @return 随机数生成接口
+		 */
+		public RandomGenerator<?> getRandomGenerator(String property);
+
+	}
+
+	/**
 	 * 随机对象实例生成工厂
 	 * 
 	 * @author yongqiangwu
@@ -57,11 +109,11 @@ public final class Randoms {
 	 */
 	public static class RandomBeanFactory<T> {
 		protected final Class<T> type; // 对象类型
-		private final List<String> excludes = new ArrayList<String>(0);
+		private PropertyExcludeStrategy propertyExcludeStrategy;
+		private TypeRandomGeneratorFactory typeRandomGeneratorFactory;
+		private PropertyRandomGeneratorFactory propertyRandomGeneratorFactory;
 		private final StringBuilder property = new StringBuilder(); // 当前属性名称
 		private final LinkedList<Class<?>> executed = new LinkedList<Class<?>>(); // 已执行对象类型
-		private final Map<Class<?>, RandomGenerator<?>> typeGenerators = new HashMap<Class<?>, RandomGenerator<?>>(0);
-		private final Map<String, RandomGenerator<?>> propertyGenerators = new HashMap<String, RandomGenerator<?>>(0);
 
 		public RandomBeanFactory(Class<T> type) {
 			if (type == null) {
@@ -84,7 +136,8 @@ public final class Randoms {
 			if (type == null) {
 				throw new IllegalArgumentException("Illegal type:" + type);
 			}
-			RandomGenerator<?> generator = this.typeGenerators.get(type);
+			RandomGenerator<?> generator = this.typeRandomGeneratorFactory == null ? null
+					: this.typeRandomGeneratorFactory.getRandomGenerator(type);
 			if (generator != null) {
 				return (M) generator.generate();
 			}
@@ -127,12 +180,13 @@ public final class Randoms {
 				}
 				this.property.append(field.getName());
 				String fullname = this.property.toString();
-				if (!this.excludes.isEmpty() && this.excludes.contains(fullname)) {
+				if (this.propertyExcludeStrategy != null && this.propertyExcludeStrategy.exclude(fullname)) {
 					continue;
 				}
 
 				Object value = null;
-				generator = this.propertyGenerators.get(fullname);
+				generator = this.propertyRandomGeneratorFactory == null ? null
+						: this.propertyRandomGeneratorFactory.getRandomGenerator(fullname);
 				if (generator != null) {
 					value = generator.generate();
 				} else if (Map.class.isAssignableFrom(field.getType())) {
@@ -173,57 +227,38 @@ public final class Randoms {
 		}
 
 		/**
-		 * 设置排除属性
+		 * 注册随机生成属性排除策略
 		 * 
-		 * @param properties
-		 *            属性名称数组
+		 * @param propertyExcludeStrategy
+		 *            随机生成属性排除策略
 		 * @return 随机对象实例生成工厂
 		 */
-		public RandomBeanFactory<T> excludes(String... properties) {
-			this.excludes.clear();
-			if (properties != null && properties.length > 0) {
-				this.excludes.addAll(Arrays.asList(properties));
-			}
+		public RandomBeanFactory<T> register(PropertyExcludeStrategy propertyExcludeStrategy) {
+			this.propertyExcludeStrategy = propertyExcludeStrategy;
 			return this;
 		}
 
 		/**
-		 * 注册随机生成器
+		 * 注册随机数生成接口工厂
 		 * 
-		 * @param type
-		 *            类型
-		 * @param generator
-		 *            生成器
+		 * @param typeRandomGeneratorFactoryy
+		 *            类型随机数生成接口工厂
 		 * @return 随机对象实例生成工厂
 		 */
-		public RandomBeanFactory<T> registerGenerator(Class<?> type, RandomGenerator<?> generator) {
-			if (type == null) {
-				throw new IllegalArgumentException("Illegal type:" + type);
-			}
-			if (generator == null) {
-				throw new IllegalArgumentException("Illegal generator:" + generator);
-			}
-			this.typeGenerators.put(type, generator);
+		public RandomBeanFactory<T> register(TypeRandomGeneratorFactory typeRandomGeneratorFactoryy) {
+			this.typeRandomGeneratorFactory = typeRandomGeneratorFactoryy;
 			return this;
 		}
 
 		/**
-		 * 注册随机生成器
+		 * 注册随机数生成接口工厂
 		 * 
-		 * @param property
-		 *            属性名称
-		 * @param generator
-		 *            生成器
+		 * @param propertyRandomGeneratorFactory
+		 *            属性随机数生成接口工厂
 		 * @return 随机对象实例生成工厂
 		 */
-		public RandomBeanFactory<T> registerGenerator(String property, RandomGenerator<?> generator) {
-			if (property == null) {
-				throw new IllegalArgumentException("Illegal property:" + property);
-			}
-			if (generator == null) {
-				throw new IllegalArgumentException("Illegal generator:" + generator);
-			}
-			this.propertyGenerators.put(property, generator);
+		public RandomBeanFactory<T> register(PropertyRandomGeneratorFactory propertyRandomGeneratorFactory) {
+			this.propertyRandomGeneratorFactory = propertyRandomGeneratorFactory;
 			return this;
 		}
 

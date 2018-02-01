@@ -241,12 +241,12 @@ public final class Randoms {
 		/**
 		 * 注册随机数生成接口工厂
 		 * 
-		 * @param typeRandomGeneratorFactoryy
+		 * @param typeRandomGeneratorFactory
 		 *            类型随机数生成接口工厂
 		 * @return 随机对象实例生成工厂
 		 */
-		public RandomBeanFactory<T> register(TypeRandomGeneratorFactory typeRandomGeneratorFactoryy) {
-			this.typeRandomGeneratorFactory = typeRandomGeneratorFactoryy;
+		public RandomBeanFactory<T> register(TypeRandomGeneratorFactory typeRandomGeneratorFactory) {
+			this.typeRandomGeneratorFactory = typeRandomGeneratorFactory;
 			return this;
 		}
 

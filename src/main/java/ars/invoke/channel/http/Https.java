@@ -1420,6 +1420,26 @@ public final class Https {
 	 *            HTTP响应对象
 	 * @param template
 	 *            视图模板名称
+	 * @return 渲染后的视图内容
+	 * @throws IOException
+	 *             IO操作异常
+	 * @throws ServletException
+	 *             Servlet操作异常
+	 */
+	public static String render(HttpServletRequest request, HttpServletResponse response, String template)
+			throws IOException, ServletException {
+		return render(request, response, template, Collections.<String, Object>emptyMap());
+	}
+
+	/**
+	 * 视图渲染
+	 * 
+	 * @param request
+	 *            HTTP请求对象
+	 * @param response
+	 *            HTTP响应对象
+	 * @param template
+	 *            视图模板名称
 	 * @param context
 	 *            渲染上下文数据
 	 * @return 渲染后的视图内容
@@ -1436,7 +1456,7 @@ public final class Https {
 		if (response == null) {
 			throw new IllegalArgumentException("Illegal response:" + response);
 		}
-		template = Strings.replace(template, "\\", "/");
+		template = Strings.replace(Strings.replace(template, "\\", "/"), "//", "/");
 		if (template != null && template.charAt(0) != '/') {
 			template = new StringBuilder("/").append(template).toString();
 		}

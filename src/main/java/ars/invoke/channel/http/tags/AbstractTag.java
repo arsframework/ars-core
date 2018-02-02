@@ -151,7 +151,7 @@ public abstract class AbstractTag extends SimpleTagSupport {
 		try {
 			value = this.execute();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			value = e;
 		}
 		if (value instanceof IOException) {
 			throw (IOException) value;
@@ -159,6 +159,8 @@ public abstract class AbstractTag extends SimpleTagSupport {
 			throw (JspException) value;
 		} else if (value instanceof RuntimeException) {
 			throw (RuntimeException) value;
+		} else if (value instanceof Exception) {
+			throw new RuntimeException((Exception) value);
 		} else if (value != null) {
 			if (!Strings.isEmpty(this.group)) {
 				value = Beans.getAssemblePropertyGroups(value, this.group, this.mapping);

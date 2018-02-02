@@ -29,11 +29,20 @@ import ars.invoke.channel.http.HttpRequester;
  * 
  */
 public abstract class AbstractHttpChannel implements HttpChannel {
-	private Context context;
-	private Redirector[] redirectors = new Redirector[0];
-	private Map<String, Render> renders = new HashMap<String, Render>(0);
-	private Map<String, String> templates = new HashMap<String, String>(0);
-	private Map<String, Converter> converters = new HashMap<String, Converter>(0);
+	private Context context; // 应用上下文
+	private String directory; // 文件目录
+	private Redirector[] redirectors = new Redirector[0]; // 请求重定向配置
+	private Map<String, Render> renders = new HashMap<String, Render>(0); // 视图渲染配置
+	private Map<String, String> templates = new HashMap<String, String>(0); // 模板映射
+	private Map<String, Converter> converters = new HashMap<String, Converter>(0); // 数据转换映射
+
+	public String getDirectory() {
+		return directory;
+	}
+
+	public void setDirectory(String directory) {
+		this.directory = directory;
+	}
 
 	public Redirector[] getRedirectors() {
 		return redirectors;
@@ -189,6 +198,9 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 			template = template.substring(0, index);
 		}
 		Render render = this.loolupRender(requester, template);
+		if (this.directory != null) {
+			template = new StringBuilder(this.directory).append('/').append(template).toString();
+		}
 		if (render == null) {
 			return Https.render(requester, template, content);
 		}
@@ -268,7 +280,7 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 		} else {
 			try {
 				value = this.render((HttpRequester) requester, template, null);
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				value = Beans.getThrowableCause(e);
 			}
 		}

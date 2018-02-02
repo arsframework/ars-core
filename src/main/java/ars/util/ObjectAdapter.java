@@ -8,15 +8,6 @@ package ars.util;
  */
 public interface ObjectAdapter {
 	/**
-	 * 判断对象是否可适配
-	 * 
-	 * @param object
-	 *            被适配对象
-	 * @return true/false
-	 */
-	public boolean isAdaptable(Object object);
-
-	/**
 	 * 对象适配
 	 * 
 	 * @param object

@@ -77,22 +77,19 @@ public final class Jsons {
 	}
 
 	/**
-	 * 获取对象适配接口
+	 * 对象适配
 	 * 
 	 * @param object
-	 *            适配源对象
-	 * @return 对象适配接口
+	 *            被适配对象
+	 * @return 适配对象
 	 */
-	private static ObjectAdapter getAdapter(Object object) {
-		if (object == null || objectAdapters.length == 0) {
-			return null;
-		}
-		for (ObjectAdapter adapter : objectAdapters) {
-			if (adapter.isAdaptable(object)) {
-				return adapter;
+	public static Object adaption(Object object) {
+		if (object != null && objectAdapters.length > 0) {
+			for (ObjectAdapter adapter : objectAdapters) {
+				object = adapter.adaption(object);
 			}
 		}
-		return null;
+		return object;
 	}
 
 	/**
@@ -108,7 +105,7 @@ public final class Jsons {
 	 *             IO操作异常
 	 */
 	private static void write(JsonWriter writer, Object object, int level) throws IOException {
-		ObjectAdapter adapter;
+		Object adapted;
 		if (object == null || level > 2) {
 			writer.nullValue();
 		} else if (object instanceof String) {
@@ -119,8 +116,8 @@ public final class Jsons {
 			writer.value((Boolean) object);
 		} else if (Beans.isMetaClass(object.getClass())) {
 			writer.value(Strings.toString(object));
-		} else if ((adapter = getAdapter(object)) != null) {
-			write(writer, adapter.adaption(object), level);
+		} else if ((adapted = adaption(object)) != object) {
+			write(writer, adapted, level);
 		} else if (object instanceof Formable) {
 			write(writer, ((Formable) object).format(), level + 1);
 		} else if (object instanceof Map) {

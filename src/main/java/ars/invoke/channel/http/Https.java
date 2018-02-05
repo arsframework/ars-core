@@ -1456,8 +1456,16 @@ public final class Https {
 		if (response == null) {
 			throw new IllegalArgumentException("Illegal response:" + response);
 		}
+		if (template == null) {
+			throw new IllegalArgumentException("Illegal template:" + template);
+		}
+		if (context == null) {
+			throw new IllegalArgumentException("Illegal context:" + context);
+		}
 		template = Strings.replace(Strings.replace(template, "\\", "/"), "//", "/");
-		if (template != null && template.charAt(0) != '/') {
+		if (!new File(ROOT_PATH, template).exists()) {
+			throw new IOException("Template does not exist:" + template);
+		} else if (template.charAt(0) != '/') {
 			template = new StringBuilder("/").append(template).toString();
 		}
 		RequestDispatcher dispatcher = request.getRequestDispatcher(template);

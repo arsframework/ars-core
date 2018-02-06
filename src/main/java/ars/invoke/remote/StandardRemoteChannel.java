@@ -306,8 +306,8 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 		Map<String, Object> parameters = (Map<String, Object>) Jsons.parse(parameter);
 		for (Entry<String, Object> entry : parameters.entrySet()) {
 			Object value = entry.getValue();
-			if (value instanceof String && UPLOAD_FILE_PATTERN.matcher((String) value).matches()) {
-				String name = (String) value;
+			if (value instanceof CharSequence && UPLOAD_FILE_PATTERN.matcher((CharSequence) value).matches()) {
+				String name = ((CharSequence) value).toString();
 				entry.setValue(
 						new Nfile(name.substring(name.indexOf('.') + 1), new File(Remotes.getDirectory(), name)));
 			} else if (value instanceof Object[]) {
@@ -315,8 +315,9 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 				if (array.length > 0) {
 					for (int i = 0; i < array.length; i++) {
 						Object item = array[i];
-						if (item instanceof String && UPLOAD_FILE_PATTERN.matcher((String) item).matches()) {
-							String name = (String) item;
+						if (item instanceof CharSequence
+								&& UPLOAD_FILE_PATTERN.matcher((CharSequence) item).matches()) {
+							String name = ((CharSequence) item).toString();
 							array[i] = new Nfile(name.substring(name.indexOf('.') + 1),
 									new File(Remotes.getDirectory(), name));
 						}
@@ -328,8 +329,9 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 					Iterator<Object> iterator = collection.iterator();
 					while (iterator.hasNext()) {
 						Object item = iterator.next();
-						if (item instanceof String && UPLOAD_FILE_PATTERN.matcher((String) item).matches()) {
-							String name = (String) item;
+						if (item instanceof CharSequence
+								&& UPLOAD_FILE_PATTERN.matcher((CharSequence) item).matches()) {
+							String name = ((CharSequence) item).toString();
 							collection.add(new Nfile(name.substring(name.indexOf('.') + 1),
 									new File(Remotes.getDirectory(), name)));
 							iterator.remove();

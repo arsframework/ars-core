@@ -4,13 +4,14 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.ByteArrayOutputStream;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import ars.util.Beans;
 import ars.util.Streams;
 import ars.util.Strings;
 import ars.invoke.Context;
@@ -128,18 +129,28 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 	 * @return 模板路径
 	 */
 	protected String lookupTemplate(HttpRequester requester) {
+		String template = null;
 		String uri = requester.getUri();
 		if (uri.indexOf('.') >= 0) {
-			return uri;
-		}
-		if (!this.templates.isEmpty()) {
+			template = uri;
+		} else if (!this.templates.isEmpty()) {
 			for (Entry<String, String> entry : this.templates.entrySet()) {
 				if (Strings.matches(uri, entry.getKey())) {
-					return entry.getValue();
+					template = entry.getValue();
+					break;
 				}
 			}
 		}
-		return null;
+		if (template != null) {
+			int index = template.indexOf('?');
+			if (index > 0) {
+				template = template.substring(0, index);
+			}
+			if (this.directory != null) {
+				template = new StringBuilder(this.directory).append('/').append(template).toString();
+			}
+		}
+		return template;
 	}
 
 	/**
@@ -189,23 +200,45 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 	 *            模板路径
 	 * @param content
 	 *            数据内容
-	 * @return 模板内容
+	 * @return 渲染结果内容
 	 * @throws Exception
 	 *             操作异常
 	 */
 	protected String render(HttpRequester requester, String template, Object content) throws Exception {
-		int index = template.indexOf('?');
-		if (index > 0) {
-			template = template.substring(0, index);
-		}
 		Render render = this.loolupRender(requester, template);
-		if (this.directory != null) {
-			template = new StringBuilder(this.directory).append('/').append(template).toString();
-		}
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		if (render == null) {
-			return Https.render(requester, template, content);
+			Https.render(requester, template, content, bos);
+		} else {
+			render.execute(requester, template, content, bos);
 		}
-		return render.execute(requester, template, content);
+		return bos.toString();
+	}
+
+	/**
+	 * 视图呈现
+	 * 
+	 * @param requester
+	 *            请求对象
+	 * @param template
+	 *            模板路径
+	 * @param content
+	 *            数据内容
+	 * @throws Exception
+	 *             操作异常
+	 */
+	protected void present(HttpRequester requester, String template, Object content) throws Exception {
+		Render render = this.loolupRender(requester, template);
+		OutputStream os = requester.getHttpServletResponse().getOutputStream();
+		try {
+			if (render == null) {
+				Https.render(requester, template, content, os);
+			} else {
+				render.execute(requester, template, content, os);
+			}
+		} finally {
+			os.close();
+		}
 	}
 
 	/**
@@ -226,11 +259,14 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 				continue;
 			}
 			if (redirect.indexOf('.') > 0) {
-				Https.response(requester.getHttpServletResponse(), this.render(requester, redirect, content));
+				if (this.directory != null) {
+					redirect = new StringBuilder(this.directory).append('/').append(redirect).toString();
+				}
+				this.present(requester, redirect, content);
 			} else {
-				String path = requester.getHttpServletRequest().getContextPath();
-				if (path != null && !path.isEmpty()) {
-					redirect = new StringBuilder(path).append(redirect).toString();
+				String context = requester.getHttpServletRequest().getContextPath();
+				if (context != null && !context.isEmpty()) {
+					redirect = new StringBuilder(context).append(redirect).toString();
 				}
 				requester.getHttpServletResponse().sendRedirect(redirect);
 			}
@@ -275,23 +311,32 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 		Invokes.setCurrentRequester(requester);
 
 		Object value = null;
+		Converter converter = null;
 		String template = this.lookupTemplate(requester);
 		if (template == null) {
-			value = this.dispatch(requester);
+			try {
+				value = this.dispatch(requester);
+			} catch (Exception e) {
+				value = e;
+			}
+			if (!Streams.isStream(value) && (converter = this.lookupConverter(requester)) != null) {
+				value = converter.serialize(value);
+			}
+		} else if (Strings.isEmpty(request.getContentType()) || (converter = this.lookupConverter(requester)) == null) {
+			try {
+				this.present(requester, template, null);
+			} catch (Exception e) {
+				value = e;
+			}
 		} else {
 			try {
-				value = this.render((HttpRequester) requester, template, null);
+				value = this.render(requester, template, null);
 			} catch (Exception e) {
-				value = Beans.getThrowableCause(e);
+				value = e;
 			}
-		}
-
-		Converter converter = null;
-		if (!Streams.isStream(value) && !Strings.isEmpty(request.getContentType())
-				&& (converter = this.lookupConverter(requester)) != null) {
 			value = converter.serialize(value);
 		}
-		if (converter != null || !this.redirect((HttpRequester) requester, value)) {
+		if (value != null && !this.redirect(requester, value)) {
 			if (value instanceof Exception) {
 				throw (Exception) value;
 			}

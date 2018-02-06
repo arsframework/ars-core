@@ -463,8 +463,8 @@ public final class Strings {
 	 * @return 字符串形式
 	 */
 	public static String toString(Object object) {
-		if (object instanceof String) {
-			return (String) object;
+		if (object instanceof CharSequence) {
+			return ((CharSequence) object).toString();
 		} else if (object instanceof Date) {
 			return Dates.format((Date) object);
 		} else if (object instanceof Class) {

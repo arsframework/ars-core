@@ -1450,6 +1450,52 @@ public final class Https {
 	 */
 	public static String render(HttpServletRequest request, HttpServletResponse response, String template,
 			Map<String, Object> context) throws IOException, ServletException {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		render(request, response, template, context, bos);
+		return bos.toString();
+	}
+
+	/**
+	 * 视图渲染
+	 * 
+	 * @param request
+	 *            HTTP请求对象
+	 * @param response
+	 *            HTTP响应对象
+	 * @param template
+	 *            视图模板名称
+	 * @param output
+	 *            数据输出流
+	 * @throws IOException
+	 *             IO操作异常
+	 * @throws ServletException
+	 *             Servlet操作异常
+	 */
+	public static void render(HttpServletRequest request, HttpServletResponse response, String template,
+			OutputStream output) throws IOException, ServletException {
+		render(request, response, template, Collections.<String, Object>emptyMap(), output);
+	}
+
+	/**
+	 * 视图渲染
+	 * 
+	 * @param request
+	 *            HTTP请求对象
+	 * @param response
+	 *            HTTP响应对象
+	 * @param template
+	 *            视图模板名称
+	 * @param context
+	 *            渲染上下文数据
+	 * @param output
+	 *            数据输出流
+	 * @throws IOException
+	 *             IO操作异常
+	 * @throws ServletException
+	 *             Servlet操作异常
+	 */
+	public static void render(HttpServletRequest request, HttpServletResponse response, String template,
+			Map<String, Object> context, OutputStream output) throws IOException, ServletException {
 		if (request == null) {
 			throw new IllegalArgumentException("Illegal request:" + request);
 		}
@@ -1462,15 +1508,18 @@ public final class Https {
 		if (context == null) {
 			throw new IllegalArgumentException("Illegal context:" + context);
 		}
+		if (output == null) {
+			throw new IllegalArgumentException("Illegal output:" + output);
+		}
 		template = Strings.replace(Strings.replace(template, "\\", "/"), "//", "/");
-		if (!new File(ROOT_PATH, template).exists()) {
-			throw new IOException("Template does not exist:" + template);
-		} else if (template.charAt(0) != '/') {
+		if (template.charAt(0) != '/') {
 			template = new StringBuilder("/").append(template).toString();
 		}
+		if (!new File(ROOT_PATH, template).exists()) {
+			throw new IOException("Template does not exist:" + template);
+		}
 		RequestDispatcher dispatcher = request.getRequestDispatcher(template);
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		final PrintWriter writer = new PrintWriter(new OutputStreamWriter(os));
+		final PrintWriter writer = new PrintWriter(new OutputStreamWriter(output));
 		try {
 			for (Entry<String, Object> entry : context.entrySet()) {
 				request.setAttribute(entry.getKey(), entry.getValue());
@@ -1484,7 +1533,6 @@ public final class Https {
 
 			});
 			writer.flush();
-			return os.toString();
 		} finally {
 			writer.close();
 		}
@@ -1507,14 +1555,34 @@ public final class Https {
 	 */
 	public static String render(HttpRequester requester, String template, Object content)
 			throws IOException, ServletException {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		render(requester, template, content, bos);
+		return bos.toString();
+	}
+
+	/**
+	 * 视图渲染
+	 * 
+	 * @param requester
+	 *            请求对象
+	 * @param template
+	 *            视图模板
+	 * @param content
+	 *            渲染内容
+	 * @param output
+	 *            数据输出流
+	 * @throws IOException
+	 *             IO操作异常
+	 * @throws ServletException
+	 *             Servlet操作异常
+	 */
+	public static void render(HttpRequester requester, String template, Object content, OutputStream output)
+			throws IOException, ServletException {
 		if (requester == null) {
 			throw new IllegalArgumentException("Illegal requester:" + requester);
 		}
-		if (template == null) {
-			throw new IllegalArgumentException("Illegal template:" + template);
-		}
-		return render(requester.getHttpServletRequest(), requester.getHttpServletResponse(), template,
-				getRenderContext(requester, content));
+		render(requester.getHttpServletRequest(), requester.getHttpServletResponse(), template,
+				getRenderContext(requester, content), output);
 	}
 
 	/**
@@ -1536,14 +1604,141 @@ public final class Https {
 	 */
 	public static String render(HttpRequester requester, String template, Object content,
 			Map<String, Object> parameters) throws IOException, ServletException {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		render(requester, template, content, parameters, bos);
+		return bos.toString();
+	}
+
+	/**
+	 * 视图渲染
+	 * 
+	 * @param requester
+	 *            请求对象
+	 * @param template
+	 *            视图模板
+	 * @param content
+	 *            渲染内容
+	 * @param parameters
+	 *            请求参数
+	 * @param output
+	 *            数据输出流
+	 * @throws IOException
+	 *             IO操作异常
+	 * @throws ServletException
+	 *             Servlet操作异常
+	 */
+	public static void render(HttpRequester requester, String template, Object content, Map<String, Object> parameters,
+			OutputStream output) throws IOException, ServletException {
 		if (requester == null) {
 			throw new IllegalArgumentException("Illegal requester:" + requester);
+		}
+		render(requester.getHttpServletRequest(), requester.getHttpServletResponse(), template,
+				getRenderContext(requester, content, parameters), output);
+	}
+
+	/**
+	 * 视图呈现
+	 * 
+	 * @param requester
+	 *            请求对象
+	 * @param template
+	 *            视图模板
+	 * @param content
+	 *            渲染内容
+	 * @throws IOException
+	 *             IO操作异常
+	 * @throws ServletException
+	 *             Servlet操作异常
+	 */
+	public static void present(HttpRequester requester, String template, Object content)
+			throws IOException, ServletException {
+		if (requester == null) {
+			throw new IllegalArgumentException("Illegal requester:" + requester);
+		}
+		present(requester.getHttpServletRequest(), requester.getHttpServletResponse(), template,
+				getRenderContext(requester, content));
+	}
+
+	/**
+	 * 视图呈现
+	 * 
+	 * @param requester
+	 *            请求对象
+	 * @param template
+	 *            视图模板
+	 * @param content
+	 *            渲染内容
+	 * @param parameters
+	 *            请求参数
+	 * @throws IOException
+	 *             IO操作异常
+	 * @throws ServletException
+	 *             Servlet操作异常
+	 */
+	public static void present(HttpRequester requester, String template, Object content, Map<String, Object> parameters)
+			throws IOException, ServletException {
+		if (requester == null) {
+			throw new IllegalArgumentException("Illegal requester:" + requester);
+		}
+		present(requester.getHttpServletRequest(), requester.getHttpServletResponse(), template,
+				getRenderContext(requester, content, parameters));
+	}
+
+	/**
+	 * 视图呈现
+	 * 
+	 * @param request
+	 *            HTTP请求对象
+	 * @param response
+	 *            HTTP响应对象
+	 * @param template
+	 *            视图模板名称
+	 * @throws IOException
+	 *             IO操作异常
+	 * @throws ServletException
+	 *             Servlet操作异常
+	 */
+	public static void present(HttpServletRequest request, HttpServletResponse response, String template)
+			throws IOException, ServletException {
+		present(request, response, template, Collections.<String, Object>emptyMap());
+	}
+
+	/**
+	 * 视图呈现
+	 * 
+	 * @param request
+	 *            HTTP请求对象
+	 * @param response
+	 *            HTTP响应对象
+	 * @param template
+	 *            视图模板名称
+	 * @param context
+	 *            渲染上下文数据
+	 * @throws IOException
+	 *             IO操作异常
+	 * @throws ServletException
+	 *             Servlet操作异常
+	 */
+	public static void present(HttpServletRequest request, HttpServletResponse response, String template,
+			Map<String, Object> context) throws IOException, ServletException {
+		if (request == null) {
+			throw new IllegalArgumentException("Illegal request:" + request);
+		}
+		if (response == null) {
+			throw new IllegalArgumentException("Illegal response:" + response);
 		}
 		if (template == null) {
 			throw new IllegalArgumentException("Illegal template:" + template);
 		}
-		return render(requester.getHttpServletRequest(), requester.getHttpServletResponse(), template,
-				getRenderContext(requester, content, parameters));
+		if (context == null) {
+			throw new IllegalArgumentException("Illegal context:" + context);
+		}
+		OutputStream bos = response.getOutputStream();
+		try {
+			render(request, response, template, context, bos);
+		} finally {
+			bos.close();
+		}
 	}
 
 	/**
@@ -1631,15 +1826,8 @@ public final class Https {
 		}
 		OutputStream os = response.getOutputStream();
 		try {
-			if (object instanceof File) {
-				File file = (File) object;
-				response.setContentType("application/octet-stream");
-				response.setHeader("Content-Disposition",
-						"attachment; filename=" + new String(file.getName().getBytes(), "ISO-8859-1"));
-				response.setHeader("Content-Length", String.valueOf(file.length()));
-				Streams.write(file, os);
-			} else if (object instanceof Nfile) {
-				Nfile file = (Nfile) object;
+			if (object instanceof File || object instanceof Nfile) {
+				Nfile file = object instanceof Nfile ? (Nfile) object : new Nfile((File) object);
 				response.setContentType("application/octet-stream");
 				response.setHeader("Content-Disposition",
 						"attachment; filename=" + new String(file.getName().getBytes(), "ISO-8859-1"));

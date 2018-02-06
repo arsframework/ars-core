@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Collections;
 
-import ars.util.Beans;
 import ars.util.Strings;
 import ars.invoke.Router;
 import ars.invoke.Invoker;
@@ -171,7 +170,7 @@ public class StandardRouter implements Router {
 					return wrapper;
 				}
 			}
-			throw new AccessDeniedException("error.resource.nonexistent");
+			throw new AccessDeniedException("error.resource.undefined");
 		}
 		return wrapper;
 	}
@@ -232,7 +231,7 @@ public class StandardRouter implements Router {
 		} finally {
 			this.completeInvoke(requester, result);
 		}
-		return result instanceof Throwable ? Beans.getThrowableCause((Throwable) result) : result;
+		return result;
 	}
 
 	@Override

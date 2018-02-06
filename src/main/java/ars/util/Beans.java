@@ -273,7 +273,7 @@ public final class Beans {
 	 * @return true/false
 	 */
 	public static boolean isEmpty(Object object) {
-		if (object == null || (object instanceof String && ((String) object).isEmpty())
+		if (object == null || (object instanceof CharSequence && ((CharSequence) object).length() == 0)
 				|| (object instanceof Map && ((Map<?, ?>) object).isEmpty())
 				|| (object instanceof Collection && ((Collection<?>) object).isEmpty())
 				|| (object instanceof Iterable && !((Iterable<?>) object).iterator().hasNext())) {
@@ -1996,7 +1996,7 @@ public final class Beans {
 	 * @return 字节对象
 	 */
 	public static Byte toByte(Class<Byte> type, Object object) {
-		if (object == null || (object instanceof String && ((String) object).isEmpty())) {
+		if (object == null || (object instanceof CharSequence && ((CharSequence) object).length() == 0)) {
 			return type == byte.class ? (byte) 0 : null;
 		}
 		return (Byte) (object instanceof Byte ? object
@@ -2013,7 +2013,7 @@ public final class Beans {
 	 * @return 字符对象
 	 */
 	public static Character toCharacter(Class<Character> type, Object object) {
-		if (object == null || (object instanceof String && ((String) object).isEmpty())) {
+		if (object == null || (object instanceof CharSequence && ((CharSequence) object).length() == 0)) {
 			return type == char.class ? (char) 0 : null;
 		}
 		return (Character) (object instanceof Character ? object
@@ -2030,7 +2030,7 @@ public final class Beans {
 	 * @return 真假对象
 	 */
 	public static Boolean toBoolean(Class<Boolean> type, Object object) {
-		if (object == null || (object instanceof String && ((String) object).isEmpty())) {
+		if (object == null || (object instanceof CharSequence && ((CharSequence) object).length() == 0)) {
 			return type == boolean.class ? false : null;
 		}
 		return (Boolean) (object instanceof Boolean ? object : Boolean.parseBoolean(object.toString()));
@@ -2046,7 +2046,7 @@ public final class Beans {
 	 * @return 整形对象
 	 */
 	public static Integer toInteger(Class<Integer> type, Object object) {
-		if (object == null || (object instanceof String && ((String) object).isEmpty())) {
+		if (object == null || (object instanceof CharSequence && ((CharSequence) object).length() == 0)) {
 			return type == int.class ? 0 : null;
 		}
 		return (Integer) (object instanceof Character ? object
@@ -2063,7 +2063,7 @@ public final class Beans {
 	 * @return 短整形对象
 	 */
 	public static Short toShort(Class<Short> type, Object object) {
-		if (object == null || (object instanceof String && ((String) object).isEmpty())) {
+		if (object == null || (object instanceof CharSequence && ((CharSequence) object).length() == 0)) {
 			return type == short.class ? (short) 0 : null;
 		}
 		return (Short) (object instanceof Short ? object
@@ -2080,7 +2080,7 @@ public final class Beans {
 	 * @return 单精度浮点对象
 	 */
 	public static Float toFloat(Class<Float> type, Object object) {
-		if (object == null || (object instanceof String && ((String) object).isEmpty())) {
+		if (object == null || (object instanceof CharSequence && ((CharSequence) object).length() == 0)) {
 			return type == float.class ? (float) 0 : null;
 		}
 		return (Float) (object instanceof Short ? object
@@ -2097,7 +2097,7 @@ public final class Beans {
 	 * @return 双精度浮点对象
 	 */
 	public static Double toDouble(Class<Double> type, Object object) {
-		if (object == null || (object instanceof String && ((String) object).isEmpty())) {
+		if (object == null || (object instanceof CharSequence && ((CharSequence) object).length() == 0)) {
 			return type == double.class ? (double) 0 : null;
 		}
 		return (Double) (object instanceof Double ? object
@@ -2114,7 +2114,7 @@ public final class Beans {
 	 * @return 长整形对象
 	 */
 	public static Long toLong(Class<Long> type, Object object) {
-		if (object == null || (object instanceof String && ((String) object).isEmpty())) {
+		if (object == null || (object instanceof CharSequence && ((CharSequence) object).length() == 0)) {
 			return type == long.class ? (long) 0 : null;
 		}
 		return (Long) (object instanceof Long ? object
@@ -2134,7 +2134,7 @@ public final class Beans {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends Enum<T>> T toEnum(Class<T> type, Object object) {
-		return object == null || (object instanceof String && ((String) object).isEmpty()) ? null
+		return object == null || (object instanceof CharSequence && ((CharSequence) object).length() == 0) ? null
 				: object instanceof Enum ? (T) object : Enum.valueOf(type, object.toString());
 	}
 
@@ -2146,7 +2146,7 @@ public final class Beans {
 	 * @return 日期
 	 */
 	public static Date toDate(Object object) {
-		return object == null || (object instanceof String && ((String) object).isEmpty()) ? null
+		return object == null || (object instanceof CharSequence && ((CharSequence) object).length() == 0) ? null
 				: object instanceof Date ? (Date) object
 						: object instanceof Number ? new Date(((Number) object).longValue())
 								: Dates.parse(object.toString());
@@ -2161,7 +2161,7 @@ public final class Beans {
 	 */
 	public static Class<?> toClass(Object object) {
 		try {
-			return object == null || (object instanceof String && ((String) object).isEmpty()) ? null
+			return object == null || (object instanceof CharSequence && ((CharSequence) object).length() == 0) ? null
 					: object instanceof Class ? (Class<?>) object : Class.forName(object.toString());
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);

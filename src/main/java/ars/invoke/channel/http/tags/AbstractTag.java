@@ -168,7 +168,7 @@ public abstract class AbstractTag extends SimpleTagSupport {
 				value = Strings.isEmpty(this.mapping) ? Beans.getAssemblePropertyValue(value, this.property)
 						: Beans.getAssemblePropertyValue(value, this.property, this.mapping);
 			}
-			if (!(value instanceof String)) {
+			if (!(value instanceof CharSequence)) {
 				if (this.json) {
 					value = Jsons.format(value);
 				} else if (this.string) {

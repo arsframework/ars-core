@@ -288,8 +288,8 @@ public final class Apis {
 						if (value == null) {
 							value = condition.getValue();
 						}
-						if (regex != null && value instanceof String
-								&& !Strings.getPattern(regex).matcher((String) value).matches()) {
+						if (regex != null && value instanceof CharSequence
+								&& !Strings.getPattern(regex).matcher((CharSequence) value).matches()) {
 							throw new ParameterInvalidException(name, "invalid");
 						}
 						_parameters[i] = Beans.toObject(type, value);

@@ -108,8 +108,8 @@ public final class Jsons {
 		Object adapted;
 		if (object == null || level > 2) {
 			writer.nullValue();
-		} else if (object instanceof String) {
-			writer.value((String) object);
+		} else if (object instanceof CharSequence) {
+			writer.value(((CharSequence) object).toString());
 		} else if (object instanceof Number) {
 			writer.value((Number) object);
 		} else if (object instanceof Boolean) {
@@ -205,11 +205,11 @@ public final class Jsons {
 						field.setAccessible(false);
 					}
 					writer.name(field.getName());
-					if (value instanceof String) {
-						value = Strings.escape((String) value);
+					if (value instanceof CharSequence) {
+						value = Strings.escape((CharSequence) value);
 					}
-					if (value == null || value instanceof String || value instanceof Number || value instanceof Boolean
-							|| Beans.isMetaClass(value.getClass())) {
+					if (value == null || value instanceof CharSequence || value instanceof Number
+							|| value instanceof Boolean || Beans.isMetaClass(value.getClass())) {
 						write(writer, value, level);
 					} else {
 						write(writer, value, level + 1);
@@ -246,7 +246,7 @@ public final class Jsons {
 	 * @return JSON字符串
 	 */
 	public static String format(Object object, boolean min) {
-		return object == null || object instanceof String ? (String) object
+		return object == null || object instanceof CharSequence ? ((CharSequence) object).toString()
 				: min ? minGson.toJson(object) : gson.toJson(object);
 	}
 

@@ -17,6 +17,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.ApplicationContextAware;
+import org.apache.http.conn.ClientConnectionManager;
 
 import ars.util.Jsons;
 import ars.util.Dates;
@@ -54,6 +55,7 @@ public class ApplicationConfiguration extends StandardRouter
 	private Messager messager; // 消息处理对象
 	private String pattern; // 资源地址匹配模式
 	private Map<String, String> configure; // 系统配置
+	private ClientConnectionManager httpClientManager; // Http客户端管理器
 	private SessionFactory sessionFactory = new CacheSessionFactory(); // 会话工厂
 	private ApplicationContext applicationContext; // 应用上下文对象
 	private boolean initialized, destroied; // Spring容器启动/销毁标记
@@ -84,6 +86,14 @@ public class ApplicationConfiguration extends StandardRouter
 
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
+	}
+
+	public ClientConnectionManager getHttpClientManager() {
+		return httpClientManager;
+	}
+
+	public void setHttpClientManager(ClientConnectionManager httpClientManager) {
+		this.httpClientManager = httpClientManager;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -124,6 +134,11 @@ public class ApplicationConfiguration extends StandardRouter
 			if (!iceItems.isEmpty()) {
 				Remotes.setConfigure(iceItems);
 			}
+		}
+
+		// 设置Http客户端管理器
+		if (this.httpClientManager != null) {
+			Https.setManager(this.httpClientManager);
 		}
 
 		// 设置json序列化对象适配器

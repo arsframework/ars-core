@@ -3,6 +3,7 @@ package ars.invoke.convert;
 import java.util.Map;
 import java.util.HashMap;
 
+import ars.util.Beans;
 import ars.invoke.InvokeException;
 import ars.invoke.convert.Converter;
 import ars.invoke.convert.ThrowableResolver;
@@ -84,6 +85,22 @@ public class StandardConvertWrapper implements Converter {
 	}
 
 	/**
+	 * 查找异常转换处理器
+	 * 
+	 * @param throwable
+	 *            异常对象
+	 * @return 异常转换处理器
+	 */
+	protected ThrowableResolver lookupThrowableResolver(Throwable throwable) {
+		for (ThrowableResolver resolver : this.throwableResolvers) {
+			if (resolver.isResolvable(throwable)) {
+				return resolver;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * 对象包装
 	 * 
 	 * @param object
@@ -110,24 +127,17 @@ public class StandardConvertWrapper implements Converter {
 			content = object;
 		}
 		if (object instanceof Throwable) {
-			boolean resolved = false;
-			Throwable throwable = (Throwable) object;
-			for (ThrowableResolver resolver : this.throwableResolvers) {
-				if (resolver.isResolvable(throwable)) {
-					code = resolver.getCode(throwable);
-					error = resolver.getMessage(throwable);
-					resolved = true;
-					break;
-				}
-			}
-			if (!resolved) {
-				if (object instanceof ParameterInvalidException) {
-					ParameterInvalidException exception = (ParameterInvalidException) object;
-					error = exception.getError();
-					content = exception.getName();
-				} else {
-					error = throwable.getMessage();
-				}
+			Throwable throwable = Beans.getThrowableCause((Throwable) object);
+			ThrowableResolver resolver = this.lookupThrowableResolver(throwable);
+			if (resolver != null) {
+				code = resolver.getCode(throwable);
+				error = resolver.getMessage(throwable);
+			} else if (throwable instanceof ParameterInvalidException) {
+				ParameterInvalidException exception = (ParameterInvalidException) object;
+				error = exception.getError();
+				content = exception.getName();
+			} else {
+				error = throwable.getMessage();
 			}
 		}
 		Map<String, Object> wrap = new HashMap<String, Object>(3);

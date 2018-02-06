@@ -23,6 +23,9 @@ public class StandardRemoteRequester extends StandardRequester implements Remote
 	public StandardRemoteRequester(Channel channel, Ice.Current current, Requester parent, Locale locale, String client,
 			String host, Token token, String uri, Map<String, Object> parameters) {
 		super(channel, parent, locale, client, host, token, uri, parameters);
+		if (current == null) {
+			throw new IllegalArgumentException("Illegal current:" + current);
+		}
 		this.current = current;
 	}
 

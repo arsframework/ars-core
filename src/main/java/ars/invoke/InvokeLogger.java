@@ -42,8 +42,8 @@ public class InvokeLogger implements InvokeListener<InvokeCompleteEvent> {
 	 */
 	protected void log(Requester requester, Object value, Date timestamp) {
 		boolean debug = logger.isDebugEnabled();
-		boolean success = !(value instanceof Throwable);
-		if (!success || (debug && (this.pattern == null || Strings.matches(requester.getUri(), this.pattern)))) {
+		boolean failed = value instanceof Throwable;
+		if (failed || (debug && (this.pattern == null || Strings.matches(requester.getUri(), this.pattern)))) {
 			StringBuilder info = new StringBuilder().append('\n').append(Dates.format(requester.getCreated(), true))
 					.append(" [").append(requester.getHost()).append(']');
 			if (requester.getUser() != null) {
@@ -52,11 +52,11 @@ public class InvokeLogger implements InvokeListener<InvokeCompleteEvent> {
 			info.append(" [").append(requester.getUri()).append("] [")
 					.append(Dates.getUnitTime(timestamp.getTime() - requester.getCreated().getTime())).append("]\n")
 					.append(requester.getParameters());
-			if (success) {
+			if (!failed) {
 				info.append('\n').append(value);
 			}
 			info.append('\n');
-			if (!success) {
+			if (failed) {
 				logger.error(info.toString(), (Throwable) value);
 			} else if (debug) {
 				logger.debug(info.toString());

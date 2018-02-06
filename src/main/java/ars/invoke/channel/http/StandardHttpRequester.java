@@ -30,6 +30,15 @@ public class StandardHttpRequester extends StandardRequester implements HttpRequ
 			HttpServletResponse response, Requester parent, Locale locale, String client, String host, Token token,
 			String uri, Map<String, Object> parameters) {
 		super(channel, parent, locale, client, host, token, uri, parameters);
+		if (config == null) {
+			throw new IllegalArgumentException("Illegal config:" + config);
+		}
+		if (request == null) {
+			throw new IllegalArgumentException("Illegal request:" + request);
+		}
+		if (response == null) {
+			throw new IllegalArgumentException("Illegal response:" + response);
+		}
 		this.config = config;
 		this.request = request;
 		this.response = response;

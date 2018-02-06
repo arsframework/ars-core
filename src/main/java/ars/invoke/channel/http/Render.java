@@ -1,5 +1,7 @@
 package ars.invoke.channel.http;
 
+import java.io.OutputStream;
+
 import ars.invoke.channel.http.HttpRequester;
 
 /**
@@ -18,10 +20,11 @@ public interface Render {
 	 *            模板路径
 	 * @param content
 	 *            数据内容
-	 * @return 模板内容
+	 * @param output
+	 *            数据输出流
 	 * @throws Exception
 	 *             操作异常
 	 */
-	public String execute(HttpRequester requester, String template, Object content) throws Exception;
+	public void execute(HttpRequester requester, String template, Object content, OutputStream output) throws Exception;
 
 }

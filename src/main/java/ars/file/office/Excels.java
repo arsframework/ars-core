@@ -22,6 +22,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 
 import ars.util.Beans;
 import ars.util.Dates;
@@ -209,7 +210,11 @@ public final class Excels {
 		if (type == Cell.CELL_TYPE_BOOLEAN) {
 			target.setCellValue(source.getBooleanCellValue());
 		} else if (type == Cell.CELL_TYPE_NUMERIC) {
-			target.setCellValue(source.getNumericCellValue());
+			if (HSSFDateUtil.isCellDateFormatted(source)) {
+				target.setCellValue(source.getDateCellValue());
+			} else {
+				target.setCellValue(source.getNumericCellValue());
+			}
 		} else {
 			target.setCellValue(source.getStringCellValue());
 		}
@@ -269,7 +274,7 @@ public final class Excels {
 		if (type == Cell.CELL_TYPE_BOOLEAN) {
 			return cell.getBooleanCellValue();
 		} else if (type == Cell.CELL_TYPE_NUMERIC) {
-			return cell.getNumericCellValue();
+			return HSSFDateUtil.isCellDateFormatted(cell) ? cell.getDateCellValue() : cell.getNumericCellValue();
 		}
 		String value = Strings.clean(cell.getStringCellValue()).trim();
 		return value.isEmpty() ? null : value;

@@ -171,9 +171,4 @@ public class RedisCache implements Cache {
 		}
 	}
 
-	@Override
-	public boolean isDestroyed() {
-		return this.pool.isClosed();
-	}
-
 }

@@ -1,19 +1,25 @@
 package ars.invoke;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.List;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Collection;
 import java.util.Collections;
 
+import ars.util.Beans;
+import ars.util.Cache;
 import ars.util.Strings;
+import ars.util.SimpleCache;
 import ars.invoke.Router;
 import ars.invoke.Invoker;
 import ars.invoke.Resource;
-import ars.invoke.cache.InvokeCache;
+import ars.invoke.CacheRule;
 import ars.invoke.request.Requester;
 import ars.invoke.event.InvokeEvent;
 import ars.invoke.event.InvokeListener;
@@ -30,13 +36,18 @@ import ars.invoke.request.AccessDeniedException;
  * 
  */
 public class StandardRouter implements Router {
-	private List<String> apis;
-	private InvokeCache cache;
-	private Map<String, InvokeWrapper> wrappers = new HashMap<String, InvokeWrapper>(0);
-	private List<InvokeListener<?>> invokeBeforeListeners = new LinkedList<InvokeListener<?>>();
-	private List<InvokeListener<?>> invokeAfterListeners = new LinkedList<InvokeListener<?>>();
-	private List<InvokeListener<?>> invokeErrorListeners = new LinkedList<InvokeListener<?>>();
-	private List<InvokeListener<?>> invokeCompleteListeners = new LinkedList<InvokeListener<?>>();
+	private Cache cache; // 缓存处理接口
+	private List<String> apis; // 资源接口集合
+	private boolean initialized; // 是否已初始化
+	private CacheRule[] cacheRules; // 缓存规则数组
+	private Map<String, CacheRule> cacheTargets = Collections.emptyMap(); // 缓存目标资源地址/缓存规则映射
+	private Map<String, Set<String>> cacheRefreshs = Collections.emptyMap(); // 触发缓存刷新资源地址映射
+	private final Map<String, String> forwards = new HashMap<String, String>(); // 请求转发资源映射
+	private final Map<String, InvokeWrapper> wrappers = new HashMap<String, InvokeWrapper>(); // 请求调用包装器资源映射
+	private final List<InvokeListener<?>> invokeBeforeListeners = new LinkedList<InvokeListener<?>>(); // 请求调用之前监听器集合
+	private final List<InvokeListener<?>> invokeAfterListeners = new LinkedList<InvokeListener<?>>(); // 请求调用成功监听器集合
+	private final List<InvokeListener<?>> invokeErrorListeners = new LinkedList<InvokeListener<?>>(); // 请求调用失败监听器集合
+	private final List<InvokeListener<?>> invokeCompleteListeners = new LinkedList<InvokeListener<?>>(); // 请求调用完成监听器集合
 
 	/**
 	 * 请求调用包装类
@@ -74,12 +85,65 @@ public class StandardRouter implements Router {
 
 	}
 
-	public InvokeCache getCache() {
-		return cache;
-	}
-
-	public void setCache(InvokeCache cache) {
-		this.cache = cache;
+	/**
+	 * 获取请求对应的资源数据缓存标识
+	 * 
+	 * @param requester
+	 *            请求对象
+	 * @param rule
+	 *            缓存规则
+	 * @return 缓存标识
+	 */
+	private String getCacheKey(Requester requester, CacheRule rule) {
+		StringBuilder buffer = new StringBuilder("{").append(requester.getUri()).append('}');
+		if (requester.getUser() != null && !rule.isGlobal()) {
+			buffer.append('{').append(requester.getUser()).append('}');
+		}
+		Set<String> condtions = requester.getParameterNames();
+		if (condtions.isEmpty()) {
+			return buffer.toString();
+		}
+		String[] keys = condtions.toArray(Strings.EMPTY_ARRAY);
+		Arrays.sort(keys);
+		buffer.append('{');
+		for (int i = 0; i < keys.length; i++) {
+			if (i > 0) {
+				buffer.append(',');
+			}
+			String key = keys[i];
+			Object value = requester.getParameter(key);
+			if (value instanceof Collection) {
+				Collection<?> collection = (Collection<?>) value;
+				if (!collection.isEmpty()) {
+					Object[] array = collection.toArray();
+					Arrays.sort(array);
+					for (Object v : array) {
+						buffer.append(key).append('=');
+						if (!Beans.isEmpty(v)) {
+							buffer.append(Strings.toString(v));
+						}
+					}
+				}
+			} else if (value instanceof Object[]) {
+				Object[] array = (Object[]) value;
+				if (array.length > 0) {
+					Object[] copy = Arrays.copyOf(array, array.length);
+					Arrays.sort(copy);
+					for (Object v : copy) {
+						buffer.append(key).append('=');
+						if (!Beans.isEmpty(v)) {
+							buffer.append(Strings.toString(v));
+						}
+					}
+				}
+			} else {
+				buffer.append(key).append('=');
+				if (!Beans.isEmpty(value)) {
+					buffer.append(Strings.toString(value));
+				}
+			}
+		}
+		return buffer.append('}').toString();
 	}
 
 	/**
@@ -161,6 +225,14 @@ public class StandardRouter implements Router {
 	 */
 	protected InvokeWrapper lookupInvokeWrapper(Requester requester) {
 		String uri = requester.getUri();
+		if (!this.forwards.isEmpty()) {
+			for (Entry<String, String> entry : this.forwards.entrySet()) {
+				if (Strings.matches(uri, entry.getKey())) {
+					uri = entry.getValue();
+					break;
+				}
+			}
+		}
 		InvokeWrapper wrapper = this.wrappers.get(uri);
 		if (wrapper == null) {
 			for (Entry<String, InvokeWrapper> entry : this.wrappers.entrySet()) {
@@ -189,15 +261,53 @@ public class StandardRouter implements Router {
 	}
 
 	@Override
-	public List<String> getApis() {
-		if (this.apis == null) {
+	public void initialize() {
+		if (!this.initialized) {
 			synchronized (this) {
-				if (this.apis == null) {
+				if (!this.initialized) {
 					this.apis = new ArrayList<String>(this.wrappers.keySet());
 					Collections.sort(this.apis);
+
+					if (this.cacheRules != null && this.cacheRules.length > 0) {
+						if (this.cache == null) {
+							this.cache = new SimpleCache();
+						}
+						this.cacheTargets = new HashMap<String, CacheRule>();
+						this.cacheRefreshs = new HashMap<String, Set<String>>();
+						for (int i = 0; i < this.apis.size(); i++) {
+							String api = this.apis.get(i);
+							for (CacheRule rule : this.cacheRules) {
+								if (rule.getTarget() == null) {
+									throw new RuntimeException("Cache rule target resource can't be empty.");
+								}
+								if (Strings.matches(api, rule.getTarget())) {
+									this.cacheTargets.put(api, rule);
+									break;
+								} else if (!Strings.matches(api, rule.getRefresh())) {
+									continue;
+								}
+								for (int n = 0; n < this.apis.size(); n++) {
+									String resource = this.apis.get(n);
+									if (Strings.matches(resource, rule.getTarget())) {
+										Set<String> resources = this.cacheRefreshs.get(api);
+										if (resources == null) {
+											resources = new HashSet<String>();
+											this.cacheRefreshs.put(api, resources);
+										}
+										resources.add(resource);
+									}
+								}
+							}
+						}
+					}
+					this.initialized = true;
 				}
 			}
 		}
+	}
+
+	@Override
+	public List<String> getApis() {
 		return this.apis;
 	}
 
@@ -211,16 +321,23 @@ public class StandardRouter implements Router {
 		Object result = null;
 		try {
 			this.beforeInvoke(requester);
-			String key = this.cache == null ? null : this.cache.key(requester);
-			if (key == null) {
+			CacheRule rule = this.cacheTargets.get(requester.getUri());
+			if (rule == null) {
 				result = this.access(requester);
+				Set<String> refresh = this.cacheRefreshs.get(requester.getUri());
+				if (refresh != null && !refresh.isEmpty()) {
+					for (String uri : refresh) {
+						this.cache.remove(new StringBuilder("{").append(uri).append("}*").toString());
+					}
+				}
 			} else {
+				String key = this.getCacheKey(requester, rule);
 				synchronized (key.intern()) {
 					if (this.cache.exists(key)) {
 						result = this.cache.get(key);
 					} else {
 						result = this.access(requester);
-						this.cache.set(key, result);
+						this.cache.set(key, result, rule.getTimeout());
 					}
 				}
 			}
@@ -262,6 +379,27 @@ public class StandardRouter implements Router {
 	}
 
 	@Override
+	public void setCache(Cache cache) {
+		if (cache == null) {
+			throw new IllegalArgumentException("Illegal cache:" + cache);
+		}
+		this.cache = cache;
+	}
+
+	@Override
+	public void setCacheRules(CacheRule... rules) {
+		this.cacheRules = rules;
+	}
+
+	@Override
+	public void setForwards(Map<String, String> forwards) {
+		this.forwards.clear();
+		if (forwards != null && !forwards.isEmpty()) {
+			this.forwards.putAll(forwards);
+		}
+	}
+
+	@Override
 	public <E extends InvokeEvent> void setListeners(Class<E> type, InvokeListener<E>... listeners) {
 		if (listeners.length > 0) {
 			List<InvokeListener<E>> list = Arrays.asList(listeners);
@@ -291,23 +429,9 @@ public class StandardRouter implements Router {
 	}
 
 	@Override
-	public <E extends InvokeEvent> void addListeners(Class<E> type, InvokeListener<E>... listeners) {
-		if (listeners.length > 0) {
-			List<InvokeListener<E>> list = Arrays.asList(listeners);
-			if (type == InvokeBeforeEvent.class) {
-				this.invokeBeforeListeners.addAll(list);
-			} else if (type == InvokeAfterEvent.class) {
-				this.invokeAfterListeners.addAll(list);
-			} else if (type == InvokeErrorEvent.class) {
-				this.invokeErrorListeners.addAll(list);
-			} else if (type == InvokeCompleteEvent.class) {
-				this.invokeCompleteListeners.addAll(list);
-			} else {
-				this.invokeBeforeListeners.addAll(list);
-				this.invokeAfterListeners.addAll(list);
-				this.invokeErrorListeners.addAll(list);
-				this.invokeCompleteListeners.addAll(list);
-			}
+	public void destroy() {
+		if (this.cache != null) {
+			this.cache.destroy();
 		}
 	}
 

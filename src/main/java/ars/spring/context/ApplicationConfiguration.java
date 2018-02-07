@@ -1,10 +1,12 @@
 package ars.spring.context;
 
 import java.util.Map;
+import java.util.List;
 import java.util.Locale;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 
@@ -30,12 +32,12 @@ import ars.invoke.Context;
 import ars.invoke.Invoker;
 import ars.invoke.Invokes;
 import ars.invoke.Messager;
+import ars.invoke.CacheRule;
 import ars.invoke.StandardRouter;
 import ars.invoke.local.Api;
 import ars.invoke.local.Apis;
 import ars.invoke.local.Function;
 import ars.invoke.remote.Remotes;
-import ars.invoke.cache.InvokeCache;
 import ars.invoke.event.InvokeEvent;
 import ars.invoke.event.InvokeListener;
 import ars.invoke.request.SessionFactory;
@@ -51,22 +53,14 @@ import ars.file.office.Converts;
  */
 public class ApplicationConfiguration extends StandardRouter
 		implements Context, ApplicationContextAware, ApplicationListener<ApplicationEvent> {
-	private Invoker invoker = Invokes.getSingleLocalInvoker(); // 资源调用对象
-	private Messager messager; // 消息处理对象
 	private String pattern; // 资源地址匹配模式
+	private Invoker invoker; // 资源调用对象
+	private Messager messager; // 消息处理对象
+	private SessionFactory sessionFactory; // 会话工厂
 	private Map<String, String> configure; // 系统配置
 	private ClientConnectionManager httpClientManager; // Http客户端管理器
-	private SessionFactory sessionFactory = new CacheSessionFactory(); // 会话工厂
 	private ApplicationContext applicationContext; // 应用上下文对象
 	private boolean initialized, destroied; // Spring容器启动/销毁标记
-
-	public Invoker getInvoker() {
-		return invoker;
-	}
-
-	public void setInvoker(Invoker invoker) {
-		this.invoker = invoker;
-	}
 
 	public String getPattern() {
 		return pattern;
@@ -74,6 +68,14 @@ public class ApplicationConfiguration extends StandardRouter
 
 	public void setPattern(String pattern) {
 		this.pattern = pattern;
+	}
+
+	public Invoker getInvoker() {
+		return invoker;
+	}
+
+	public void setInvoker(Invoker invoker) {
+		this.invoker = invoker;
 	}
 
 	public Map<String, String> getConfigure() {
@@ -96,10 +98,31 @@ public class ApplicationConfiguration extends StandardRouter
 		this.httpClientManager = httpClientManager;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
+	}
+
+	@Override
+	public final void onApplicationEvent(ApplicationEvent event) {
+		if (event instanceof ContextRefreshedEvent && !this.initialized) {
+			this.initialize();
+			this.initialized = true;
+		} else if (event instanceof ContextClosedEvent && !this.destroied) {
+			this.destroy();
+			this.destroied = true;
+		}
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public void initialize() {
+		if (this.invoker == null) {
+			this.invoker = Invokes.getSingleLocalInvoker();
+		}
+		if (this.sessionFactory == null) {
+			this.sessionFactory = new CacheSessionFactory();
+		}
 
 		// 初始化系统配置
 		Map<String, String> iceItems = new HashMap<String, String>();
@@ -142,12 +165,12 @@ public class ApplicationConfiguration extends StandardRouter
 		}
 
 		// 设置json序列化对象适配器
-		ObjectAdapter[] objectAdapters = applicationContext.getBeansOfType(ObjectAdapter.class).values()
+		ObjectAdapter[] objectAdapters = this.applicationContext.getBeansOfType(ObjectAdapter.class).values()
 				.toArray(new ObjectAdapter[0]);
 		Jsons.setObjectAdapters(objectAdapters);
 
 		// 注册系统接口资源
-		Collection<?> entities = applicationContext.getBeansWithAnnotation(Api.class).values();
+		Collection<?> entities = this.applicationContext.getBeansWithAnnotation(Api.class).values();
 		for (Object entity : entities) {
 			Class<?> type = entity.getClass();
 			String classApi = Apis.getApi(Apis.getApiClass(type));
@@ -161,13 +184,21 @@ public class ApplicationConfiguration extends StandardRouter
 			}
 		}
 
+		// 设置资源缓存配置
+		Map<String, CacheRule> cacheRules = this.applicationContext.getBeansOfType(CacheRule.class);
+		if (!cacheRules.isEmpty()) {
+			this.setCacheRules(cacheRules.values().toArray(new CacheRule[0]));
+		}
+
 		// 注册事件监听器
-		Collection<InvokeListener> listeners = applicationContext.getBeansOfType(InvokeListener.class).values();
+		Map<Class, List<InvokeListener>> listeners = new HashMap<Class, List<InvokeListener>>();
 		try {
-			for (InvokeListener<?> listener : listeners) {
-				InvokeListener<?> target = null;
+			for (Entry<String, InvokeListener> entry : this.applicationContext.getBeansOfType(InvokeListener.class)
+					.entrySet()) {
+				InvokeListener target = null;
+				InvokeListener listener = entry.getValue();
 				if (AopUtils.isAopProxy(listener)) {
-					target = (InvokeListener<?>) ((Advised) listener).getTargetSource().getTarget();
+					target = (InvokeListener) ((Advised) listener).getTargetSource().getTarget();
 				}
 				Class type = null;
 				for (Method method : (target == null ? listener : target).getClass().getMethods()) {
@@ -175,37 +206,31 @@ public class ApplicationConfiguration extends StandardRouter
 						type = method.getParameterTypes()[0];
 					}
 				}
-				this.addListeners(type, listener);
+				List<InvokeListener> groups = listeners.get(type);
+				if (groups == null) {
+					groups = new LinkedList<InvokeListener>();
+					listeners.put(type, groups);
+				}
+				groups.add(listener);
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		if (!listeners.isEmpty()) {
+			for (Entry<Class, List<InvokeListener>> entry : listeners.entrySet()) {
+				this.setListeners(entry.getKey(), entry.getValue().toArray(new InvokeListener[0]));
+			}
+		}
 
 		// 设置请求通道上下文
-		Collection<Channel> channels = applicationContext.getBeansOfType(Channel.class).values();
+		Collection<Channel> channels = this.applicationContext.getBeansOfType(Channel.class).values();
 		for (Channel channel : channels) {
 			if (channel.getContext() == null) {
 				channel.setContext(this);
 			}
 		}
-	}
-
-	@Override
-	public final void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof ContextRefreshedEvent && !this.initialized) {
-			this.initialized = true;
-			Servers.startup();
-		} else if (event instanceof ContextClosedEvent && !this.destroied) {
-			this.destroied = true;
-			Https.destroy();
-			Servers.shutdown();
-			Remotes.destroy();
-			this.sessionFactory.destroy();
-			InvokeCache cache = this.getCache();
-			if (cache != null) {
-				cache.destroy();
-			}
-		}
+		super.initialize();
+		Servers.startup();
 	}
 
 	@Override
@@ -239,7 +264,16 @@ public class ApplicationConfiguration extends StandardRouter
 
 	@Override
 	public SessionFactory getSessionFactory() {
-		return sessionFactory;
+		return this.sessionFactory;
+	}
+
+	@Override
+	public void destroy() {
+		super.destroy();
+		this.sessionFactory.destroy();
+		Https.destroy();
+		Remotes.destroy();
+		Servers.shutdown();
 	}
 
 }

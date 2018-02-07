@@ -8,6 +8,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.io.Serializable;
 
 import ars.util.Cache;
+import ars.util.Strings;
 import ars.server.Server;
 import ars.server.task.AbstractTaskServer;
 
@@ -137,7 +138,12 @@ public class SimpleCache implements Cache {
 			if (this.destroyed) {
 				throw new RuntimeException("The cache has been destroyed");
 			}
-			this.values.remove(key);
+			Iterator<String> iterator = this.values.keySet().iterator();
+			while (iterator.hasNext()) {
+				if (Strings.matches(iterator.next(), key)) {
+					iterator.remove();
+				}
+			}
 		} finally {
 			this.lock.writeLock().unlock();
 		}
@@ -186,11 +192,6 @@ public class SimpleCache implements Cache {
 				this.lock.writeLock().unlock();
 			}
 		}
-	}
-
-	@Override
-	public boolean isDestroyed() {
-		return this.destroyed;
 	}
 
 }

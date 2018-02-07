@@ -65,11 +65,4 @@ public interface Cache {
 	 */
 	public void destroy();
 
-	/**
-	 * 判断缓存容器是否已销毁
-	 * 
-	 * @return true/false
-	 */
-	public boolean isDestroyed();
-
 }

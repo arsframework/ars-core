@@ -1073,7 +1073,7 @@ public final class Excels {
 		int r = start;
 		Sheet sheet = null;
 		for (int i = 0; i < objects.size(); i++) {
-			if (i == 0 || i % 5000 == 0) {
+			if (i % 50000 == 0) {
 				r = start;
 				sheet = workbook.createSheet();
 			}

@@ -889,11 +889,12 @@ public final class Excels {
 	 *            对象实体列表
 	 * @param properties
 	 *            需要转换的属性名称数组
+	 * @return 设置数量
 	 * @throws IOException
 	 *             IO操作异常
 	 */
-	public static void setObjects(Nfile file, List<?> objects, String... properties) throws IOException {
-		setObjects(file, 0, objects, properties);
+	public static int setObjects(Nfile file, List<?> objects, String... properties) throws IOException {
+		return setObjects(file, 0, objects, properties);
 	}
 
 	/**
@@ -905,11 +906,12 @@ public final class Excels {
 	 *            对象实体列表
 	 * @param properties
 	 *            需要转换的属性名称数组
+	 * @return 设置数量
 	 * @throws IOException
 	 *             IO操作异常
 	 */
-	public static void setObjects(Workbook workbook, List<?> objects, String... properties) throws IOException {
-		setObjects(workbook, 0, objects, properties);
+	public static int setObjects(Workbook workbook, List<?> objects, String... properties) throws IOException {
+		return setObjects(workbook, 0, objects, properties);
 	}
 
 	/**
@@ -925,13 +927,15 @@ public final class Excels {
 	 *            对象实体列表
 	 * @param properties
 	 *            需要转换的属性名称数组
+	 * @return 设置数量
 	 * @throws IOException
 	 *             IO操作异常
 	 */
-	public static <M> void setObjects(Nfile file, int start, List<M> objects, String... properties) throws IOException {
+	public static <M> int setObjects(Nfile file, int start, List<M> objects, String... properties) throws IOException {
 		Workbook workbook = getWorkbook();
-		setObjects(workbook, start, objects, properties);
+		int count = setObjects(workbook, start, objects, properties);
 		write(workbook, file);
+		return count;
 	}
 
 	/**

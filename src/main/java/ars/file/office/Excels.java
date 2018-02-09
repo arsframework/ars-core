@@ -566,7 +566,7 @@ public final class Excels {
 		}
 		int count = 0;
 		for (int i = 0, sheets = workbook.getNumberOfSheets(); i < sheets; i++) {
-			count += workbook.getSheetAt(i).getLastRowNum() - start;
+			count += workbook.getSheetAt(i).getPhysicalNumberOfRows() - start;
 		}
 		return count;
 	}

@@ -55,9 +55,11 @@ public final class Excels {
 		 * 
 		 * @param row
 		 *            数据行对象
+		 * @param count
+		 *            当前记录数（从1开始）
 		 * @return 对象实体
 		 */
-		public T read(Row row);
+		public T read(Row row, int count);
 
 	}
 
@@ -77,8 +79,10 @@ public final class Excels {
 		 *            对象实体
 		 * @param row
 		 *            数据行对象
+		 * @param count
+		 *            当前记录数（从1开始）
 		 */
-		public void write(T entity, Row row);
+		public void write(T entity, Row row, int count);
 
 	}
 
@@ -732,8 +736,8 @@ public final class Excels {
 		return getObjects(workbook, start, new Reader<M>() {
 
 			@Override
-			public M read(Row row) {
-				int count = 0; // 设置属性个数
+			public M read(Row row, int count) {
+				int initialized = 0; // 设置属性个数
 				M entity = Beans.getInstance(type);
 				for (int i = 0; i < fields.length; i++) {
 					Field field = fields[i];
@@ -742,9 +746,9 @@ public final class Excels {
 						continue;
 					}
 					Beans.setValue(entity, field, value);
-					count++;
+					initialized++;
 				}
-				return count == 0 ? null : entity;
+				return initialized == 0 ? null : entity;
 			}
 
 		});
@@ -833,17 +837,17 @@ public final class Excels {
 		if (reader == null) {
 			throw new IllegalArgumentException("Illegal reader:" + reader);
 		}
+		int count = 0;
 		List<M> objects = new LinkedList<M>();
 		for (int i = 0, sheets = workbook.getNumberOfSheets(); i < sheets; i++) {
 			Sheet sheet = workbook.getSheetAt(i);
 			for (int r = start, rows = sheet.getLastRowNum(); r <= rows; r++) {
 				Row row = sheet.getRow(r);
-				if (row == null) {
-					continue;
-				}
-				M object = reader.read(row);
-				if (object != null) {
-					objects.add(object);
+				if (!isEmpty(row)) {
+					M object = reader.read(row, ++count);
+					if (object != null) {
+						objects.add(object);
+					}
 				}
 			}
 		}
@@ -943,30 +947,32 @@ public final class Excels {
 	 *            对象实体列表
 	 * @param properties
 	 *            需要转换的属性名称数组
+	 * @return 设置数量
 	 * @throws IOException
 	 *             IO操作异常
 	 */
-	public static <M> void setObjects(Workbook workbook, int start, List<M> objects, String... properties)
+	public static <M> int setObjects(Workbook workbook, int start, List<M> objects, String... properties)
 			throws IOException {
 		if (objects == null) {
 			throw new IllegalArgumentException("Illegal objects:" + objects);
 		}
-		if (!objects.isEmpty()) {
-			final Field[] fields = Beans.getFields(objects.get(0).getClass(), properties);
-			setObjects(workbook, start, objects, new Writer<M>() {
+		if (objects.isEmpty()) {
+			return 0;
+		}
+		final Field[] fields = Beans.getFields(objects.get(0).getClass(), properties);
+		return setObjects(workbook, start, objects, new Writer<M>() {
 
-				@Override
-				public void write(M entity, Row row) {
-					for (int i = 0; i < fields.length; i++) {
-						Object value = Beans.getValue(entity, fields[i]);
-						if (value != null) {
-							setValue(row.createCell(i), value);
-						}
+			@Override
+			public void write(M entity, Row row, int count) {
+				for (int i = 0; i < fields.length; i++) {
+					Object value = Beans.getValue(entity, fields[i]);
+					if (value != null) {
+						setValue(row.createCell(i), value);
 					}
 				}
+			}
 
-			});
-		}
+		});
 	}
 
 	/**
@@ -980,11 +986,12 @@ public final class Excels {
 	 *            对象实体列表
 	 * @param writer
 	 *            Excel对象实体写入接口
+	 * @return 设置数量
 	 * @throws IOException
 	 *             IO操作异常
 	 */
-	public static <M> void setObjects(Nfile file, List<M> objects, Writer<M> writer) throws IOException {
-		setObjects(file, 0, objects, writer);
+	public static <M> int setObjects(Nfile file, List<M> objects, Writer<M> writer) throws IOException {
+		return setObjects(file, 0, objects, writer);
 	}
 
 	/**
@@ -998,11 +1005,12 @@ public final class Excels {
 	 *            对象实体列表
 	 * @param writer
 	 *            Excel对象实体写入接口
+	 * @return 设置数量
 	 * @throws IOException
 	 *             IO操作异常
 	 */
-	public static <M> void setObjects(Workbook workbook, List<M> objects, Writer<M> writer) throws IOException {
-		setObjects(workbook, 0, objects, writer);
+	public static <M> int setObjects(Workbook workbook, List<M> objects, Writer<M> writer) throws IOException {
+		return setObjects(workbook, 0, objects, writer);
 	}
 
 	/**
@@ -1018,13 +1026,15 @@ public final class Excels {
 	 *            对象实体列表
 	 * @param writer
 	 *            Excel对象实体写入接口
+	 * @return 设置数量
 	 * @throws IOException
 	 *             IO操作异常
 	 */
-	public static <M> void setObjects(Nfile file, int start, List<M> objects, Writer<M> writer) throws IOException {
+	public static <M> int setObjects(Nfile file, int start, List<M> objects, Writer<M> writer) throws IOException {
 		Workbook workbook = getWorkbook();
-		setObjects(workbook, start, objects, writer);
+		int count = setObjects(workbook, start, objects, writer);
 		write(workbook, file);
+		return count;
 	}
 
 	/**
@@ -1040,10 +1050,11 @@ public final class Excels {
 	 *            对象实体列表
 	 * @param writer
 	 *            Excel对象实体写入接口
+	 * @return 设置数量
 	 * @throws IOException
 	 *             IO操作异常
 	 */
-	public static <M> void setObjects(Workbook workbook, int start, List<M> objects, Writer<M> writer)
+	public static <M> int setObjects(Workbook workbook, int start, List<M> objects, Writer<M> writer)
 			throws IOException {
 		if (workbook == null) {
 			throw new IllegalArgumentException("Illegal workbook:" + workbook);
@@ -1054,6 +1065,7 @@ public final class Excels {
 		if (writer == null) {
 			throw new IllegalArgumentException("Illegal writer:" + writer);
 		}
+		int count = 0;
 		int r = start;
 		Sheet sheet = null;
 		for (int i = 0; i < objects.size(); i++) {
@@ -1061,8 +1073,12 @@ public final class Excels {
 				r = start;
 				sheet = workbook.createSheet();
 			}
-			writer.write(objects.get(i), sheet.createRow(r++));
+			M object = objects.get(i);
+			if (object != null) {
+				writer.write(object, sheet.createRow(r++), ++count);
+			}
 		}
+		return count;
 	}
 
 	/**
@@ -1072,11 +1088,12 @@ public final class Excels {
 	 *            Excel文件
 	 * @param reader
 	 *            Excel对象实体读取接口
+	 * @return 读取数量
 	 * @throws IOException
 	 *             IO操作异常
 	 */
-	public static void iteration(Nfile file, Reader<?> reader) throws IOException {
-		iteration(file, 0, reader);
+	public static int iteration(Nfile file, Reader<?> reader) throws IOException {
+		return iteration(file, 0, reader);
 	}
 
 	/**
@@ -1086,11 +1103,12 @@ public final class Excels {
 	 *            Excel文件工作薄
 	 * @param reader
 	 *            Excel对象实体读取接口
+	 * @return 读取数量
 	 * @throws IOException
 	 *             IO操作异常
 	 */
-	public static void iteration(Workbook workbook, Reader<?> reader) throws IOException {
-		iteration(workbook, 0, reader);
+	public static int iteration(Workbook workbook, Reader<?> reader) throws IOException {
+		return iteration(workbook, 0, reader);
 	}
 
 	/**
@@ -1102,16 +1120,17 @@ public final class Excels {
 	 *            开始数据行下标（从0开始）
 	 * @param reader
 	 *            Excel对象实体读取接口
+	 * @return 读取数量
 	 * @throws IOException
 	 *             IO操作异常
 	 */
-	public static void iteration(Nfile file, int start, Reader<?> reader) throws IOException {
+	public static int iteration(Nfile file, int start, Reader<?> reader) throws IOException {
 		if (file == null) {
 			throw new IllegalArgumentException("Illegal file:" + file);
 		}
 		Workbook workbook = getWorkbook(file);
 		try {
-			iteration(workbook, start, reader);
+			return iteration(workbook, start, reader);
 		} finally {
 			workbook.close();
 		}
@@ -1126,10 +1145,11 @@ public final class Excels {
 	 *            开始数据行下标（从0开始）
 	 * @param reader
 	 *            Excel对象实体读取接口
+	 * @return 读取数量
 	 * @throws IOException
 	 *             IO操作异常
 	 */
-	public static void iteration(Workbook workbook, int start, Reader<?> reader) throws IOException {
+	public static int iteration(Workbook workbook, int start, Reader<?> reader) throws IOException {
 		if (workbook == null) {
 			throw new IllegalArgumentException("Illegal workbook:" + workbook);
 		}
@@ -1139,12 +1159,17 @@ public final class Excels {
 		if (reader == null) {
 			throw new IllegalArgumentException("Illegal reader:" + reader);
 		}
+		int count = 0;
 		for (int i = 0, sheets = workbook.getNumberOfSheets(); i < sheets; i++) {
 			Sheet sheet = workbook.getSheetAt(i);
 			for (int r = start, rows = sheet.getLastRowNum(); r <= rows; r++) {
-				reader.read(sheet.getRow(r));
+				Row row = sheet.getRow(r);
+				if (!isEmpty(row)) {
+					reader.read(row, ++count);
+				}
 			}
 		}
+		return count;
 	}
 
 }

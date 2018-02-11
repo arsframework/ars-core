@@ -1,17 +1,19 @@
 package ars.invoke.channel.http;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Map.Entry;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ars.util.Files;
 import ars.util.Streams;
 import ars.util.Strings;
 import ars.invoke.Context;
@@ -191,48 +193,33 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 		return null;
 	}
 
-	/**
-	 * 视图渲染
-	 * 
-	 * @param requester
-	 *            请求对象
-	 * @param template
-	 *            模板路径
-	 * @param content
-	 *            数据内容
-	 * @return 渲染结果内容
-	 * @throws Exception
-	 *             操作异常
-	 */
-	protected String render(HttpRequester requester, String template, Object content) throws Exception {
+	@Override
+	public String render(HttpRequester requester, String template, Object content) throws Exception {
 		Render render = this.loolupRender(requester, template);
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		if (render == null) {
-			Https.render(requester, template, content, bos);
+			if ("jsp".equalsIgnoreCase(Files.getSuffix(template))) {
+				Https.render(requester, template, content, bos);
+			} else {
+				Streams.write(new File(Https.ROOT_PATH, template), bos);
+			}
 		} else {
 			render.execute(requester, template, content, bos);
 		}
 		return bos.toString();
 	}
 
-	/**
-	 * 视图呈现
-	 * 
-	 * @param requester
-	 *            请求对象
-	 * @param template
-	 *            模板路径
-	 * @param content
-	 *            数据内容
-	 * @throws Exception
-	 *             操作异常
-	 */
-	protected void present(HttpRequester requester, String template, Object content) throws Exception {
+	@Override
+	public void present(HttpRequester requester, String template, Object content) throws Exception {
 		Render render = this.loolupRender(requester, template);
 		OutputStream os = requester.getHttpServletResponse().getOutputStream();
 		try {
 			if (render == null) {
-				Https.render(requester, template, content, os);
+				if ("jsp".equalsIgnoreCase(Files.getSuffix(template))) {
+					Https.render(requester, template, content, os);
+				} else {
+					Streams.write(new File(Https.ROOT_PATH, template), os);
+				}
 			} else {
 				render.execute(requester, template, content, os);
 			}
@@ -241,18 +228,8 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 		}
 	}
 
-	/**
-	 * 请求重定向
-	 * 
-	 * @param requester
-	 *            请求对象
-	 * @param content
-	 *            重定向内容
-	 * @return 是否重定向成功
-	 * @throws Exception
-	 *             操作异常
-	 */
-	protected boolean redirect(HttpRequester requester, Object content) throws Exception {
+	@Override
+	public boolean redirect(HttpRequester requester, Object content) throws Exception {
 		for (Redirector redirector : this.redirectors) {
 			String redirect = redirector.getRedirect(requester, content);
 			if (redirect == null) {
@@ -273,20 +250,6 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * 响应请求结果
-	 * 
-	 * @param requester
-	 *            请求对象
-	 * @param value
-	 *            请求结果
-	 * @throws IOException
-	 *             IO操作异常
-	 */
-	protected void response(HttpRequester requester, Object value) throws IOException {
-		Https.response(requester.getHttpServletResponse(), value);
 	}
 
 	@Override
@@ -340,7 +303,7 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 			if (value instanceof Exception) {
 				throw (Exception) value;
 			}
-			this.response(requester, value);
+			Https.response(response, value);
 		}
 	}
 

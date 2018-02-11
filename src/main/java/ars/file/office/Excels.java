@@ -485,7 +485,7 @@ public final class Excels {
 		if (row == null) {
 			throw new IllegalArgumentException("Illegal row:" + row);
 		}
-		if (titles.length > 0) {
+		if (titles != null && titles.length > 0) {
 			Workbook workbook = row.getSheet().getWorkbook();
 			Font font = workbook.createFont();
 			font.setBoldweight(Font.BOLDWEIGHT_BOLD);
@@ -534,7 +534,20 @@ public final class Excels {
 	}
 
 	/**
-	 * 获取Excel文件总行数
+	 * 获取Excel数据总行数
+	 * 
+	 * @param sheet
+	 *            Excel sheet
+	 * @return 总行数
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static int getCount(Sheet sheet) throws IOException {
+		return getCount(sheet, 0);
+	}
+
+	/**
+	 * 获取Excel数据总行数
 	 * 
 	 * @param workbook
 	 *            Excel文件工作薄
@@ -544,6 +557,27 @@ public final class Excels {
 	 */
 	public static int getCount(Workbook workbook) throws IOException {
 		return getCount(workbook, 0);
+	}
+
+	/**
+	 * 获取Excel数据总行数
+	 * 
+	 * @param sheet
+	 *            Excel sheet
+	 * @param start
+	 *            开始数据行下标（从0开始）
+	 * @return 总行数
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static int getCount(Sheet sheet, int start) throws IOException {
+		if (sheet == null) {
+			throw new IllegalArgumentException("Illegal sheet:" + sheet);
+		}
+		if (start < 0) {
+			throw new IllegalArgumentException("Illegal start:" + start);
+		}
+		return sheet.getPhysicalNumberOfRows() - start;
 	}
 
 	/**
@@ -566,9 +600,22 @@ public final class Excels {
 		}
 		int count = 0;
 		for (int i = 0, sheets = workbook.getNumberOfSheets(); i < sheets; i++) {
-			count += workbook.getSheetAt(i).getPhysicalNumberOfRows() - start;
+			count += getCount(workbook.getSheetAt(i), start);
 		}
 		return count;
+	}
+
+	/**
+	 * 获取Excel文件标题
+	 * 
+	 * @param file
+	 *            Excel文件
+	 * @return 标题数组
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static String[] getTitles(Nfile file) throws IOException {
+		return getTitles(file, 0);
 	}
 
 	/**
@@ -594,6 +641,53 @@ public final class Excels {
 	/**
 	 * 获取Excel文件标题
 	 * 
+	 * @param sheet
+	 *            Excel sheet
+	 * @return 标题数组
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static String[] getTitles(Sheet sheet) throws IOException {
+		return getTitles(sheet, 0);
+	}
+
+	/**
+	 * 获取Excel文件标题
+	 * 
+	 * @param workbook
+	 *            Excel文件工作薄
+	 * @return 标题数组
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static String[] getTitles(Workbook workbook) throws IOException {
+		return getTitles(workbook, 0);
+	}
+
+	/**
+	 * 获取Excel文件标题
+	 * 
+	 * @param sheet
+	 *            Excel sheet
+	 * @param index
+	 *            标题数据行下标（从0开始）
+	 * @return 标题数组
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static String[] getTitles(Sheet sheet, int index) throws IOException {
+		if (sheet == null) {
+			throw new IllegalArgumentException("Illegal sheet:" + sheet);
+		}
+		if (index < 0) {
+			throw new IllegalArgumentException("Illegal index:" + index);
+		}
+		return getValues(sheet.getRow(index), String.class);
+	}
+
+	/**
+	 * 获取Excel文件标题
+	 * 
 	 * @param workbook
 	 *            Excel文件工作薄
 	 * @param index
@@ -603,11 +697,47 @@ public final class Excels {
 	 *             IO操作异常
 	 */
 	public static String[] getTitles(Workbook workbook, int index) throws IOException {
+		if (workbook == null) {
+			throw new IllegalArgumentException("Illegal workbook:" + workbook);
+		}
 		if (index < 0) {
 			throw new IllegalArgumentException("Illegal index:" + index);
 		}
-		int sheets = workbook.getNumberOfSheets();
-		return sheets == 0 ? Strings.EMPTY_ARRAY : getValues(workbook.getSheetAt(0).getRow(index), String.class);
+		return workbook.getNumberOfSheets() == 0 ? Strings.EMPTY_ARRAY : getTitles(workbook.getSheetAt(0), index);
+	}
+
+	/**
+	 * 将Excel行对象数据转换成对象实例
+	 * 
+	 * @param <M>
+	 *            数据类型
+	 * @param row
+	 *            Excel行对象
+	 * @param type
+	 *            目标对象类型
+	 * @param fields
+	 *            目标对象字段数组
+	 * @return 目标对象实例
+	 */
+	public static <M> M getObject(Row row, Class<M> type, Field... fields) {
+		if (row == null) {
+			throw new IllegalArgumentException("Illegal row:" + row);
+		}
+		if (type == null) {
+			throw new IllegalArgumentException("Illegal type:" + type);
+		}
+		int initialized = 0; // 设置属性个数
+		M entity = Beans.getInstance(type);
+		for (int i = 0; i < fields.length; i++) {
+			Field field = fields[i];
+			Object value = getValue(row.getCell(i), field.getType());
+			if (value == null) {
+				continue;
+			}
+			Beans.setValue(entity, field, value);
+			initialized++;
+		}
+		return initialized == 0 ? null : entity;
 	}
 
 	/**
@@ -630,19 +760,7 @@ public final class Excels {
 		if (type == null) {
 			throw new IllegalArgumentException("Illegal type:" + type);
 		}
-		int count = 0; // 设置属性个数
-		M entity = Beans.getInstance(type);
-		Field[] fields = Beans.getFields(type, properties);
-		for (int i = 0; i < fields.length; i++) {
-			Field field = fields[i];
-			Object value = getValue(row.getCell(i), field.getType());
-			if (value == null) {
-				continue;
-			}
-			Beans.setValue(entity, field, value);
-			count++;
-		}
-		return count == 0 ? null : entity;
+		return getObject(row, type, Beans.getFields(type, properties));
 	}
 
 	/**
@@ -662,6 +780,25 @@ public final class Excels {
 	 */
 	public static <M> List<M> getObjects(Nfile file, Class<M> type, String... properties) throws IOException {
 		return getObjects(file, 0, type, properties);
+	}
+
+	/**
+	 * 从Excel文件中获取对象实体
+	 * 
+	 * @param <M>
+	 *            数据类型
+	 * @param sheet
+	 *            Excel sheet
+	 * @param type
+	 *            对象类型
+	 * @param properties
+	 *            目标对象属性名称数组
+	 * @return 对象实体列表
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static <M> List<M> getObjects(Sheet sheet, Class<M> type, String... properties) throws IOException {
+		return getObjects(sheet, 0, type, properties);
 	}
 
 	/**
@@ -715,6 +852,39 @@ public final class Excels {
 	 * 
 	 * @param <M>
 	 *            数据类型
+	 * @param sheet
+	 *            Excel sheet
+	 * @param start
+	 *            开始数据行下标（从0开始）
+	 * @param type
+	 *            对象类型
+	 * @param properties
+	 *            目标对象属性名称数组
+	 * @return 对象实体列表
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static <M> List<M> getObjects(Sheet sheet, int start, final Class<M> type, String... properties)
+			throws IOException {
+		if (type == null) {
+			throw new IllegalArgumentException("Illegal type:" + type);
+		}
+		final Field[] fields = Beans.getFields(type, properties);
+		return getObjects(sheet, start, new Reader<M>() {
+
+			@Override
+			public M read(Row row, int count) {
+				return getObject(row, type, fields);
+			}
+
+		});
+	}
+
+	/**
+	 * 从Excel文件中获取对象实体
+	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param workbook
 	 *            Excel文件工作薄
 	 * @param start
@@ -737,18 +907,7 @@ public final class Excels {
 
 			@Override
 			public M read(Row row, int count) {
-				int initialized = 0; // 设置属性个数
-				M entity = Beans.getInstance(type);
-				for (int i = 0; i < fields.length; i++) {
-					Field field = fields[i];
-					Object value = getValue(row.getCell(i), field.getType());
-					if (value == null) {
-						continue;
-					}
-					Beans.setValue(entity, field, value);
-					initialized++;
-				}
-				return initialized == 0 ? null : entity;
+				return getObject(row, type, fields);
 			}
 
 		});
@@ -769,6 +928,23 @@ public final class Excels {
 	 */
 	public static <M> List<M> getObjects(Nfile file, Reader<M> reader) throws IOException {
 		return getObjects(file, 0, reader);
+	}
+
+	/**
+	 * 从Excel文件中获取对象实体
+	 * 
+	 * @param <M>
+	 *            数据类型
+	 * @param sheet
+	 *            Excel sheet
+	 * @param reader
+	 *            Excel对象实体读取接口
+	 * @return 对象实体列表
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static <M> List<M> getObjects(Sheet sheet, Reader<M> reader) throws IOException {
+		return getObjects(sheet, 0, reader);
 	}
 
 	/**
@@ -810,6 +986,45 @@ public final class Excels {
 		} finally {
 			workbook.close();
 		}
+	}
+
+	/**
+	 * 从Excel文件中获取对象实体
+	 * 
+	 * @param <M>
+	 *            数据类型
+	 * @param sheet
+	 *            Excel sheet
+	 * @param start
+	 *            开始数据行下标（从0开始）
+	 * @param reader
+	 *            Excel对象实体读取接口
+	 * @return 对象实体列表
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static <M> List<M> getObjects(Sheet sheet, int start, Reader<M> reader) throws IOException {
+		if (sheet == null) {
+			throw new IllegalArgumentException("Illegal sheet:" + sheet);
+		}
+		if (start < 0) {
+			throw new IllegalArgumentException("Illegal start:" + start);
+		}
+		if (reader == null) {
+			throw new IllegalArgumentException("Illegal reader:" + reader);
+		}
+		int count = 0;
+		List<M> objects = new LinkedList<M>();
+		for (int r = start, rows = sheet.getLastRowNum(); r <= rows; r++) {
+			Row row = sheet.getRow(r);
+			if (!isEmpty(row)) {
+				M object = reader.read(row, ++count);
+				if (object != null) {
+					objects.add(object);
+				}
+			}
+		}
+		return objects;
 	}
 
 	/**
@@ -861,6 +1076,31 @@ public final class Excels {
 	 *            目标Excel行对象
 	 * @param object
 	 *            源对象实例
+	 * @param fields
+	 *            需要转换的字段数组
+	 */
+	public static void setObject(Row row, Object object, Field... fields) {
+		if (row == null) {
+			throw new IllegalArgumentException("Illegal row:" + row);
+		}
+		if (object == null) {
+			throw new IllegalArgumentException("Illegal object:" + object);
+		}
+		for (int i = 0; i < fields.length; i++) {
+			Object value = Beans.getValue(object, fields[i]);
+			if (value != null) {
+				setValue(row.createCell(i), value);
+			}
+		}
+	}
+
+	/**
+	 * 将对象实例转换成Excel行对象
+	 * 
+	 * @param row
+	 *            目标Excel行对象
+	 * @param object
+	 *            源对象实例
 	 * @param properties
 	 *            需要转换的属性名称数组
 	 */
@@ -871,13 +1111,7 @@ public final class Excels {
 		if (object == null) {
 			throw new IllegalArgumentException("Illegal object:" + object);
 		}
-		Field[] fields = Beans.getFields(object.getClass(), properties);
-		for (int i = 0; i < fields.length; i++) {
-			Object value = Beans.getValue(object, fields[i]);
-			if (value != null) {
-				setValue(row.createCell(i), value);
-			}
-		}
+		setObject(row, object, Beans.getFields(object.getClass(), properties));
 	}
 
 	/**
@@ -895,6 +1129,23 @@ public final class Excels {
 	 */
 	public static int setObjects(Nfile file, List<?> objects, String... properties) throws IOException {
 		return setObjects(file, 0, objects, properties);
+	}
+
+	/**
+	 * 将对象实体设置到Excel文件中
+	 * 
+	 * @param sheet
+	 *            Excel sheet
+	 * @param objects
+	 *            对象实体列表
+	 * @param properties
+	 *            需要转换的属性名称数组
+	 * @return 设置数量
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static int setObjects(Sheet sheet, List<?> objects, String... properties) throws IOException {
+		return setObjects(sheet, 0, objects, properties);
 	}
 
 	/**
@@ -943,6 +1194,41 @@ public final class Excels {
 	 * 
 	 * @param <M>
 	 *            数据类型
+	 * @param sheet
+	 *            Excel sheet
+	 * @param start
+	 *            开始数据行下标（从0开始）
+	 * @param objects
+	 *            对象实体列表
+	 * @param properties
+	 *            需要转换的属性名称数组
+	 * @return 设置数量
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static <M> int setObjects(Sheet sheet, int start, List<M> objects, String... properties) throws IOException {
+		if (objects == null) {
+			throw new IllegalArgumentException("Illegal objects:" + objects);
+		}
+		if (objects.isEmpty()) {
+			return 0;
+		}
+		final Field[] fields = Beans.getFields(objects.get(0).getClass(), properties);
+		return setObjects(sheet, start, objects, new Writer<M>() {
+
+			@Override
+			public void write(M entity, Row row, int count) {
+				setObject(row, entity, fields);
+			}
+
+		});
+	}
+
+	/**
+	 * 将对象实体设置到Excel文件中
+	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param workbook
 	 *            Excel文件工作薄
 	 * @param start
@@ -968,12 +1254,7 @@ public final class Excels {
 
 			@Override
 			public void write(M entity, Row row, int count) {
-				for (int i = 0; i < fields.length; i++) {
-					Object value = Beans.getValue(entity, fields[i]);
-					if (value != null) {
-						setValue(row.createCell(i), value);
-					}
-				}
+				setObject(row, entity, fields);
 			}
 
 		});
@@ -996,6 +1277,25 @@ public final class Excels {
 	 */
 	public static <M> int setObjects(Nfile file, List<M> objects, Writer<M> writer) throws IOException {
 		return setObjects(file, 0, objects, writer);
+	}
+
+	/**
+	 * 将对象实体设置到Excel文件中
+	 * 
+	 * @param <M>
+	 *            数据类型
+	 * @param sheet
+	 *            Excel sheet
+	 * @param objects
+	 *            对象实体列表
+	 * @param writer
+	 *            Excel对象实体写入接口
+	 * @return 设置数量
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static <M> int setObjects(Sheet sheet, List<M> objects, Writer<M> writer) throws IOException {
+		return setObjects(sheet, 0, objects, writer);
 	}
 
 	/**
@@ -1046,6 +1346,46 @@ public final class Excels {
 	 * 
 	 * @param <M>
 	 *            数据类型
+	 * @param sheet
+	 *            Excel sheet
+	 * @param start
+	 *            开始数据行下标（从0开始）
+	 * @param objects
+	 *            对象实体列表
+	 * @param writer
+	 *            Excel对象实体写入接口
+	 * @return 设置数量
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static <M> int setObjects(Sheet sheet, int start, List<M> objects, Writer<M> writer) throws IOException {
+		if (sheet == null) {
+			throw new IllegalArgumentException("Illegal sheet:" + sheet);
+		}
+		if (start < 0) {
+			throw new IllegalArgumentException("Illegal start:" + start);
+		}
+		if (objects == null) {
+			throw new IllegalArgumentException("Illegal objects:" + objects);
+		}
+		if (writer == null) {
+			throw new IllegalArgumentException("Illegal writer:" + writer);
+		}
+		int count = 0;
+		for (int i = 0; i < objects.size(); i++) {
+			M object = objects.get(i);
+			if (object != null) {
+				writer.write(object, sheet.createRow(start++), ++count);
+			}
+		}
+		return count;
+	}
+
+	/**
+	 * 将对象实体设置到Excel文件中
+	 * 
+	 * @param <M>
+	 *            数据类型
 	 * @param workbook
 	 *            Excel文件工作薄
 	 * @param start
@@ -1062,6 +1402,9 @@ public final class Excels {
 			throws IOException {
 		if (workbook == null) {
 			throw new IllegalArgumentException("Illegal workbook:" + workbook);
+		}
+		if (start < 0) {
+			throw new IllegalArgumentException("Illegal start:" + start);
 		}
 		if (objects == null) {
 			throw new IllegalArgumentException("Illegal objects:" + objects);
@@ -1103,6 +1446,21 @@ public final class Excels {
 	/**
 	 * Excel文件迭代
 	 * 
+	 * @param sheet
+	 *            Excel sheet
+	 * @param reader
+	 *            Excel对象实体读取接口
+	 * @return 读取数量
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static int iteration(Sheet sheet, Reader<?> reader) throws IOException {
+		return iteration(sheet, 0, reader);
+	}
+
+	/**
+	 * Excel文件迭代
+	 * 
 	 * @param workbook
 	 *            Excel文件工作薄
 	 * @param reader
@@ -1138,6 +1496,39 @@ public final class Excels {
 		} finally {
 			workbook.close();
 		}
+	}
+
+	/**
+	 * Excel文件迭代
+	 * 
+	 * @param sheet
+	 *            Excel sheet
+	 * @param start
+	 *            开始数据行下标（从0开始）
+	 * @param reader
+	 *            Excel对象实体读取接口
+	 * @return 读取数量
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static int iteration(Sheet sheet, int start, Reader<?> reader) throws IOException {
+		if (sheet == null) {
+			throw new IllegalArgumentException("Illegal sheet:" + sheet);
+		}
+		if (start < 0) {
+			throw new IllegalArgumentException("Illegal start:" + start);
+		}
+		if (reader == null) {
+			throw new IllegalArgumentException("Illegal reader:" + reader);
+		}
+		int count = 0;
+		for (int r = start, rows = sheet.getLastRowNum(); r <= rows; r++) {
+			Row row = sheet.getRow(r);
+			if (!isEmpty(row)) {
+				reader.read(row, ++count);
+			}
+		}
+		return count;
 	}
 
 	/**

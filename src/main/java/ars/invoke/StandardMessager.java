@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.Locale;
 import java.util.HashMap;
 import java.util.ResourceBundle;
-import java.util.MissingResourceException;
 import java.text.MessageFormat;
 
 import ars.util.Strings;
@@ -64,15 +63,12 @@ public class StandardMessager implements Messager {
 	 */
 	protected String getMessage(Locale locale, String key, String text) {
 		ResourceBundle[] bundles = this.getBundles(locale);
-		for (ResourceBundle bundle : bundles) {
-			if (bundle.containsKey(key)) {
-				return bundle.getString(key);
+		if (bundles != null) {
+			for (ResourceBundle bundle : bundles) {
+				if (bundle.containsKey(key)) {
+					return bundle.getString(key);
+				}
 			}
-		}
-		if (text == null) {
-			throw new MissingResourceException(
-					"Can't find resource for bundle java.util.PropertyResourceBundle, key " + key,
-					StandardMessager.class.getName(), key);
 		}
 		return text;
 	}

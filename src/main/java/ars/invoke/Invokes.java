@@ -114,15 +114,13 @@ public final class Invokes {
 	 */
 	public static Requester getRootRequester(Requester requester) {
 		if (requester == null) {
-			return null;
+			throw new IllegalArgumentException("Illegal requester:" + requester);
 		}
-		while (true) {
-			Requester parent = requester.getParent();
-			if (parent == null) {
-				return requester;
-			}
+		Requester parent = null;
+		while ((parent = requester.getParent()) != null) {
 			requester = parent;
 		}
+		return requester;
 	}
 
 	/**

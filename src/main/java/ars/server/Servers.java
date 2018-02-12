@@ -153,8 +153,11 @@ public final class Servers {
 	 */
 	public static void setExecutor(ExecutorService executor) {
 		if (executor == null) {
+			throw new IllegalArgumentException("Illegal executor:" + executor);
+		}
+		if (Servers.executor == null) {
 			synchronized (Servers.class) {
-				if (executor == null) {
+				if (Servers.executor == null) {
 					Servers.executor = executor;
 				}
 			}
@@ -168,6 +171,9 @@ public final class Servers {
 	 *            线程处理接口
 	 */
 	public static void execute(Runnable runnable) {
+		if (runnable == null) {
+			throw new IllegalArgumentException("Illegal runnable:" + runnable);
+		}
 		getExecutor().execute(runnable);
 	}
 
@@ -179,6 +185,9 @@ public final class Servers {
 	 * @return 任务结果
 	 */
 	public static Future<?> submit(Runnable runnable) {
+		if (runnable == null) {
+			throw new IllegalArgumentException("Illegal runnable:" + runnable);
+		}
 		return getExecutor().submit(runnable);
 	}
 
@@ -194,6 +203,12 @@ public final class Servers {
 	 * @return 任务结果
 	 */
 	public static <T> Future<T> submit(Runnable runnable, T result) {
+		if (runnable == null) {
+			throw new IllegalArgumentException("Illegal runnable:" + runnable);
+		}
+		if (result == null) {
+			throw new IllegalArgumentException("Illegal result:" + result);
+		}
 		return getExecutor().submit(runnable, result);
 	}
 
@@ -207,15 +222,18 @@ public final class Servers {
 	 * @return 任务结果
 	 */
 	public static <T> Future<T> submit(Callable<T> callable) {
+		if (callable == null) {
+			throw new IllegalArgumentException("Illegal callable:" + callable);
+		}
 		return getExecutor().submit(callable);
 	}
 
 	/**
-	 * 获取默认任务调度对象
+	 * 获取任务调度器
 	 * 
-	 * @return 任务调度对象
+	 * @return 任务调度器
 	 */
-	public static Scheduler getDefaultScheduler() {
+	public static Scheduler getScheduler() {
 		if (scheduler == null) {
 			synchronized (Servers.class) {
 				if (scheduler == null) {
@@ -228,6 +246,25 @@ public final class Servers {
 			}
 		}
 		return scheduler;
+	}
+
+	/**
+	 * 设置任务调度器
+	 * 
+	 * @param scheduler
+	 *            任务调度器
+	 */
+	public static void setScheduler(Scheduler scheduler) {
+		if (scheduler == null) {
+			throw new IllegalArgumentException("Illegal scheduler:" + scheduler);
+		}
+		if (Servers.scheduler == null) {
+			synchronized (Servers.class) {
+				if (Servers.scheduler == null) {
+					Servers.scheduler = scheduler;
+				}
+			}
+		}
 	}
 
 }

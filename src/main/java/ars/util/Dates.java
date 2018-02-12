@@ -55,7 +55,10 @@ public final class Dates {
 	 * @return 日期时间对象
 	 */
 	public static Date parse(String source) {
-		return source == null ? null : parse(source, datetimeFormat, dateFormat);
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		return parse(source, datetimeFormat, dateFormat);
 	}
 
 	/**
@@ -68,16 +71,16 @@ public final class Dates {
 	 * @return 日期时间对象
 	 */
 	public static Date parse(String source, String... formats) {
-		if (source != null) {
-			for (String format : formats) {
-				try {
-					return new SimpleDateFormat(format).parse(source);
-				} catch (ParseException e) {
-				}
-			}
-			throw new RuntimeException("Unparseable date:" + source);
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
 		}
-		return null;
+		for (String format : formats) {
+			try {
+				return new SimpleDateFormat(format).parse(source);
+			} catch (ParseException e) {
+			}
+		}
+		throw new RuntimeException("Unparseable date:" + source);
 	}
 
 	/**
@@ -90,16 +93,16 @@ public final class Dates {
 	 * @return 日期时间对象
 	 */
 	public static Date parse(String source, DateFormat... formats) {
-		if (source != null) {
-			for (DateFormat format : formats) {
-				try {
-					return format.parse(source);
-				} catch (ParseException e) {
-				}
-			}
-			throw new RuntimeException("Unparseable date:" + source);
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
 		}
-		return null;
+		for (DateFormat format : formats) {
+			try {
+				return format.parse(source);
+			} catch (ParseException e) {
+			}
+		}
+		throw new RuntimeException("Unparseable date:" + source);
 	}
 
 	/**
@@ -124,7 +127,7 @@ public final class Dates {
 	 */
 	public static String format(Date date, boolean nano) {
 		if (date == null) {
-			return null;
+			throw new IllegalArgumentException("Illegal date:" + date);
 		}
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
@@ -146,7 +149,7 @@ public final class Dates {
 	 */
 	public static Date differ(Date date, int type, int amount) {
 		if (date == null) {
-			return null;
+			throw new IllegalArgumentException("Illegal date:" + date);
 		}
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
@@ -163,7 +166,7 @@ public final class Dates {
 	 */
 	public static int getAge(Date birthday) {
 		if (birthday == null) {
-			return 0;
+			throw new IllegalArgumentException("Illegal birthday:" + birthday);
 		}
 		Calendar calendar = Calendar.getInstance();
 		int currentYear = calendar.get(Calendar.YEAR);
@@ -364,6 +367,9 @@ public final class Dates {
 	 * @return 带单位的时间表示
 	 */
 	public static String getUnitTime(long time) {
+		if (time < 0) {
+			throw new IllegalArgumentException("Illegal time:" + time);
+		}
 		StringBuilder buffer = new StringBuilder();
 		if (time >= 86400000) {
 			buffer.append(Beans.DEFAULT_DECIMAL_FORMAT.format(time / 86400000d)).append('d');

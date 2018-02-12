@@ -58,6 +58,18 @@ public final class Barcodes {
 	 * @return 图片对象
 	 */
 	public static BufferedImage encode(String content, BarcodeFormat format, int width, int height) {
+		if (content == null) {
+			throw new IllegalArgumentException("Illegal content:" + content);
+		}
+		if (format == null) {
+			throw new IllegalArgumentException("Illegal format:" + format);
+		}
+		if (width < 1) {
+			throw new IllegalArgumentException("Illegal width:" + width);
+		}
+		if (height < 1) {
+			throw new IllegalArgumentException("Illegal height:" + height);
+		}
 		Map<EncodeHintType, Object> hints = new HashMap<EncodeHintType, Object>(1, 1);
 		hints.put(EncodeHintType.CHARACTER_SET, Strings.UTF8);
 		try {
@@ -76,6 +88,9 @@ public final class Barcodes {
 	 * @return 图形内容
 	 */
 	public static String decode(BufferedImage image) {
+		if (image == null) {
+			throw new IllegalArgumentException("Illegal image:" + image);
+		}
 		Map<DecodeHintType, Object> hints = new HashMap<DecodeHintType, Object>(1, 1);
 		hints.put(DecodeHintType.CHARACTER_SET, Strings.UTF8);
 		BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(new BufferedImageLuminanceSource(image)));

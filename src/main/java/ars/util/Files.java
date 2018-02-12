@@ -4,13 +4,15 @@ import java.io.File;
 import java.io.Reader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.io.ByteArrayOutputStream;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
+import ars.util.Nfile;
 import ars.util.Beans;
 import ars.util.Streams;
 import ars.util.Strings;
@@ -33,6 +35,9 @@ public final class Files {
 	 *            源文件/文件目录
 	 */
 	public static void delete(File file) {
+		if (file == null) {
+			throw new IllegalArgumentException("Illegal file:" + file);
+		}
 		if (file != null && file.exists()) {
 			if (file.isDirectory()) {
 				File[] children = file.listFiles();
@@ -55,7 +60,13 @@ public final class Files {
 	 *             IO操作异常
 	 */
 	public static void copy(File source, File target) throws IOException {
-		if (source != null && source.exists()) {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
+		if (source.exists()) {
 			if (source.isDirectory()) {
 				File path = new File(target, source.getName());
 				if (!path.exists()) {
@@ -85,7 +96,13 @@ public final class Files {
 	 *             IO操作异常
 	 */
 	public static void move(File source, File target) throws IOException {
-		if (source != null && source.exists()) {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
+		if (source.exists()) {
 			if (source.isDirectory()) {
 				File path = new File(target, source.getName());
 				if (!path.exists()) {
@@ -192,6 +209,48 @@ public final class Files {
 	}
 
 	/**
+	 * 获取文件内容
+	 * 
+	 * @param file
+	 *            文件对象
+	 * @return 文件内容
+	 * @throws IOException
+	 */
+	public static String getString(File file) throws IOException {
+		if (file == null) {
+			throw new IllegalArgumentException("Illegal file:" + file);
+		}
+		OutputStream os = new ByteArrayOutputStream();
+		try {
+			Streams.write(file, os);
+		} finally {
+			os.close();
+		}
+		return os.toString();
+	}
+
+	/**
+	 * 获取文件内容
+	 * 
+	 * @param file
+	 *            文件对象
+	 * @return 文件内容
+	 * @throws IOException
+	 */
+	public static String getString(Nfile file) throws IOException {
+		if (file == null) {
+			throw new IllegalArgumentException("Illegal file:" + file);
+		}
+		OutputStream os = new ByteArrayOutputStream();
+		try {
+			Streams.write(file, os);
+		} finally {
+			os.close();
+		}
+		return os.toString();
+	}
+
+	/**
 	 * 获取文件行列表
 	 * 
 	 * @param file
@@ -202,9 +261,30 @@ public final class Files {
 	 */
 	public static List<String> getLines(File file) throws IOException {
 		if (file == null) {
-			return new ArrayList<String>(0);
+			throw new IllegalArgumentException("Illegal file:" + file);
 		}
 		InputStream is = new FileInputStream(file);
+		try {
+			return getLines(is);
+		} finally {
+			is.close();
+		}
+	}
+
+	/**
+	 * 获取文件行列表
+	 * 
+	 * @param file
+	 *            文件对象
+	 * @return 行列表
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static List<String> getLines(Nfile file) throws IOException {
+		if (file == null) {
+			throw new IllegalArgumentException("Illegal file:" + file);
+		}
+		InputStream is = file.getInputStream();
 		try {
 			return getLines(is);
 		} finally {
@@ -223,7 +303,7 @@ public final class Files {
 	 */
 	public static List<String> getLines(Reader reader) throws IOException {
 		if (reader == null) {
-			return new ArrayList<String>(0);
+			throw new IllegalArgumentException("Illegal reader:" + reader);
 		}
 		List<String> lines = new LinkedList<String>();
 		BufferedReader bufferedReader = new BufferedReader(reader);
@@ -243,14 +323,17 @@ public final class Files {
 	/**
 	 * 获取文件行列表
 	 * 
-	 * @param input
+	 * @param stream
 	 *            文件输入流
 	 * @return 行列表
 	 * @throws IOException
 	 *             IO操作异常
 	 */
-	public static List<String> getLines(InputStream input) throws IOException {
-		return input == null ? new ArrayList<String>(0) : getLines(new InputStreamReader(input));
+	public static List<String> getLines(InputStream stream) throws IOException {
+		if (stream == null) {
+			throw new IllegalArgumentException("Illegal stream:" + stream);
+		}
+		return getLines(new InputStreamReader(stream));
 	}
 
 	/**
@@ -261,6 +344,9 @@ public final class Files {
 	 * @return 带单位的文件大小表示
 	 */
 	public static String getUnitSize(long size) {
+		if (size < 0) {
+			throw new IllegalArgumentException("Illegal size:" + size);
+		}
 		StringBuilder buffer = new StringBuilder();
 		if (size >= 1073741824) {
 			buffer.append(Beans.DEFAULT_DECIMAL_FORMAT.format(size / 1073741824d)).append("GB");
@@ -284,9 +370,30 @@ public final class Files {
 	 *             IO操作异常
 	 */
 	public static String getEncoding(File file) throws IOException {
+		if (file == null) {
+			throw new IllegalArgumentException("Illegal file:" + file);
+		}
 		BytesEncoding encoding = new BytesEncoding();
 		return BytesEncoding.javaname[encoding.detectEncoding(Streams.getBytes(file))];
 	}
+
+	/**
+	 * 获取文件编码格式
+	 * 
+	 * @param file
+	 *            文件对象
+	 * @return 编码格式
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static String getEncoding(Nfile file) throws IOException {
+		if (file == null) {
+			throw new IllegalArgumentException("Illegal file:" + file);
+		}
+		BytesEncoding encoding = new BytesEncoding();
+		return BytesEncoding.javaname[encoding.detectEncoding(Streams.getBytes(file))];
+	}
+
 }
 
 /**

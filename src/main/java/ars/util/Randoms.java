@@ -366,7 +366,7 @@ public final class Randoms {
 	 * @return 字符串
 	 */
 	public static String randomString(int length) {
-		return randomString(length, Strings.CHARS);
+		return randomString(Strings.CHARS, length);
 	}
 
 	/**
@@ -377,26 +377,26 @@ public final class Randoms {
 	 * @return 字符串
 	 */
 	public static String randomString(Character[] chars) {
-		return randomString(4, chars);
+		return randomString(chars, 4);
 	}
 
 	/**
 	 * 随机生成字符串
 	 * 
-	 * @param length
-	 *            字符串长度
 	 * @param chars
 	 *            随机字符数组
+	 * @param length
+	 *            字符串长度
 	 * @return 字符串
 	 */
-	public static String randomString(int length, Character[] chars) {
-		if (length < 1) {
-			throw new IllegalArgumentException("Illegal length:" + length);
-		}
+	public static String randomString(Character[] chars, int length) {
 		if (chars == null || chars.length == 0) {
 			throw new IllegalArgumentException("Illegal chars:" + Strings.toString(chars));
 		}
-		return Strings.random(length, chars);
+		if (length < 1) {
+			throw new IllegalArgumentException("Illegal length:" + length);
+		}
+		return Strings.random(chars, length);
 	}
 
 	/**

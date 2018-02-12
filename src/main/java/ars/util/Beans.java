@@ -70,7 +70,7 @@ public final class Beans {
 	 */
 	public static Class<?>[] getTypes(Object... objects) {
 		if (objects == null) {
-			return null;
+			throw new IllegalArgumentException("Illegal objects:" + objects);
 		}
 		Class<?>[] types = new Class<?>[objects.length];
 		for (int i = 0; i < objects.length; i++) {
@@ -204,6 +204,9 @@ public final class Beans {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <K, V> Comparator<K> getTreeMapComparator(TreeMap<K, V> map) {
+		if (map == null) {
+			throw new IllegalArgumentException("Illegal map:" + map);
+		}
 		Field field = null;
 		try {
 			field = map.getClass().getDeclaredField("comparator");
@@ -228,6 +231,9 @@ public final class Beans {
 	 * @return 泛型类型数组
 	 */
 	public static Class<?>[] getGenericTypes(Class<?> cls) {
+		if (cls == null) {
+			throw new IllegalArgumentException("Illegal cls:" + cls);
+		}
 		Type genericSuperclass = cls.getGenericSuperclass();
 		if (genericSuperclass instanceof ParameterizedType) {
 			Type[] types = ((ParameterizedType) genericSuperclass).getActualTypeArguments();
@@ -251,6 +257,9 @@ public final class Beans {
 	 * @return 泛型类型数组
 	 */
 	public static Class<?>[] getGenericTypes(Field field) {
+		if (field == null) {
+			throw new IllegalArgumentException("Illegal field:" + field);
+		}
 		Type genericSuperclass = field.getGenericType();
 		if (genericSuperclass instanceof ParameterizedType) {
 			Type[] types = ((ParameterizedType) genericSuperclass).getActualTypeArguments();
@@ -758,8 +767,11 @@ public final class Beans {
 	 * @return 对象实例
 	 */
 	public static <T> T getInstance(Class<T> type) {
+		if (type == null) {
+			throw new IllegalArgumentException("Illegal type:" + type);
+		}
 		try {
-			return type == null ? null : type.newInstance();
+			return type.newInstance();
 		} catch (InstantiationException e) {
 			throw new RuntimeException(e);
 		} catch (IllegalAccessException e) {
@@ -779,9 +791,14 @@ public final class Beans {
 	 * @return 对象实例
 	 */
 	public static <T> T getInstance(Class<T> type, Object[] parameters) {
+		if (type == null) {
+			throw new IllegalArgumentException("Illegal type:" + type);
+		}
+		if (parameters == null) {
+			throw new IllegalArgumentException("Illegal parameters:" + parameters);
+		}
 		try {
-			return type == null || parameters == null ? null
-					: type.getConstructor(getTypes(parameters)).newInstance(parameters);
+			return type.getConstructor(getTypes(parameters)).newInstance(parameters);
 		} catch (InstantiationException e) {
 			throw new RuntimeException(e);
 		} catch (IllegalAccessException e) {
@@ -829,8 +846,14 @@ public final class Beans {
 	 * @return 字段对象
 	 */
 	public static Field getField(Class<?> cls, String name) {
+		if (cls == null) {
+			throw new IllegalArgumentException("Illegal cls:" + cls);
+		}
+		if (name == null) {
+			throw new IllegalArgumentException("Illegal name:" + name);
+		}
 		try {
-			return cls == null || name == null ? null : cls.getDeclaredField(name);
+			return cls.getDeclaredField(name);
 		} catch (NoSuchFieldException e) {
 			Class<?> parent = cls.getSuperclass();
 			if (parent == null) {
@@ -850,6 +873,9 @@ public final class Beans {
 	 * @return 字段对象数组
 	 */
 	public static Field[] getFields(Class<?> cls, String... names) {
+		if (cls == null) {
+			throw new IllegalArgumentException("Illegal cls:" + cls);
+		}
 		if (names == null || names.length == 0) {
 			List<Field> fields = new LinkedList<Field>();
 			while (cls != Object.class) {
@@ -895,7 +921,7 @@ public final class Beans {
 	 */
 	public static String[] getProperties(Class<?> cls) {
 		if (cls == null) {
-			return null;
+			throw new IllegalArgumentException("Illegal cls:" + cls);
 		}
 		if (Enum.class.isAssignableFrom(cls)) {
 			Method method = null;
@@ -945,6 +971,12 @@ public final class Beans {
 	 * @return 方法对象
 	 */
 	public static Method getMethod(Class<?> cls, String name, Class<?>... parameterTypes) {
+		if (cls == null) {
+			throw new IllegalArgumentException("Illegal cls:" + cls);
+		}
+		if (name == null) {
+			throw new IllegalArgumentException("Illegal name:" + name);
+		}
 		return getMethod(cls, cls, name, parameterTypes);
 	}
 
@@ -1000,6 +1032,12 @@ public final class Beans {
 	 * @return 方法对象
 	 */
 	public static Method getGetMethod(Class<?> cls, Field field) {
+		if (cls == null) {
+			throw new IllegalArgumentException("Illegal cls:" + cls);
+		}
+		if (field == null) {
+			throw new IllegalArgumentException("Illegal field:" + field);
+		}
 		String property = field.getName();
 		StringBuilder buffer = new StringBuilder().append(Character.toUpperCase(property.charAt(0)));
 		if (property.length() > 1) {
@@ -1029,6 +1067,12 @@ public final class Beans {
 	 * @return 方法对象
 	 */
 	public static Method getSetMethod(Class<?> cls, Field field) {
+		if (cls == null) {
+			throw new IllegalArgumentException("Illegal cls:" + cls);
+		}
+		if (field == null) {
+			throw new IllegalArgumentException("Illegal field:" + field);
+		}
 		String property = field.getName();
 		StringBuilder buffer = new StringBuilder("set").append(Character.toUpperCase(property.charAt(0)));
 		if (property.length() > 1) {
@@ -1051,7 +1095,10 @@ public final class Beans {
 	 * @return 字段值
 	 */
 	public static Object getValue(Object object, String property) {
-		if (object == null || property == null) {
+		if (property == null) {
+			throw new IllegalArgumentException("Illegal property:" + property);
+		}
+		if (object == null) {
 			return null;
 		}
 		String suffix = null;
@@ -1078,7 +1125,10 @@ public final class Beans {
 	 * @return 字段值
 	 */
 	public static Object getValue(Object object, Field field) {
-		if (object == null || field == null) {
+		if (field == null) {
+			throw new IllegalArgumentException("Illegal field:" + field);
+		}
+		if (object == null) {
 			return null;
 		}
 		Class<?> meta = object instanceof Class ? (Class<?>) object : object.getClass();
@@ -1139,6 +1189,9 @@ public final class Beans {
 	 * @return 属性方法值
 	 */
 	public static Object getMethodValue(Object object, String method) {
+		if (method == null) {
+			throw new IllegalArgumentException("Illegal method:" + method);
+		}
 		if (object == null) {
 			return null;
 		}
@@ -1170,6 +1223,9 @@ public final class Beans {
 	 * @return 值
 	 */
 	public static Object getAssembleMethodValue(Object object, String method) {
+		if (method == null) {
+			throw new IllegalArgumentException("Illegal method:" + method);
+		}
 		if (isEmpty(object)) {
 			return object;
 		}
@@ -1210,6 +1266,9 @@ public final class Beans {
 	 * @return 值
 	 */
 	public static Object getAssemblePropertyValue(Object object, String property) {
+		if (property == null) {
+			throw new IllegalArgumentException("Illegal property:" + property);
+		}
 		if (isEmpty(object)) {
 			return object;
 		}
@@ -1260,6 +1319,12 @@ public final class Beans {
 	 * @return 键/值对
 	 */
 	public static Map<Object, Object> getAssemblePropertyValue(Object object, String property, String mapping) {
+		if (property == null) {
+			throw new IllegalArgumentException("Illegal property:" + property);
+		}
+		if (mapping == null) {
+			throw new IllegalArgumentException("Illegal mapping:" + mapping);
+		}
 		if (isEmpty(object)) {
 			return new HashMap<Object, Object>(0);
 		}
@@ -1305,6 +1370,9 @@ public final class Beans {
 	 * @return 属性值列表
 	 */
 	public static List<Object> getAssemblePropertyValues(Object object, String property) {
+		if (property == null) {
+			throw new IllegalArgumentException("Illegal property:" + property);
+		}
 		if (isEmpty(object)) {
 			return new ArrayList<Object>(0);
 		}
@@ -1376,6 +1444,12 @@ public final class Beans {
 	 * @return 键/值映射
 	 */
 	public static Map<Object, List<Object>> getAssemblePropertyGroups(Object object, String property, String mapping) {
+		if (property == null) {
+			throw new IllegalArgumentException("Illegal property:" + property);
+		}
+		if (mapping == null) {
+			throw new IllegalArgumentException("Illegal mapping:" + mapping);
+		}
 		if (Beans.isEmpty(object)) {
 			return new HashMap<Object, List<Object>>(0);
 		}
@@ -1464,6 +1538,9 @@ public final class Beans {
 	 *            字段值
 	 */
 	public static void setValue(Object object, Field field, Object value) {
+		if (field == null) {
+			throw new IllegalArgumentException("Illegal field:" + field);
+		}
 		if (object != null && field != null) {
 			Class<?> meta = object instanceof Class ? (Class<?>) object : object.getClass();
 			Method method = getSetMethod(meta, field);
@@ -1493,6 +1570,9 @@ public final class Beans {
 	 *            字段值
 	 */
 	public static void setValue(Object object, String property, Object value) {
+		if (property == null) {
+			throw new IllegalArgumentException("Illegal property:" + property);
+		}
 		if (object != null) {
 			Class<?> meta = object instanceof Class ? (Class<?>) object : object.getClass();
 			setValue(object, getField(meta, property), value);
@@ -1586,7 +1666,7 @@ public final class Beans {
 	 * @return 对象实例
 	 */
 	public static <T> T initialize(Class<T> type, Map<?, ?> values) {
-		if (type == null || values == null) {
+		if (type == null) {
 			return null;
 		}
 		Class<?> cls = type;
@@ -1616,7 +1696,7 @@ public final class Beans {
 	 */
 	public static List<Class<?>> getClasses(String pack) {
 		if (pack == null) {
-			return new ArrayList<Class<?>>(0);
+			throw new IllegalArgumentException("Illegal pack:" + pack);
 		}
 		List<Class<?>> classes = new ArrayList<Class<?>>();
 		// 获取包的名字 并进行替换
@@ -1729,6 +1809,12 @@ public final class Beans {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T[] getArray(Class<T> type, int length) {
+		if (type == null) {
+			throw new IllegalArgumentException("Illegal type:" + type);
+		}
+		if (length < 0) {
+			throw new IllegalArgumentException("Illegal length:" + length);
+		}
 		Class<?> _type = isBasicClass(type) ? getBasicWrapClass(type) : type;
 		return (T[]) Array.newInstance(_type, length);
 	}
@@ -1744,6 +1830,9 @@ public final class Beans {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Object toObject(Class<?> type, Object object) {
+		if (type == null) {
+			throw new IllegalArgumentException("Illegal type:" + type);
+		}
 		if (type == Object.class) {
 			return object;
 		} else if (type.isArray()) {
@@ -1821,6 +1910,12 @@ public final class Beans {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <K, V, T> Map<K, T> toMap(Class<T> type, Map<K, V> object) {
+		if (type == null) {
+			throw new IllegalArgumentException("Illegal type:" + type);
+		}
+		if (object == null) {
+			return new HashMap<K, T>(0);
+		}
 		Map<K, T> map = object instanceof TreeMap ? new TreeMap<K, T>(getTreeMapComparator((TreeMap<K, V>) object))
 				: object instanceof LinkedHashMap ? new LinkedHashMap<K, T>(object.size())
 						: new HashMap<K, T>(object.size());
@@ -1842,6 +1937,9 @@ public final class Beans {
 	 * @return Set
 	 */
 	public static <T> Set<T> toSet(Class<T> type, Object object) {
+		if (type == null) {
+			throw new IllegalArgumentException("Illegal type:" + type);
+		}
 		if (object == null) {
 			return new HashSet<T>(0);
 		}
@@ -1865,6 +1963,9 @@ public final class Beans {
 	 * @return List
 	 */
 	public static <T> List<T> toList(Class<T> type, Object object) {
+		if (type == null) {
+			throw new IllegalArgumentException("Illegal type:" + type);
+		}
 		if (object == null) {
 			return new ArrayList<T>(0);
 		}
@@ -1889,6 +1990,9 @@ public final class Beans {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T[] toArray(Class<T> type, Object object) {
+		if (type == null) {
+			throw new IllegalArgumentException("Illegal type:" + type);
+		}
 		if (object == null) {
 			return getArray(type, 0);
 		} else if (object instanceof List) {
@@ -1996,6 +2100,9 @@ public final class Beans {
 	 * @return 字节对象
 	 */
 	public static Byte toByte(Class<Byte> type, Object object) {
+		if (type == null) {
+			throw new IllegalArgumentException("Illegal type:" + type);
+		}
 		if (object == null || (object instanceof CharSequence && ((CharSequence) object).length() == 0)) {
 			return type == byte.class ? (byte) 0 : null;
 		}
@@ -2013,6 +2120,9 @@ public final class Beans {
 	 * @return 字符对象
 	 */
 	public static Character toCharacter(Class<Character> type, Object object) {
+		if (type == null) {
+			throw new IllegalArgumentException("Illegal type:" + type);
+		}
 		if (object == null || (object instanceof CharSequence && ((CharSequence) object).length() == 0)) {
 			return type == char.class ? (char) 0 : null;
 		}
@@ -2030,6 +2140,9 @@ public final class Beans {
 	 * @return 真假对象
 	 */
 	public static Boolean toBoolean(Class<Boolean> type, Object object) {
+		if (type == null) {
+			throw new IllegalArgumentException("Illegal type:" + type);
+		}
 		if (object == null || (object instanceof CharSequence && ((CharSequence) object).length() == 0)) {
 			return type == boolean.class ? false : null;
 		}
@@ -2046,6 +2159,9 @@ public final class Beans {
 	 * @return 整形对象
 	 */
 	public static Integer toInteger(Class<Integer> type, Object object) {
+		if (type == null) {
+			throw new IllegalArgumentException("Illegal type:" + type);
+		}
 		if (object == null || (object instanceof CharSequence && ((CharSequence) object).length() == 0)) {
 			return type == int.class ? 0 : null;
 		}
@@ -2063,6 +2179,9 @@ public final class Beans {
 	 * @return 短整形对象
 	 */
 	public static Short toShort(Class<Short> type, Object object) {
+		if (type == null) {
+			throw new IllegalArgumentException("Illegal type:" + type);
+		}
 		if (object == null || (object instanceof CharSequence && ((CharSequence) object).length() == 0)) {
 			return type == short.class ? (short) 0 : null;
 		}
@@ -2080,6 +2199,9 @@ public final class Beans {
 	 * @return 单精度浮点对象
 	 */
 	public static Float toFloat(Class<Float> type, Object object) {
+		if (type == null) {
+			throw new IllegalArgumentException("Illegal type:" + type);
+		}
 		if (object == null || (object instanceof CharSequence && ((CharSequence) object).length() == 0)) {
 			return type == float.class ? (float) 0 : null;
 		}
@@ -2097,6 +2219,9 @@ public final class Beans {
 	 * @return 双精度浮点对象
 	 */
 	public static Double toDouble(Class<Double> type, Object object) {
+		if (type == null) {
+			throw new IllegalArgumentException("Illegal type:" + type);
+		}
 		if (object == null || (object instanceof CharSequence && ((CharSequence) object).length() == 0)) {
 			return type == double.class ? (double) 0 : null;
 		}
@@ -2114,6 +2239,9 @@ public final class Beans {
 	 * @return 长整形对象
 	 */
 	public static Long toLong(Class<Long> type, Object object) {
+		if (type == null) {
+			throw new IllegalArgumentException("Illegal type:" + type);
+		}
 		if (object == null || (object instanceof CharSequence && ((CharSequence) object).length() == 0)) {
 			return type == long.class ? (long) 0 : null;
 		}
@@ -2134,6 +2262,9 @@ public final class Beans {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends Enum<T>> T toEnum(Class<T> type, Object object) {
+		if (type == null) {
+			throw new IllegalArgumentException("Illegal type:" + type);
+		}
 		return object == null || (object instanceof CharSequence && ((CharSequence) object).length() == 0) ? null
 				: object instanceof Enum ? (T) object : Enum.valueOf(type, object.toString());
 	}
@@ -2200,7 +2331,10 @@ public final class Beans {
 	 * @return 调用结果
 	 */
 	public static Object invoke(Object target, Method method, Object... args) {
-		if (target == null || method == null) {
+		if (method == null) {
+			throw new IllegalArgumentException("Illegal method:" + method);
+		}
+		if (target == null) {
 			return null;
 		}
 		method.setAccessible(true);
@@ -2229,7 +2363,10 @@ public final class Beans {
 	 * @return 调用结果
 	 */
 	public static Object invoke(Object target, String method, Object... args) {
-		if (target == null || method == null) {
+		if (method == null) {
+			throw new IllegalArgumentException("Illegal method:" + method);
+		}
+		if (target == null) {
 			return null;
 		}
 		Class<?>[] parameterTypes = new Class<?>[args == null ? 0 : args.length];
@@ -2252,7 +2389,10 @@ public final class Beans {
 	 * @return 调用结果数组
 	 */
 	public static Object[] invoke(Object[] targets, String method, Object... args) {
-		if (targets == null || method == null) {
+		if (method == null) {
+			throw new IllegalArgumentException("Illegal method:" + method);
+		}
+		if (targets == null) {
 			return null;
 		}
 		Object[] values = new Object[targets.length];
@@ -2534,6 +2674,9 @@ public final class Beans {
 	 * @return 异常对象
 	 */
 	public static Throwable getThrowableCause(Throwable throwable) {
+		if (throwable == null) {
+			throw new IllegalArgumentException("Illegal throwable:" + throwable);
+		}
 		Throwable parent = throwable;
 		Throwable cause = throwable.getCause();
 		while (cause != null) {

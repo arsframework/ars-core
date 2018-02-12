@@ -124,6 +124,15 @@ public final class Opcodes {
 	 * @return 图片对象
 	 */
 	public static BufferedImage encode(String content, int width, int height) {
+		if (content == null) {
+			throw new IllegalArgumentException("Illegal content:" + content);
+		}
+		if (width < 1) {
+			throw new IllegalArgumentException("Illegal width:" + width);
+		}
+		if (height < 1) {
+			throw new IllegalArgumentException("Illegal height:" + height);
+		}
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		Graphics2D graphics = image.createGraphics();
 		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

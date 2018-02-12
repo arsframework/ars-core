@@ -87,7 +87,7 @@ public abstract class AbstractTaskServer extends AbstractServer {
 			JobDataMap data = detail.getJobDataMap();
 			data.put("server", this);
 			data.put("concurrent", this.concurrent);
-			Servers.getDefaultScheduler().scheduleJob(detail, trigger);
+			Servers.getScheduler().scheduleJob(detail, trigger);
 		} catch (SchedulerException e) {
 			throw new RuntimeException(e);
 		}

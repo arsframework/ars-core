@@ -67,8 +67,9 @@ public final class Apis {
 	 */
 	public static Class<?> getApiClass(Class<?> cls) {
 		if (cls == null) {
-			return null;
-		} else if (cls.isAnnotationPresent(Api.class)) {
+			throw new IllegalArgumentException("Illegal cls:" + cls);
+		}
+		if (cls.isAnnotationPresent(Api.class)) {
 			return cls;
 		}
 		Class<?>[] interfaces = cls.getInterfaces();
@@ -91,7 +92,7 @@ public final class Apis {
 	 */
 	public static Method[] getApiMethods(Class<?> cls) {
 		if (cls == null) {
-			return null;
+			throw new IllegalArgumentException("Illegal cls:" + cls);
 		}
 		List<Method> methods = _getApiMethods(cls);
 		if (methods.isEmpty()) {
@@ -143,7 +144,10 @@ public final class Apis {
 	 * @return 接口地址
 	 */
 	public static String getApi(Class<?> cls) {
-		if (cls == null || !cls.isAnnotationPresent(Api.class)) {
+		if (cls == null) {
+			throw new IllegalArgumentException("Illegal cls:" + cls);
+		}
+		if (!cls.isAnnotationPresent(Api.class)) {
 			return null;
 		}
 		String api = cls.getAnnotation(Api.class).value();
@@ -158,7 +162,10 @@ public final class Apis {
 	 * @return 接口地址
 	 */
 	public static String getApi(Method method) {
-		if (method == null || !method.isAnnotationPresent(Api.class)) {
+		if (method == null) {
+			throw new IllegalArgumentException("Illegal method:" + method);
+		}
+		if (!method.isAnnotationPresent(Api.class)) {
 			return null;
 		}
 		String api = method.getAnnotation(Api.class).value();
@@ -174,7 +181,7 @@ public final class Apis {
 	 */
 	public static Condition[] getConditions(Method method) {
 		if (method == null) {
-			return new Condition[0];
+			throw new IllegalArgumentException("Illegal method:" + method);
 		}
 		Class<?>[] types = method.getParameterTypes();
 		Condition[] conditions = new Condition[types.length];
@@ -227,6 +234,9 @@ public final class Apis {
 	 * @return 对象实体
 	 */
 	private static Object param2entity(Class<?> type, Map<String, Object> parameters) {
+		if (type == null) {
+			throw new IllegalArgumentException("Illegal type:" + type);
+		}
 		Class<?> cls = type;
 		Object instance = Beans.getInstance(type);
 		if (parameters != null && !parameters.isEmpty()) {
@@ -266,6 +276,9 @@ public final class Apis {
 	 *             操作异常
 	 */
 	public static Object[] getParameters(Requester requester, Condition... conditions) throws Exception {
+		if (requester == null) {
+			throw new IllegalArgumentException("Illegal requester:" + requester);
+		}
 		Object[] _parameters = new Object[conditions.length];
 		Map<String, Object> parameters = requester.getParameters();
 		for (int i = 0; i < conditions.length; i++) {
@@ -315,6 +328,9 @@ public final class Apis {
 	 * @return 树列表
 	 */
 	public static List<SimpleTree> getTrees(Collection<String> apis) {
+		if (apis == null) {
+			throw new IllegalArgumentException("Illegal apis:" + apis);
+		}
 		List<SimpleTree> roots = new ArrayList<SimpleTree>(apis.size());
 		Map<String, SimpleTree> trees = new HashMap<String, SimpleTree>(apis.size());
 		for (String api : apis) {

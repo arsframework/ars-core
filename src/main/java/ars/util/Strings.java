@@ -185,6 +185,9 @@ public final class Strings {
 	 * @return 密文
 	 */
 	public static String md5(String source) {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
 		try {
 			MessageDigest digest = MessageDigest.getInstance("MD5");
 			digest.update(source.getBytes());
@@ -202,6 +205,9 @@ public final class Strings {
 	 * @return 密文
 	 */
 	public static String sha1(String source) {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-1");
 			digest.update(source.getBytes());
@@ -221,6 +227,12 @@ public final class Strings {
 	 * @return 密文
 	 */
 	public static String des(String source, String key) {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (key == null) {
+			throw new IllegalArgumentException("Illegal key:" + key);
+		}
 		try {
 			DESKeySpec spec = new DESKeySpec(key.getBytes());
 			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
@@ -253,6 +265,12 @@ public final class Strings {
 	 * @return 明文
 	 */
 	public static String undes(String source, String key) {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (key == null) {
+			throw new IllegalArgumentException("Illegal key:" + key);
+		}
 		try {
 			DESKeySpec spec = new DESKeySpec(key.getBytes());
 			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
@@ -285,6 +303,12 @@ public final class Strings {
 	 * @return 密文（base64）
 	 */
 	public static String aes(String source, String key) {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (key == null) {
+			throw new IllegalArgumentException("Illegal key:" + key);
+		}
 		try {
 			KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
 			keyGenerator.init(128, new SecureRandom(key.getBytes()));
@@ -315,6 +339,12 @@ public final class Strings {
 	 * @return 明文
 	 */
 	public static String unaes(String source, String key) {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (key == null) {
+			throw new IllegalArgumentException("Illegal key:" + key);
+		}
 		try {
 			KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
 			keyGenerator.init(128, new SecureRandom(key.getBytes()));
@@ -354,6 +384,9 @@ public final class Strings {
 	 * @return 字节数组
 	 */
 	public static byte[] hexToByte(String hex) {
+		if (hex == null) {
+			throw new IllegalArgumentException("Illegal hex:" + hex);
+		}
 		int length = hex.length() / 2;
 		char[] chars = hex.toUpperCase().toCharArray();
 		byte[] bytes = new byte[length];
@@ -371,6 +404,9 @@ public final class Strings {
 	 * @return 16进制字符串
 	 */
 	public static String byteToHex(byte[] bytes) {
+		if (bytes == null) {
+			throw new IllegalArgumentException("Illegal bytes:" + bytes);
+		}
 		StringBuilder buffer = new StringBuilder();
 		for (int i = 0; i < bytes.length; i++) {
 			String hex = Integer.toHexString(bytes[i] & 0xFF);
@@ -392,6 +428,12 @@ public final class Strings {
 	 * @return 16进制字符串
 	 */
 	public static String charToHex(char[] chars, int radix) {
+		if (chars == null) {
+			throw new IllegalArgumentException("Illegal chars:null");
+		}
+		if (radix < 1) {
+			throw new IllegalArgumentException("Illegal radix:" + radix);
+		}
 		StringBuilder buffer = new StringBuilder();
 		for (char c : chars) {
 			String s = Integer.toHexString(c);
@@ -414,6 +456,12 @@ public final class Strings {
 	 * @return 10进制字符数组
 	 */
 	public static char[] hexToChar(String hex, int radix) {
+		if (hex == null) {
+			throw new IllegalArgumentException("Illegal hex:" + hex);
+		}
+		if (radix < 1) {
+			throw new IllegalArgumentException("Illegal radix:" + radix);
+		}
 		int len = hex.length() / radix;
 		char[] chars = new char[len];
 		for (int i = 0; i < len; i++) {
@@ -430,6 +478,9 @@ public final class Strings {
 	 * @return 字符数组
 	 */
 	public static char[] unicodeToChar(String unicode) {
+		if (unicode == null) {
+			throw new IllegalArgumentException("Illegal unicode:" + unicode);
+		}
 		int index = -1, _index = -1;
 		StringBuilder buffer = new StringBuilder();
 		while ((index = unicode.indexOf("\\u", index + 1)) > -1) {
@@ -540,6 +591,12 @@ public final class Strings {
 	 * @return 随机数字符串
 	 */
 	public static String random(int length, int max, boolean repeat) {
+		if (length < 1) {
+			throw new IllegalArgumentException("Illegal length:" + length);
+		}
+		if (max < length) {
+			throw new IllegalArgumentException("Illegal max:" + max);
+		}
 		Random random = Randoms.getCurrentRandom();
 		StringBuilder buffer = new StringBuilder();
 		for (int i = 0; i < length; i++) {
@@ -565,28 +622,34 @@ public final class Strings {
 	/**
 	 * 获取随机数
 	 * 
-	 * @param length
-	 *            随机数长度
 	 * @param source
 	 *            随机数源
+	 * @param length
+	 *            随机数长度
 	 * @return 随机数组
 	 */
-	public static String random(int length, Object[] source) {
-		return random(length, source, true);
+	public static String random(Object[] source, int length) {
+		return random(source, length, true);
 	}
 
 	/**
 	 * 获取随机数
 	 * 
-	 * @param length
-	 *            随机数长度
 	 * @param source
 	 *            随机数源
+	 * @param length
+	 *            随机数长度
 	 * @param repeat
 	 *            是否允许重复
 	 * @return 随机数组
 	 */
-	public static String random(int length, Object[] source, boolean repeat) {
+	public static String random(Object[] source, int length, boolean repeat) {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (length < 1) {
+			throw new IllegalArgumentException("Illegal length:" + length);
+		}
 		Random random = Randoms.getCurrentRandom();
 		StringBuilder buffer = new StringBuilder();
 		for (int i = 0; i < length; i++) {
@@ -1675,6 +1738,9 @@ public final class Strings {
 	 * @return 对象列表
 	 */
 	public static List<?> toList(CharSequence source) {
+		if (source == null || source.length() == 0) {
+			return new ArrayList<Object>(0);
+		}
 		int skip = 0;
 		StringBuilder buffer = new StringBuilder();
 		List<StringBuilder> buffers = new LinkedList<StringBuilder>();
@@ -1944,6 +2010,9 @@ public final class Strings {
 	 * @return 转义后字符串
 	 */
 	public static String escape(CharSequence source) {
+		if (source == null || source.length() == 0) {
+			return toString(source);
+		}
 		StringBuilder buffer = new StringBuilder();
 		for (int i = 0; i < source.length(); i++) {
 			char c = source.charAt(i);
@@ -1990,6 +2059,9 @@ public final class Strings {
 	 * @return 匹配模式
 	 */
 	public static Pattern getPattern(String regex) {
+		if (regex == null) {
+			throw new IllegalArgumentException("Illegal regex:" + regex);
+		}
 		if (patterns == null) {
 			synchronized (Strings.class) {
 				if (patterns == null) {

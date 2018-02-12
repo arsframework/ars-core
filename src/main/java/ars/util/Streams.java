@@ -104,6 +104,9 @@ public final class Streams {
 	 *             类不存在异常
 	 */
 	public static Serializable deserialize(InputStream input) throws IOException, ClassNotFoundException {
+		if (input == null) {
+			throw new IllegalArgumentException("Illegal input:" + input);
+		}
 		return (Serializable) new ObjectInputStream(input).readObject();
 	}
 
@@ -119,6 +122,9 @@ public final class Streams {
 	 *             类不存在异常
 	 */
 	public static Serializable deserialize(ReadableByteChannel channel) throws IOException, ClassNotFoundException {
+		if (channel == null) {
+			throw new IllegalArgumentException("Illegal channel:" + channel);
+		}
 		int n = 0;
 		PipedOutputStream pos = new PipedOutputStream();
 		PipedInputStream pis = new PipedInputStream(pos);
@@ -143,7 +149,31 @@ public final class Streams {
 	 *             IO操作异常
 	 */
 	public static byte[] getBytes(File file) throws IOException {
+		if (file == null) {
+			throw new IllegalArgumentException("Illegal file:" + file);
+		}
 		InputStream is = new FileInputStream(file);
+		try {
+			return getBytes(is);
+		} finally {
+			is.close();
+		}
+	}
+
+	/**
+	 * 从文件中获取字节
+	 * 
+	 * @param file
+	 *            文件对象
+	 * @return 字节数组
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static byte[] getBytes(Nfile file) throws IOException {
+		if (file == null) {
+			throw new IllegalArgumentException("Illegal file:" + file);
+		}
+		InputStream is = file.getInputStream();
 		try {
 			return getBytes(is);
 		} finally {
@@ -161,11 +191,18 @@ public final class Streams {
 	 *             IO操作异常
 	 */
 	public static byte[] getBytes(InputStream input) throws IOException {
+		if (input == null) {
+			throw new IllegalArgumentException("Illegal input:" + input);
+		}
 		int n = 0;
 		byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		while ((n = input.read(buffer)) > 0) {
-			bos.write(buffer, 0, n);
+		try {
+			while ((n = input.read(buffer)) > 0) {
+				bos.write(buffer, 0, n);
+			}
+		} finally {
+			bos.close();
 		}
 		return bos.toByteArray();
 	}
@@ -180,11 +217,18 @@ public final class Streams {
 	 *             IO操作异常
 	 */
 	public static byte[] getBytes(ReadableByteChannel channel) throws IOException {
+		if (channel == null) {
+			throw new IllegalArgumentException("Illegal channel:" + channel);
+		}
 		int n = 0;
 		ByteBuffer buffer = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE);
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		while ((n = channel.read(buffer)) > 0) {
-			bos.write(buffer.array(), 0, n);
+		try {
+			while ((n = channel.read(buffer)) > 0) {
+				bos.write(buffer.array(), 0, n);
+			}
+		} finally {
+			bos.close();
 		}
 		return bos.toByteArray();
 	}
@@ -200,6 +244,12 @@ public final class Streams {
 	 *             IO操作异常
 	 */
 	public static void append(byte[] source, File target) throws IOException {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		File path = target.getParentFile();
 		if (path != null && !path.exists()) {
 			path.mkdirs();
@@ -223,6 +273,12 @@ public final class Streams {
 	 *             IO操作异常
 	 */
 	public static void append(File source, File target) throws IOException {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		if (!source.exists()) {
 			return;
 		}
@@ -276,6 +332,12 @@ public final class Streams {
 	 *             IO操作异常
 	 */
 	public static void append(Nfile source, File target) throws IOException {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		if (source.isFile()) {
 			append(source.getFile(), target);
 		} else {
@@ -299,6 +361,12 @@ public final class Streams {
 	 *             IO操作异常
 	 */
 	public static void append(InputStream source, File target) throws IOException {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		File path = target.getParentFile();
 		if (path != null && !path.exists()) {
 			path.mkdirs();
@@ -322,6 +390,12 @@ public final class Streams {
 	 *             IO操作异常
 	 */
 	public static void append(ReadableByteChannel source, File target) throws IOException {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		File path = target.getParentFile();
 		if (path != null && !path.exists()) {
 			path.mkdirs();
@@ -345,6 +419,12 @@ public final class Streams {
 	 *             IO操作异常
 	 */
 	public static void write(byte[] source, File target) throws IOException {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		File path = target.getParentFile();
 		if (path != null && !path.exists()) {
 			path.mkdirs();
@@ -368,6 +448,12 @@ public final class Streams {
 	 *             IO操作异常
 	 */
 	public static void write(File source, File target) throws IOException {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		if (!source.exists()) {
 			return;
 		}
@@ -421,6 +507,12 @@ public final class Streams {
 	 *             IO操作异常
 	 */
 	public static void write(File source, OutputStream target) throws IOException {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		InputStream is = new FileInputStream(source);
 		try {
 			write(is, target);
@@ -440,6 +532,12 @@ public final class Streams {
 	 *             IO操作异常
 	 */
 	public static void write(File source, WritableByteChannel target) throws IOException {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		InputStream is = new FileInputStream(source);
 		try {
 			write(is, target);
@@ -459,6 +557,12 @@ public final class Streams {
 	 *             IO操作异常
 	 */
 	public static void write(Nfile source, File target) throws IOException {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		if (source.isFile()) {
 			write(source.getFile(), target);
 		} else {
@@ -482,6 +586,12 @@ public final class Streams {
 	 *             IO操作异常
 	 */
 	public static void write(Nfile source, OutputStream target) throws IOException {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		InputStream is = source.getInputStream();
 		try {
 			write(is, target);
@@ -501,6 +611,12 @@ public final class Streams {
 	 *             IO操作异常
 	 */
 	public static void write(Nfile source, WritableByteChannel target) throws IOException {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		InputStream is = source.getInputStream();
 		try {
 			write(is, target);
@@ -520,6 +636,12 @@ public final class Streams {
 	 *             IO操作异常
 	 */
 	public static void write(InputStream source, File target) throws IOException {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		File path = target.getParentFile();
 		if (path != null && !path.exists()) {
 			path.mkdirs();
@@ -543,6 +665,12 @@ public final class Streams {
 	 *             IO操作异常
 	 */
 	public static void write(InputStream source, OutputStream target) throws IOException {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		int n = 0;
 		byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
 		while ((n = source.read(buffer)) > 0) {
@@ -561,6 +689,12 @@ public final class Streams {
 	 *             IO操作异常
 	 */
 	public static void write(InputStream source, WritableByteChannel target) throws IOException {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
 		while (source.read(buffer) > 0) {
 			target.write(ByteBuffer.wrap(buffer));
@@ -578,6 +712,12 @@ public final class Streams {
 	 *             IO操作异常
 	 */
 	public static void write(ReadableByteChannel source, File target) throws IOException {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		File path = target.getParentFile();
 		if (path != null && !path.exists()) {
 			path.mkdirs();
@@ -601,6 +741,12 @@ public final class Streams {
 	 *             IO操作异常
 	 */
 	public static void write(ReadableByteChannel source, OutputStream target) throws IOException {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		int n = 0;
 		ByteBuffer buffer = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE);
 		while ((n = source.read(buffer)) > 0) {
@@ -619,6 +765,12 @@ public final class Streams {
 	 *             IO操作异常
 	 */
 	public static void write(ReadableByteChannel source, WritableByteChannel target) throws IOException {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		int n = 0;
 		ByteBuffer buffer = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE);
 		while ((n = source.read(buffer)) > 0) {

@@ -715,6 +715,21 @@ public final class Excels {
 	 *            Excel行对象
 	 * @param type
 	 *            目标对象类型
+	 * @return 目标对象实例
+	 */
+	public static <M> M getObject(Row row, Class<M> type) {
+		return getObject(row, type, Beans.getFields(type));
+	}
+
+	/**
+	 * 将Excel行对象数据转换成对象实例
+	 * 
+	 * @param <M>
+	 *            数据类型
+	 * @param row
+	 *            Excel行对象
+	 * @param type
+	 *            目标对象类型
 	 * @param fields
 	 *            目标对象字段数组
 	 * @return 目标对象实例
@@ -1067,6 +1082,24 @@ public final class Excels {
 			}
 		}
 		return objects;
+	}
+
+	/**
+	 * 将对象实例转换成Excel行对象
+	 * 
+	 * @param row
+	 *            目标Excel行对象
+	 * @param object
+	 *            源对象实例
+	 */
+	public static void setObject(Row row, Object object) {
+		if (row == null) {
+			throw new IllegalArgumentException("Illegal row:" + row);
+		}
+		if (object == null) {
+			throw new IllegalArgumentException("Illegal object:" + object);
+		}
+		setObject(row, object, Beans.getFields(object.getClass()));
 	}
 
 	/**

@@ -242,6 +242,12 @@ public final class Converts {
 	 *             IO操作异常
 	 */
 	public static void txt2swf(File input, File output) throws IOException {
+		if (input == null) {
+			throw new IllegalArgumentException("Illegal input:" + input);
+		}
+		if (output == null) {
+			throw new IllegalArgumentException("Illegal output:" + output);
+		}
 		String encoding = Files.getEncoding(input);
 		String charset = Charset.defaultCharset().name();
 		if (charset.equalsIgnoreCase(encoding)) {
@@ -280,6 +286,12 @@ public final class Converts {
 	 *             IO操作异常
 	 */
 	public static void file2swf(File input, File output) throws IOException {
+		if (input == null) {
+			throw new IllegalArgumentException("Illegal input:" + input);
+		}
+		if (output == null) {
+			throw new IllegalArgumentException("Illegal output:" + output);
+		}
 		String name = input.getName().toLowerCase();
 		if (name.endsWith(".jpg") || name.endsWith(".jpe") || name.endsWith(".jpeg")) {
 			jpeg2swf(input, output);
@@ -318,6 +330,12 @@ public final class Converts {
 	 *             转换异常
 	 */
 	public static void svg2pdf(String svg, File target) throws IOException, TranscoderException {
+		if (svg == null) {
+			throw new IllegalArgumentException("Illegal svg:" + svg);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		File path = target.getParentFile();
 		if (path != null && !path.exists()) {
 			path.mkdirs();
@@ -343,6 +361,12 @@ public final class Converts {
 	 *             转换异常
 	 */
 	public static void svg2pdf(String svg, OutputStream output) throws IOException, TranscoderException {
+		if (svg == null) {
+			throw new IllegalArgumentException("Illegal svg:" + svg);
+		}
+		if (output == null) {
+			throw new IllegalArgumentException("Illegal output:" + output);
+		}
 		svg2pdf(new ByteArrayInputStream(svg.getBytes()), output);
 	}
 
@@ -357,6 +381,12 @@ public final class Converts {
 	 *             转换异常
 	 */
 	public static void svg2pdf(Reader reader, OutputStream output) throws TranscoderException {
+		if (reader == null) {
+			throw new IllegalArgumentException("Illegal reader:" + reader);
+		}
+		if (output == null) {
+			throw new IllegalArgumentException("Illegal output:" + output);
+		}
 		Transcoder transcoder = new PDFTranscoder();
 		transcoder.transcode(new TranscoderInput(reader), new TranscoderOutput(output));
 	}
@@ -372,6 +402,12 @@ public final class Converts {
 	 *             转换异常
 	 */
 	public static void svg2pdf(InputStream input, OutputStream output) throws TranscoderException {
+		if (input == null) {
+			throw new IllegalArgumentException("Illegal input:" + input);
+		}
+		if (output == null) {
+			throw new IllegalArgumentException("Illegal output:" + output);
+		}
 		Transcoder transcoder = new PDFTranscoder();
 		transcoder.transcode(new TranscoderInput(input), new TranscoderOutput(output));
 	}
@@ -389,6 +425,12 @@ public final class Converts {
 	 *             转换异常
 	 */
 	public static void svg2png(String svg, File target) throws IOException, TranscoderException {
+		if (svg == null) {
+			throw new IllegalArgumentException("Illegal svg:" + svg);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		File path = target.getParentFile();
 		if (path != null && !path.exists()) {
 			path.mkdirs();
@@ -414,6 +456,12 @@ public final class Converts {
 	 *             转换异常
 	 */
 	public static void svg2png(String svg, OutputStream output) throws IOException, TranscoderException {
+		if (svg == null) {
+			throw new IllegalArgumentException("Illegal svg:" + svg);
+		}
+		if (output == null) {
+			throw new IllegalArgumentException("Illegal output:" + output);
+		}
 		svg2png(new ByteArrayInputStream(svg.getBytes()), output);
 	}
 
@@ -428,6 +476,12 @@ public final class Converts {
 	 *             转换异常
 	 */
 	public static void svg2png(Reader reader, OutputStream output) throws TranscoderException {
+		if (reader == null) {
+			throw new IllegalArgumentException("Illegal reader:" + reader);
+		}
+		if (output == null) {
+			throw new IllegalArgumentException("Illegal output:" + output);
+		}
 		Transcoder transcoder = new PNGTranscoder();
 		transcoder.transcode(new TranscoderInput(reader), new TranscoderOutput(output));
 	}
@@ -443,6 +497,12 @@ public final class Converts {
 	 *             转换异常
 	 */
 	public static void svg2png(InputStream input, OutputStream output) throws TranscoderException {
+		if (input == null) {
+			throw new IllegalArgumentException("Illegal input:" + input);
+		}
+		if (output == null) {
+			throw new IllegalArgumentException("Illegal output:" + output);
+		}
 		Transcoder transcoder = new PNGTranscoder();
 		transcoder.transcode(new TranscoderInput(input), new TranscoderOutput(output));
 	}
@@ -460,6 +520,12 @@ public final class Converts {
 	 *             转换异常
 	 */
 	public static void svg2jpeg(String svg, File target) throws IOException, TranscoderException {
+		if (svg == null) {
+			throw new IllegalArgumentException("Illegal svg:" + svg);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		File path = target.getParentFile();
 		if (path != null && !path.exists()) {
 			path.mkdirs();
@@ -485,6 +551,12 @@ public final class Converts {
 	 *             转换异常
 	 */
 	public static void svg2jpeg(String svg, OutputStream output) throws IOException, TranscoderException {
+		if (svg == null) {
+			throw new IllegalArgumentException("Illegal svg:" + svg);
+		}
+		if (output == null) {
+			throw new IllegalArgumentException("Illegal output:" + output);
+		}
 		svg2jpeg(new ByteArrayInputStream(svg.getBytes()), output);
 	}
 
@@ -499,6 +571,12 @@ public final class Converts {
 	 *             转换异常
 	 */
 	public static void svg2jpeg(Reader reader, OutputStream output) throws TranscoderException {
+		if (reader == null) {
+			throw new IllegalArgumentException("Illegal reader:" + reader);
+		}
+		if (output == null) {
+			throw new IllegalArgumentException("Illegal output:" + output);
+		}
 		Transcoder transcoder = new JPEGTranscoder();
 		transcoder.transcode(new TranscoderInput(reader), new TranscoderOutput(output));
 	}
@@ -514,6 +592,12 @@ public final class Converts {
 	 *             转换异常
 	 */
 	public static void svg2jpeg(InputStream input, OutputStream output) throws TranscoderException {
+		if (input == null) {
+			throw new IllegalArgumentException("Illegal input:" + input);
+		}
+		if (output == null) {
+			throw new IllegalArgumentException("Illegal output:" + output);
+		}
 		Transcoder transcoder = new JPEGTranscoder();
 		transcoder.transcode(new TranscoderInput(input), new TranscoderOutput(output));
 	}
@@ -533,6 +617,12 @@ public final class Converts {
 	 *             IO操作异常
 	 */
 	public static void html2pdf(String html, File target, String... fonts) throws DocumentException, IOException {
+		if (html == null) {
+			throw new IllegalArgumentException("Illegal html:" + html);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		File path = target.getParentFile();
 		if (path != null && !path.exists()) {
 			path.mkdirs();
@@ -561,14 +651,22 @@ public final class Converts {
 	 */
 	public static void html2pdf(String html, OutputStream output, String... fonts)
 			throws DocumentException, IOException {
+		if (html == null) {
+			throw new IllegalArgumentException("Illegal html:" + html);
+		}
+		if (output == null) {
+			throw new IllegalArgumentException("Illegal output:" + output);
+		}
 		ITextRenderer renderer = new ITextRenderer();
 		ChainingReplacedElementFactory chainingReplacedElementFactory = new ChainingReplacedElementFactory();
 		chainingReplacedElementFactory.addReplacedElementFactory(new SVGReplacedElementFactory());
 		renderer.getSharedContext().setReplacedElementFactory(chainingReplacedElementFactory);
 		renderer.setDocumentFromString(html);
-		ITextFontResolver fontResolver = renderer.getFontResolver();
-		for (String font : fonts) {
-			fontResolver.addFont(Strings.getRealPath(font), BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+		if (fonts != null && fonts.length > 0) {
+			ITextFontResolver fontResolver = renderer.getFontResolver();
+			for (String font : fonts) {
+				fontResolver.addFont(Strings.getRealPath(font), BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+			}
 		}
 		renderer.layout();
 		try {
@@ -593,6 +691,12 @@ public final class Converts {
 	 *             IO操作异常
 	 */
 	public static void html2pdf(File source, File target, String... fonts) throws DocumentException, IOException {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (target == null) {
+			throw new IllegalArgumentException("Illegal target:" + target);
+		}
 		File path = target.getParentFile();
 		if (path != null && !path.exists()) {
 			path.mkdirs();
@@ -621,14 +725,22 @@ public final class Converts {
 	 */
 	public static void html2pdf(File source, OutputStream output, String... fonts)
 			throws DocumentException, IOException {
+		if (source == null) {
+			throw new IllegalArgumentException("Illegal source:" + source);
+		}
+		if (output == null) {
+			throw new IllegalArgumentException("Illegal output:" + output);
+		}
 		ITextRenderer renderer = new ITextRenderer();
 		ChainingReplacedElementFactory chainingReplacedElementFactory = new ChainingReplacedElementFactory();
 		chainingReplacedElementFactory.addReplacedElementFactory(new SVGReplacedElementFactory());
 		renderer.getSharedContext().setReplacedElementFactory(chainingReplacedElementFactory);
 		renderer.setDocument(source);
-		ITextFontResolver fontResolver = renderer.getFontResolver();
-		for (String font : fonts) {
-			fontResolver.addFont(Strings.getRealPath(font), BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+		if (fonts != null && fonts.length > 0) {
+			ITextFontResolver fontResolver = renderer.getFontResolver();
+			for (String font : fonts) {
+				fontResolver.addFont(Strings.getRealPath(font), BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+			}
 		}
 		renderer.layout();
 		try {

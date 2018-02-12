@@ -27,7 +27,7 @@ public class RandomNameGenerator implements NameGenerator {
 	@Override
 	public String generate(String name) {
 		StringBuilder random = new StringBuilder().append(System.currentTimeMillis())
-				.append(Strings.random(this.length, Strings.CHARS));
+				.append(Strings.random(Strings.CHARS, this.length));
 		String suffix = Files.getSuffix(name);
 		return suffix == null ? random.toString() : random.append('.').append(suffix).toString();
 	}

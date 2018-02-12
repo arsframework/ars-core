@@ -194,23 +194,25 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 	}
 
 	@Override
-	public String render(HttpRequester requester, String template, Object content) throws Exception {
+	public String view(HttpRequester requester, String template, Object content) throws Exception {
 		Render render = this.loolupRender(requester, template);
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		if (render == null) {
 			if ("jsp".equalsIgnoreCase(Files.getSuffix(template))) {
-				Https.render(requester, template, content, bos);
-			} else {
-				Streams.write(new File(Https.ROOT_PATH, template), bos);
+				return Https.view(requester, template, content);
 			}
-		} else {
-			render.execute(requester, template, content, bos);
+			return Files.getString(new File(Https.ROOT_PATH, template));
 		}
-		return bos.toString();
+		OutputStream os = new ByteArrayOutputStream();
+		try {
+			render.execute(requester, template, content, os);
+		} finally {
+			os.close();
+		}
+		return os.toString();
 	}
 
 	@Override
-	public void present(HttpRequester requester, String template, Object content) throws Exception {
+	public void render(HttpRequester requester, String template, Object content) throws Exception {
 		Render render = this.loolupRender(requester, template);
 		OutputStream os = requester.getHttpServletResponse().getOutputStream();
 		try {
@@ -239,7 +241,7 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 				if (this.directory != null) {
 					redirect = new StringBuilder(this.directory).append('/').append(redirect).toString();
 				}
-				this.present(requester, redirect, content);
+				this.render(requester, redirect, content);
 			} else {
 				String context = requester.getHttpServletRequest().getContextPath();
 				if (context != null && !context.isEmpty()) {
@@ -287,13 +289,13 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 			}
 		} else if (Strings.isEmpty(request.getContentType()) || (converter = this.lookupConverter(requester)) == null) {
 			try {
-				this.present(requester, template, null);
+				this.render(requester, template, null);
 			} catch (Exception e) {
 				value = e;
 			}
 		} else {
 			try {
-				value = this.render(requester, template, null);
+				value = this.view(requester, template, null);
 			} catch (Exception e) {
 				value = e;
 			}

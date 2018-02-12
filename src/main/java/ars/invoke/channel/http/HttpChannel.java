@@ -14,6 +14,21 @@ import ars.invoke.Channel;
  */
 public interface HttpChannel extends Channel {
 	/**
+	 * 获取视图内容
+	 * 
+	 * @param requester
+	 *            请求对象
+	 * @param template
+	 *            模板路径
+	 * @param content
+	 *            数据内容
+	 * @return 视图内容
+	 * @throws Exception
+	 *             操作异常
+	 */
+	public String view(HttpRequester requester, String template, Object content) throws Exception;
+
+	/**
 	 * 视图渲染
 	 * 
 	 * @param requester
@@ -22,25 +37,10 @@ public interface HttpChannel extends Channel {
 	 *            模板路径
 	 * @param content
 	 *            数据内容
-	 * @return 渲染结果内容
 	 * @throws Exception
 	 *             操作异常
 	 */
-	public String render(HttpRequester requester, String template, Object content) throws Exception;
-
-	/**
-	 * 视图呈现
-	 * 
-	 * @param requester
-	 *            请求对象
-	 * @param template
-	 *            模板路径
-	 * @param content
-	 *            数据内容
-	 * @throws Exception
-	 *             操作异常
-	 */
-	public void present(HttpRequester requester, String template, Object content) throws Exception;
+	public void render(HttpRequester requester, String template, Object content) throws Exception;
 
 	/**
 	 * 请求重定向

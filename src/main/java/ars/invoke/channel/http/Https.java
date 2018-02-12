@@ -1322,6 +1322,9 @@ public final class Https {
 		if (requester == null) {
 			throw new IllegalArgumentException("Illegal requester:" + requester);
 		}
+		if (parameters == null) {
+			throw new IllegalArgumentException("Illegal parameters:" + parameters);
+		}
 		Date datetime = new Date();
 		final Session session = requester.getSession();
 		HttpServletRequest request = requester.getHttpServletRequest();
@@ -1414,21 +1417,116 @@ public final class Https {
 	/**
 	 * 视图渲染
 	 * 
+	 * @param requester
+	 *            请求对象
+	 * @param template
+	 *            视图模板
+	 * @param content
+	 *            渲染内容
+	 * @throws IOException
+	 *             IO操作异常
+	 * @throws ServletException
+	 *             Servlet操作异常
+	 */
+	public static void render(HttpRequester requester, String template, Object content)
+			throws IOException, ServletException {
+		render(requester, template, content, Collections.<String, Object>emptyMap());
+	}
+
+	/**
+	 * 视图渲染
+	 * 
+	 * @param requester
+	 *            请求对象
+	 * @param template
+	 *            视图模板
+	 * @param content
+	 *            渲染内容
+	 * @param output
+	 *            数据输出流
+	 * @throws IOException
+	 *             IO操作异常
+	 * @throws ServletException
+	 *             Servlet操作异常
+	 */
+	public static void render(HttpRequester requester, String template, Object content, OutputStream output)
+			throws IOException, ServletException {
+		render(requester, template, content, Collections.<String, Object>emptyMap(), output);
+	}
+
+	/**
+	 * 视图渲染
+	 * 
+	 * @param requester
+	 *            请求对象
+	 * @param template
+	 *            视图模板
+	 * @param content
+	 *            渲染内容
+	 * @param parameters
+	 *            请求参数
+	 * @throws IOException
+	 *             IO操作异常
+	 * @throws ServletException
+	 *             Servlet操作异常
+	 */
+	public static void render(HttpRequester requester, String template, Object content, Map<String, Object> parameters)
+			throws IOException, ServletException {
+		if (requester == null) {
+			throw new IllegalArgumentException("Illegal requester:" + requester);
+		}
+		OutputStream os = requester.getHttpServletResponse().getOutputStream();
+		try {
+			render(requester, template, content, parameters, os);
+		} finally {
+			os.close();
+		}
+	}
+
+	/**
+	 * 视图渲染
+	 * 
+	 * @param requester
+	 *            请求对象
+	 * @param template
+	 *            视图模板
+	 * @param content
+	 *            渲染内容
+	 * @param parameters
+	 *            请求参数
+	 * @param output
+	 *            数据输出流
+	 * @throws IOException
+	 *             IO操作异常
+	 * @throws ServletException
+	 *             Servlet操作异常
+	 */
+	public static void render(HttpRequester requester, String template, Object content, Map<String, Object> parameters,
+			OutputStream output) throws IOException, ServletException {
+		if (requester == null) {
+			throw new IllegalArgumentException("Illegal requester:" + requester);
+		}
+		render(requester.getHttpServletRequest(), requester.getHttpServletResponse(), template,
+				getRenderContext(requester, content, parameters), output);
+	}
+
+	/**
+	 * 视图渲染
+	 * 
 	 * @param request
 	 *            HTTP请求对象
 	 * @param response
 	 *            HTTP响应对象
 	 * @param template
 	 *            视图模板名称
-	 * @return 渲染后的视图内容
 	 * @throws IOException
 	 *             IO操作异常
 	 * @throws ServletException
 	 *             Servlet操作异常
 	 */
-	public static String render(HttpServletRequest request, HttpServletResponse response, String template)
+	public static void render(HttpServletRequest request, HttpServletResponse response, String template)
 			throws IOException, ServletException {
-		return render(request, response, template, Collections.<String, Object>emptyMap());
+		render(request, response, template, Collections.<String, Object>emptyMap());
 	}
 
 	/**
@@ -1442,17 +1540,25 @@ public final class Https {
 	 *            视图模板名称
 	 * @param context
 	 *            渲染上下文数据
-	 * @return 渲染后的视图内容
 	 * @throws IOException
 	 *             IO操作异常
 	 * @throws ServletException
 	 *             Servlet操作异常
 	 */
-	public static String render(HttpServletRequest request, HttpServletResponse response, String template,
+	public static void render(HttpServletRequest request, HttpServletResponse response, String template,
 			Map<String, Object> context) throws IOException, ServletException {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		render(request, response, template, context, bos);
-		return bos.toString();
+		if (request == null) {
+			throw new IllegalArgumentException("Illegal request:" + request);
+		}
+		if (response == null) {
+			throw new IllegalArgumentException("Illegal response:" + response);
+		}
+		OutputStream os = response.getOutputStream();
+		try {
+			render(request, response, template, context, os);
+		} finally {
+			os.close();
+		}
 	}
 
 	/**
@@ -1539,7 +1645,7 @@ public final class Https {
 	}
 
 	/**
-	 * 视图渲染
+	 * 获取视图内容
 	 * 
 	 * @param requester
 	 *            请求对象
@@ -1547,46 +1653,19 @@ public final class Https {
 	 *            视图模板
 	 * @param content
 	 *            渲染内容
-	 * @return 渲染后的视图内容
+	 * @return 视图内容
 	 * @throws IOException
 	 *             IO操作异常
 	 * @throws ServletException
 	 *             Servlet操作异常
 	 */
-	public static String render(HttpRequester requester, String template, Object content)
+	public static String view(HttpRequester requester, String template, Object content)
 			throws IOException, ServletException {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		render(requester, template, content, bos);
-		return bos.toString();
+		return view(requester, template, content, Collections.<String, Object>emptyMap());
 	}
 
 	/**
-	 * 视图渲染
-	 * 
-	 * @param requester
-	 *            请求对象
-	 * @param template
-	 *            视图模板
-	 * @param content
-	 *            渲染内容
-	 * @param output
-	 *            数据输出流
-	 * @throws IOException
-	 *             IO操作异常
-	 * @throws ServletException
-	 *             Servlet操作异常
-	 */
-	public static void render(HttpRequester requester, String template, Object content, OutputStream output)
-			throws IOException, ServletException {
-		if (requester == null) {
-			throw new IllegalArgumentException("Illegal requester:" + requester);
-		}
-		render(requester.getHttpServletRequest(), requester.getHttpServletResponse(), template,
-				getRenderContext(requester, content), output);
-	}
-
-	/**
-	 * 视图渲染
+	 * 获取视图内容
 	 * 
 	 * @param requester
 	 *            请求对象
@@ -1596,96 +1675,23 @@ public final class Https {
 	 *            渲染内容
 	 * @param parameters
 	 *            请求参数
-	 * @return 渲染后的视图内容
+	 * @return 视图内容
 	 * @throws IOException
 	 *             IO操作异常
 	 * @throws ServletException
 	 *             Servlet操作异常
 	 */
-	public static String render(HttpRequester requester, String template, Object content,
-			Map<String, Object> parameters) throws IOException, ServletException {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		render(requester, template, content, parameters, bos);
-		return bos.toString();
-	}
-
-	/**
-	 * 视图渲染
-	 * 
-	 * @param requester
-	 *            请求对象
-	 * @param template
-	 *            视图模板
-	 * @param content
-	 *            渲染内容
-	 * @param parameters
-	 *            请求参数
-	 * @param output
-	 *            数据输出流
-	 * @throws IOException
-	 *             IO操作异常
-	 * @throws ServletException
-	 *             Servlet操作异常
-	 */
-	public static void render(HttpRequester requester, String template, Object content, Map<String, Object> parameters,
-			OutputStream output) throws IOException, ServletException {
-		if (requester == null) {
-			throw new IllegalArgumentException("Illegal requester:" + requester);
-		}
-		render(requester.getHttpServletRequest(), requester.getHttpServletResponse(), template,
-				getRenderContext(requester, content, parameters), output);
-	}
-
-	/**
-	 * 视图呈现
-	 * 
-	 * @param requester
-	 *            请求对象
-	 * @param template
-	 *            视图模板
-	 * @param content
-	 *            渲染内容
-	 * @throws IOException
-	 *             IO操作异常
-	 * @throws ServletException
-	 *             Servlet操作异常
-	 */
-	public static void present(HttpRequester requester, String template, Object content)
+	public static String view(HttpRequester requester, String template, Object content, Map<String, Object> parameters)
 			throws IOException, ServletException {
 		if (requester == null) {
 			throw new IllegalArgumentException("Illegal requester:" + requester);
 		}
-		present(requester.getHttpServletRequest(), requester.getHttpServletResponse(), template,
-				getRenderContext(requester, content));
-	}
-
-	/**
-	 * 视图呈现
-	 * 
-	 * @param requester
-	 *            请求对象
-	 * @param template
-	 *            视图模板
-	 * @param content
-	 *            渲染内容
-	 * @param parameters
-	 *            请求参数
-	 * @throws IOException
-	 *             IO操作异常
-	 * @throws ServletException
-	 *             Servlet操作异常
-	 */
-	public static void present(HttpRequester requester, String template, Object content, Map<String, Object> parameters)
-			throws IOException, ServletException {
-		if (requester == null) {
-			throw new IllegalArgumentException("Illegal requester:" + requester);
-		}
-		present(requester.getHttpServletRequest(), requester.getHttpServletResponse(), template,
+		return view(requester.getHttpServletRequest(), requester.getHttpServletResponse(), template,
 				getRenderContext(requester, content, parameters));
 	}
 
 	/**
-	 * 视图呈现
+	 * 获取视图内容
 	 * 
 	 * @param request
 	 *            HTTP请求对象
@@ -1693,18 +1699,19 @@ public final class Https {
 	 *            HTTP响应对象
 	 * @param template
 	 *            视图模板名称
+	 * @return 视图内容
 	 * @throws IOException
 	 *             IO操作异常
 	 * @throws ServletException
 	 *             Servlet操作异常
 	 */
-	public static void present(HttpServletRequest request, HttpServletResponse response, String template)
+	public static String view(HttpServletRequest request, HttpServletResponse response, String template)
 			throws IOException, ServletException {
-		present(request, response, template, Collections.<String, Object>emptyMap());
+		return view(request, response, template, Collections.<String, Object>emptyMap());
 	}
 
 	/**
-	 * 视图呈现
+	 * 获取视图内容
 	 * 
 	 * @param request
 	 *            HTTP请求对象
@@ -1714,31 +1721,21 @@ public final class Https {
 	 *            视图模板名称
 	 * @param context
 	 *            渲染上下文数据
+	 * @return 视图内容
 	 * @throws IOException
 	 *             IO操作异常
 	 * @throws ServletException
 	 *             Servlet操作异常
 	 */
-	public static void present(HttpServletRequest request, HttpServletResponse response, String template,
+	public static String view(HttpServletRequest request, HttpServletResponse response, String template,
 			Map<String, Object> context) throws IOException, ServletException {
-		if (request == null) {
-			throw new IllegalArgumentException("Illegal request:" + request);
-		}
-		if (response == null) {
-			throw new IllegalArgumentException("Illegal response:" + response);
-		}
-		if (template == null) {
-			throw new IllegalArgumentException("Illegal template:" + template);
-		}
-		if (context == null) {
-			throw new IllegalArgumentException("Illegal context:" + context);
-		}
-		OutputStream bos = response.getOutputStream();
+		OutputStream os = new ByteArrayOutputStream();
 		try {
-			render(request, response, template, context, bos);
+			render(request, response, template, context, os);
 		} finally {
-			bos.close();
+			os.close();
 		}
+		return os.toString();
 	}
 
 	/**

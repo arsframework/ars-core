@@ -6,8 +6,6 @@ import java.util.regex.Matcher;
 import ars.util.Beans;
 import ars.util.Strings;
 import ars.invoke.request.Requester;
-import ars.invoke.local.LocalInvoker;
-import ars.invoke.remote.RemoteInvoker;
 
 /**
  * 请求调用工具类
@@ -42,44 +40,10 @@ public final class Invokes {
 	 */
 	public static final Pattern TIMESTAMP_PATTERN = Pattern.compile("\\$\\{ *timestamp *\\}", Pattern.CASE_INSENSITIVE);
 
-	private static LocalInvoker localInvoker;
-	private static RemoteInvoker remoteInvoker;
 	private static final ThreadLocal<Requester> currentRequester = new ThreadLocal<Requester>();
 
 	private Invokes() {
 
-	}
-
-	/**
-	 * 获取本地资源调用器实例（单例）
-	 * 
-	 * @return 本地资源调用器实例
-	 */
-	public static LocalInvoker getSingleLocalInvoker() {
-		if (localInvoker == null) {
-			synchronized (LocalInvoker.class) {
-				if (localInvoker == null) {
-					localInvoker = new LocalInvoker();
-				}
-			}
-		}
-		return localInvoker;
-	}
-
-	/**
-	 * 获取远程资源调用器实例（单例）
-	 * 
-	 * @return 远程资源调用器实例
-	 */
-	public static RemoteInvoker getSingleRemoteInvoker() {
-		if (remoteInvoker == null) {
-			synchronized (RemoteInvoker.class) {
-				if (remoteInvoker == null) {
-					remoteInvoker = new RemoteInvoker();
-				}
-			}
-		}
-		return remoteInvoker;
 	}
 
 	/**

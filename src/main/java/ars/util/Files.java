@@ -215,6 +215,7 @@ public final class Files {
 	 *            文件对象
 	 * @return 文件内容
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static String getString(File file) throws IOException {
 		if (file == null) {
@@ -236,6 +237,7 @@ public final class Files {
 	 *            文件对象
 	 * @return 文件内容
 	 * @throws IOException
+	 *             IO操作异常
 	 */
 	public static String getString(Nfile file) throws IOException {
 		if (file == null) {

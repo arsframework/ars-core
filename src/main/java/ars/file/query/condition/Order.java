@@ -13,6 +13,9 @@ public class Order implements Condition {
 	private Property property; // 排序属性
 
 	public Order(Property property) {
+		if (property == null) {
+			throw new IllegalArgumentException("Illegal property:" + property);
+		}
 		this.property = property;
 	}
 

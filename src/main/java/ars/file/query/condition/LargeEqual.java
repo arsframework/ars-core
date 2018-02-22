@@ -14,6 +14,12 @@ public class LargeEqual implements Condition {
 	private Object value; // 比较值
 
 	public LargeEqual(Property property, Object value) {
+		if (property == null) {
+			throw new IllegalArgumentException("Illegal property:" + property);
+		}
+		if (value == null) {
+			throw new IllegalArgumentException("Illegal value:" + value);
+		}
 		this.property = property;
 		this.value = value;
 	}

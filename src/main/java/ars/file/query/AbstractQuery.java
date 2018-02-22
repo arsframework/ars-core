@@ -73,7 +73,7 @@ public abstract class AbstractQuery implements Query {
 
 	@Override
 	public Query eq(Property property, Object value) {
-		if (value != null) {
+		if (property != null && value != null) {
 			this.conditions.add(Conditions.eq(property, value));
 		}
 		return this;
@@ -81,7 +81,7 @@ public abstract class AbstractQuery implements Query {
 
 	@Override
 	public Query ne(Property property, Object value) {
-		if (value != null) {
+		if (property != null && value != null) {
 			this.conditions.add(Conditions.ne(property, value));
 		}
 		return this;
@@ -89,7 +89,7 @@ public abstract class AbstractQuery implements Query {
 
 	@Override
 	public Query gt(Property property, Object value) {
-		if (value != null) {
+		if (property != null && value != null) {
 			this.conditions.add(Conditions.gt(property, value));
 		}
 		return this;
@@ -97,7 +97,7 @@ public abstract class AbstractQuery implements Query {
 
 	@Override
 	public Query ge(Property property, Object value) {
-		if (value != null) {
+		if (property != null && value != null) {
 			this.conditions.add(Conditions.ge(property, value));
 		}
 		return this;
@@ -105,7 +105,7 @@ public abstract class AbstractQuery implements Query {
 
 	@Override
 	public Query lt(Property property, Object value) {
-		if (value != null) {
+		if (property != null && value != null) {
 			this.conditions.add(Conditions.lt(property, value));
 		}
 		return this;
@@ -113,7 +113,7 @@ public abstract class AbstractQuery implements Query {
 
 	@Override
 	public Query le(Property property, Object value) {
-		if (value != null) {
+		if (property != null && value != null) {
 			this.conditions.add(Conditions.le(property, value));
 		}
 		return this;
@@ -121,7 +121,7 @@ public abstract class AbstractQuery implements Query {
 
 	@Override
 	public Query between(Property property, Object low, Object high) {
-		if (low != null && high != null) {
+		if (property != null && low != null && high != null) {
 			this.conditions.add(Conditions.between(property, low, high));
 		}
 		return this;
@@ -129,7 +129,7 @@ public abstract class AbstractQuery implements Query {
 
 	@Override
 	public Query start(Property property, String value) {
-		if (value != null) {
+		if (property != null && value != null) {
 			this.conditions.add(Conditions.like(property, value, Position.BEGIN));
 		}
 		return this;
@@ -137,7 +137,7 @@ public abstract class AbstractQuery implements Query {
 
 	@Override
 	public Query end(Property property, String value) {
-		if (value != null) {
+		if (property != null && value != null) {
 			this.conditions.add(Conditions.like(property, value, Position.END));
 		}
 		return this;
@@ -145,7 +145,7 @@ public abstract class AbstractQuery implements Query {
 
 	@Override
 	public Query like(Property property, String value) {
-		if (value != null) {
+		if (property != null && value != null) {
 			this.conditions.add(Conditions.like(property, value, Position.ANY));
 		}
 		return this;
@@ -154,7 +154,7 @@ public abstract class AbstractQuery implements Query {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Query custom(String key, Object value) {
-		if (value == null) {
+		if (key == null || value == null) {
 			return this;
 		}
 		if (key.equalsIgnoreCase(ORDER)) {

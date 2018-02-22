@@ -175,6 +175,9 @@ public final class Conditions {
 	 * @return 转换后的值
 	 */
 	public static Object valueAdapter(Property property, Object value) {
+		if (property == null) {
+			throw new IllegalArgumentException("Illegal property:" + property);
+		}
 		boolean array = value != null && value.getClass().isArray();
 		if (property == Property.NAME) {
 			return array ? Beans.toArray(String.class, value) : Beans.toObject(String.class, value);
@@ -196,6 +199,12 @@ public final class Conditions {
 	 * @return true/false
 	 */
 	public static boolean isSatisfy(Describe describe, Less less) {
+		if (describe == null) {
+			throw new IllegalArgumentException("Illegal describe:" + describe);
+		}
+		if (less == null) {
+			throw new IllegalArgumentException("Illegal less:" + less);
+		}
 		Property property = less.getProperty();
 		Object value = less.getValue();
 		if (property == Property.NAME && describe.getName().compareToIgnoreCase((String) value) > -1) {
@@ -218,6 +227,12 @@ public final class Conditions {
 	 * @return true/false
 	 */
 	public static boolean isSatisfy(Describe describe, Like like) {
+		if (describe == null) {
+			throw new IllegalArgumentException("Illegal describe:" + describe);
+		}
+		if (like == null) {
+			throw new IllegalArgumentException("Illegal like:" + like);
+		}
 		Property property = like.getProperty();
 		String value = like.getValue().toUpperCase();
 		Like.Position position = like.getPosition();
@@ -251,6 +266,12 @@ public final class Conditions {
 	 * @return true/false
 	 */
 	public static boolean isSatisfy(Describe describe, Equal equal) {
+		if (describe == null) {
+			throw new IllegalArgumentException("Illegal describe:" + describe);
+		}
+		if (equal == null) {
+			throw new IllegalArgumentException("Illegal equal:" + equal);
+		}
 		Property property = equal.getProperty();
 		Object value = equal.getValue();
 		int matched = 0;
@@ -312,6 +333,12 @@ public final class Conditions {
 	 * @return true/false
 	 */
 	public static boolean isSatisfy(Describe describe, Large large) {
+		if (describe == null) {
+			throw new IllegalArgumentException("Illegal describe:" + describe);
+		}
+		if (large == null) {
+			throw new IllegalArgumentException("Illegal large:" + large);
+		}
 		Property property = large.getProperty();
 		Object value = large.getValue();
 		if (property == Property.NAME && describe.getName().compareToIgnoreCase((String) value) < 0) {
@@ -334,6 +361,12 @@ public final class Conditions {
 	 * @return true/false
 	 */
 	public static boolean isSatisfy(Describe describe, Between between) {
+		if (describe == null) {
+			throw new IllegalArgumentException("Illegal describe:" + describe);
+		}
+		if (between == null) {
+			throw new IllegalArgumentException("Illegal between:" + between);
+		}
 		Property property = between.getProperty();
 		Object low = between.getLow();
 		Object high = between.getHigh();
@@ -359,6 +392,12 @@ public final class Conditions {
 	 * @return true/false
 	 */
 	public static boolean isSatisfy(Describe describe, NotEqual notEqual) {
+		if (describe == null) {
+			throw new IllegalArgumentException("Illegal describe:" + describe);
+		}
+		if (notEqual == null) {
+			throw new IllegalArgumentException("Illegal notEqual:" + notEqual);
+		}
 		Property property = notEqual.getProperty();
 		Object value = notEqual.getValue();
 		if (property == Property.NAME) {
@@ -415,6 +454,12 @@ public final class Conditions {
 	 * @return true/false
 	 */
 	public static boolean isSatisfy(Describe describe, LessEqual lessEqual) {
+		if (describe == null) {
+			throw new IllegalArgumentException("Illegal describe:" + describe);
+		}
+		if (lessEqual == null) {
+			throw new IllegalArgumentException("Illegal lessEqual:" + lessEqual);
+		}
 		Property property = lessEqual.getProperty();
 		Object value = lessEqual.getValue();
 		if (property == Property.NAME && describe.getName().compareToIgnoreCase((String) value) > 0) {
@@ -437,6 +482,12 @@ public final class Conditions {
 	 * @return true/false
 	 */
 	public static boolean isSatisfy(Describe describe, LargeEqual largeEqual) {
+		if (describe == null) {
+			throw new IllegalArgumentException("Illegal describe:" + describe);
+		}
+		if (largeEqual == null) {
+			throw new IllegalArgumentException("Illegal largeEqual:" + largeEqual);
+		}
 		Property property = largeEqual.getProperty();
 		Object value = largeEqual.getValue();
 		if (property == Property.NAME && describe.getName().compareToIgnoreCase((String) value) < 0) {
@@ -459,6 +510,12 @@ public final class Conditions {
 	 * @return true/false
 	 */
 	public static boolean isSatisfy(Describe describe, Condition... conditions) {
+		if (describe == null) {
+			throw new IllegalArgumentException("Illegal describe:" + describe);
+		}
+		if (conditions == null) {
+			throw new IllegalArgumentException("Illegal conditions:" + conditions);
+		}
 		for (Condition condition : conditions) {
 			if (condition instanceof Less && !isSatisfy(describe, (Less) condition)) {
 				return false;
@@ -493,6 +550,15 @@ public final class Conditions {
 	 * @return 比较结果
 	 */
 	public static int compare(File o1, File o2, Order... orders) {
+		if (o1 == null) {
+			throw new IllegalArgumentException("Illegal o1:" + o1);
+		}
+		if (o2 == null) {
+			throw new IllegalArgumentException("Illegal o2:" + o2);
+		}
+		if (orders == null) {
+			throw new IllegalArgumentException("Illegal orders:" + orders);
+		}
 		for (Order order : orders) {
 			int compare = 0;
 			Property property = order.getProperty();
@@ -530,6 +596,15 @@ public final class Conditions {
 	 * @return 比较结果
 	 */
 	public static int compare(Describe o1, Describe o2, Order... orders) {
+		if (o1 == null) {
+			throw new IllegalArgumentException("Illegal o1:" + o1);
+		}
+		if (o2 == null) {
+			throw new IllegalArgumentException("Illegal o2:" + o2);
+		}
+		if (orders == null) {
+			throw new IllegalArgumentException("Illegal orders:" + orders);
+		}
 		for (Order order : orders) {
 			int compare = 0;
 			Property property = order.getProperty();
@@ -562,6 +637,12 @@ public final class Conditions {
 	 *            排序对象数组
 	 */
 	public static void sort(File[] files, final Order... orders) {
+		if (files == null) {
+			throw new IllegalArgumentException("Illegal files:" + files);
+		}
+		if (orders == null) {
+			throw new IllegalArgumentException("Illegal orders:" + orders);
+		}
 		Arrays.sort(files, new Comparator<File>() {
 
 			@Override
@@ -581,6 +662,12 @@ public final class Conditions {
 	 *            排序对象数组
 	 */
 	public static void sort(Describe[] describes, final Order... orders) {
+		if (describes == null) {
+			throw new IllegalArgumentException("Illegal describes:" + describes);
+		}
+		if (orders == null) {
+			throw new IllegalArgumentException("Illegal orders:" + orders);
+		}
 		Arrays.sort(describes, new Comparator<Describe>() {
 
 			@Override
@@ -600,6 +687,12 @@ public final class Conditions {
 	 *            排序对象数组
 	 */
 	public static void sort(List<Describe> describes, final Order... orders) {
+		if (describes == null) {
+			throw new IllegalArgumentException("Illegal describes:" + describes);
+		}
+		if (orders == null) {
+			throw new IllegalArgumentException("Illegal orders:" + orders);
+		}
 		Collections.sort(describes, new Comparator<Describe>() {
 
 			@Override

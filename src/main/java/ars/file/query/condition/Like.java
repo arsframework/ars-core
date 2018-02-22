@@ -19,6 +19,15 @@ public class Like implements Condition {
 	}
 
 	public Like(Property property, String value, Position position) {
+		if (property == null) {
+			throw new IllegalArgumentException("Illegal property:" + property);
+		}
+		if (value == null) {
+			throw new IllegalArgumentException("Illegal value:" + value);
+		}
+		if (position == null) {
+			throw new IllegalArgumentException("Illegal position:" + position);
+		}
 		this.property = property;
 		this.value = value;
 		this.position = position;

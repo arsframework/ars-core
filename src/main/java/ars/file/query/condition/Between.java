@@ -15,6 +15,15 @@ public class Between implements Condition {
 	private Object high; // 高值
 
 	public Between(Property property, Object low, Object high) {
+		if (property == null) {
+			throw new IllegalArgumentException("Illegal property:" + property);
+		}
+		if (low == null) {
+			throw new IllegalArgumentException("Illegal low:" + low);
+		}
+		if (high == null) {
+			throw new IllegalArgumentException("Illegal high:" + high);
+		}
 		this.property = property;
 		this.low = low;
 		this.high = high;

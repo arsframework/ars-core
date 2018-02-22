@@ -57,6 +57,11 @@ public final class Beans {
 	 */
 	public static final DecimalFormat DEFAULT_DECIMAL_FORMAT = new DecimalFormat("0.##");
 
+	/**
+	 * 对象单例映射表
+	 */
+	private static final Map<Class<?>, Object> singles = new HashMap<Class<?>, Object>(0);
+
 	private Beans() {
 
 	}
@@ -767,10 +772,39 @@ public final class Beans {
 	 * @return 对象实例
 	 */
 	public static <T> T getInstance(Class<T> type) {
+		return getInstance(type, false);
+	}
+
+	/**
+	 * 获取对象实例
+	 * 
+	 * @param <T>
+	 *            数据类型
+	 * @param type
+	 *            对象类型
+	 * @param single
+	 *            是否单例
+	 * @return 对象实例
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T getInstance(Class<T> type, boolean single) {
 		if (type == null) {
 			throw new IllegalArgumentException("Illegal type:" + type);
 		}
 		try {
+			if (single) {
+				T instance = (T) singles.get(type);
+				if (instance == null) {
+					synchronized (type) {
+						instance = (T) singles.get(type);
+						if (instance == null) {
+							instance = type.newInstance();
+							singles.put(type, instance);
+						}
+					}
+				}
+				return instance;
+			}
 			return type.newInstance();
 		} catch (InstantiationException e) {
 			throw new RuntimeException(e);
@@ -786,19 +820,50 @@ public final class Beans {
 	 *            数据类型
 	 * @param type
 	 *            对象类型
-	 * @param parameters
+	 * @param arguments
 	 *            实例化参数
 	 * @return 对象实例
 	 */
-	public static <T> T getInstance(Class<T> type, Object[] parameters) {
+	public static <T> T getInstance(Class<T> type, Object... arguments) {
+		return getInstance(type, false, arguments);
+	}
+
+	/**
+	 * 获取对象实例
+	 * 
+	 * @param <T>
+	 *            数据类型
+	 * @param type
+	 *            对象类型
+	 * @param single
+	 *            是否单例
+	 * @param arguments
+	 *            实例化参数
+	 * @return 对象实例
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T getInstance(Class<T> type, boolean single, Object... arguments) {
 		if (type == null) {
 			throw new IllegalArgumentException("Illegal type:" + type);
 		}
-		if (parameters == null) {
-			throw new IllegalArgumentException("Illegal parameters:" + parameters);
+		if (arguments == null) {
+			throw new IllegalArgumentException("Illegal arguments:" + arguments);
 		}
 		try {
-			return type.getConstructor(getTypes(parameters)).newInstance(parameters);
+			if (single) {
+				T instance = (T) singles.get(type);
+				if (instance == null) {
+					synchronized (type) {
+						instance = (T) singles.get(type);
+						if (instance == null) {
+							instance = type.getConstructor(getTypes(arguments)).newInstance(arguments);
+							singles.put(type, instance);
+						}
+					}
+				}
+				return instance;
+			}
+			return type.getConstructor(getTypes(arguments)).newInstance(arguments);
 		} catch (InstantiationException e) {
 			throw new RuntimeException(e);
 		} catch (IllegalAccessException e) {
@@ -819,7 +884,7 @@ public final class Beans {
 	 */
 	public static boolean isInstantiable(Class<?> type) {
 		if (type == null) {
-			return false;
+			throw new IllegalArgumentException("Illegal type:" + type);
 		}
 		int mod = type.getModifiers();
 		if (!(Modifier.isAbstract(mod) || Modifier.isInterface(mod) || Enum.class.isAssignableFrom(type))) {

@@ -24,11 +24,11 @@ public class FTPOperator extends AbstractOperator {
 	protected final ClientFactory clientFactory;
 
 	public FTPOperator(ClientFactory clientFactory) {
+		super("/");
 		if (clientFactory == null) {
 			throw new IllegalArgumentException("Illegal clientFactory:" + clientFactory);
 		}
 		this.clientFactory = clientFactory;
-		this.setWorkingDirectory("/");
 	}
 
 	/**
@@ -177,7 +177,7 @@ public class FTPOperator extends AbstractOperator {
 
 	@Override
 	public boolean exists(String path) throws Exception {
-		path = new File(this.getWorkingDirectory(), path).getPath();
+		path = new File(this.workingDirectory, path).getPath();
 		FTPClient client = this.connect();
 		try {
 			if (client.changeWorkingDirectory(path)) {
@@ -196,7 +196,7 @@ public class FTPOperator extends AbstractOperator {
 
 	@Override
 	public boolean mkdirs(String path) throws Exception {
-		path = new File(this.getWorkingDirectory(), path).getPath();
+		path = new File(this.workingDirectory, path).getPath();
 		FTPClient client = this.connect();
 		try {
 			return client.makeDirectory(path);
@@ -209,8 +209,7 @@ public class FTPOperator extends AbstractOperator {
 	public boolean rename(String path, String name) throws Exception {
 		FTPClient client = this.connect();
 		try {
-			return client.rename(path,
-					new File(new File(this.getWorkingDirectory(), path).getParent(), name).getPath());
+			return client.rename(path, new File(new File(this.workingDirectory, path).getParent(), name).getPath());
 		} finally {
 			this.disconnect(client);
 		}
@@ -218,7 +217,7 @@ public class FTPOperator extends AbstractOperator {
 
 	@Override
 	public void delete(String path) throws Exception {
-		path = new File(this.getWorkingDirectory(), path).getPath();
+		path = new File(this.workingDirectory, path).getPath();
 		FTPClient client = this.connect();
 		try {
 			if (client.changeWorkingDirectory(path)) {
@@ -240,8 +239,8 @@ public class FTPOperator extends AbstractOperator {
 
 	@Override
 	public void copy(String source, String target) throws Exception {
-		File sfile = new File(this.getWorkingDirectory(), source);
-		File tfile = new File(this.getWorkingDirectory(), target);
+		File sfile = new File(this.workingDirectory, source);
+		File tfile = new File(this.workingDirectory, target);
 		source = sfile.getPath();
 		target = new File(tfile, sfile.getName()).getPath();
 		FTPClient sourceClient = null, targetClient = null;
@@ -293,8 +292,8 @@ public class FTPOperator extends AbstractOperator {
 
 	@Override
 	public void move(String source, String target) throws Exception {
-		File sfile = new File(this.getWorkingDirectory(), source);
-		File tfile = new File(this.getWorkingDirectory(), target);
+		File sfile = new File(this.workingDirectory, source);
+		File tfile = new File(this.workingDirectory, target);
 		source = sfile.getPath();
 		target = new File(tfile, sfile.getName()).getPath();
 		FTPClient sourceClient = null, targetClient = null;
@@ -348,7 +347,7 @@ public class FTPOperator extends AbstractOperator {
 
 	@Override
 	public Query query() {
-		return new FTPQuery(this.clientFactory, this.getWorkingDirectory());
+		return new FTPQuery(this.clientFactory, this.workingDirectory);
 	}
 
 	@Override
@@ -359,9 +358,9 @@ public class FTPOperator extends AbstractOperator {
 		FTPClient client = this.connect();
 		try {
 			if (directory == null) {
-				client.changeWorkingDirectory(this.getWorkingDirectory());
+				client.changeWorkingDirectory(this.workingDirectory);
 			} else {
-				client.changeWorkingDirectory(new File(this.getWorkingDirectory(), directory).getPath());
+				client.changeWorkingDirectory(new File(this.workingDirectory, directory).getPath());
 			}
 			for (FTPFile file : client.listFiles()) {
 				if (file.getName().equals(name)) {
@@ -382,22 +381,33 @@ public class FTPOperator extends AbstractOperator {
 
 	@Override
 	public Nfile read(String path) throws Exception {
-		path = new File(this.getWorkingDirectory(), path).getPath();
-		FTPClient client = this.connect();
+		path = new File(this.workingDirectory, path).getPath();
+		InputStream stream = null;
+		final FTPClient client = this.connect();
 		try {
-			InputStream stream = client.retrieveFileStream(path);
-			return stream == null || client.getReplyCode() == 550 ? null : new Nfile(new File(path).getName(), stream);
+			stream = client.retrieveFileStream(path);
 		} finally {
-			this.disconnect(client);
+			if (stream == null || client.getReplyCode() == 550) {
+				this.disconnect(client);
+				return null;
+			}
 		}
+		return new Nfile(new File(path).getName(), stream) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void finalize() throws Throwable {
+				disconnect(client);
+			}
+
+		};
 	}
 
 	@Override
 	public void write(InputStream stream, String path) throws Exception {
-		path = new File(this.getWorkingDirectory(), path).getPath();
+		path = new File(this.workingDirectory, path).getPath();
 		String parent = new File(path).getParent();
-		String directory = parent == null ? this.getWorkingDirectory()
-				: new File(this.getWorkingDirectory(), parent).getPath();
+		String directory = parent == null ? this.workingDirectory : new File(this.workingDirectory, parent).getPath();
 		FTPClient client = this.connect();
 		try {
 			if (!client.changeWorkingDirectory(directory)) {

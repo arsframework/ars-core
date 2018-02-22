@@ -2,6 +2,7 @@ package ars.file;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.FileInputStream;
 import java.io.ByteArrayInputStream;
 import java.util.Map;
 import java.util.List;
@@ -25,15 +26,16 @@ import ars.file.office.Converts;
  * 
  */
 public abstract class AbstractOperator implements Operator {
-	private String workingDirectory = Strings.TEMP_PATH; // 工作目录
+	protected final String workingDirectory; // 工作目录
 
-	@Override
-	public String getWorkingDirectory() {
-		return this.workingDirectory;
+	public AbstractOperator() {
+		this(Strings.TEMP_PATH);
 	}
 
-	@Override
-	public void setWorkingDirectory(String workingDirectory) {
+	public AbstractOperator(String workingDirectory) {
+		if (workingDirectory == null) {
+			throw new IllegalArgumentException("Illegal workingDirectory:" + workingDirectory);
+		}
 		this.workingDirectory = Strings.getRealPath(workingDirectory);
 	}
 
@@ -86,6 +88,16 @@ public abstract class AbstractOperator implements Operator {
 			}
 		}
 		return this.read(swf);
+	}
+
+	@Override
+	public void write(File file, String path) throws Exception {
+		InputStream is = new FileInputStream(file);
+		try {
+			this.write(is, path);
+		} finally {
+			is.close();
+		}
 	}
 
 	@Override

@@ -1,8 +1,9 @@
 package ars.file;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.List;
-import java.io.InputStream;
 
 import ars.util.Nfile;
 import ars.file.Describe;
@@ -15,21 +16,6 @@ import ars.file.query.Query;
  * 
  */
 public interface Operator {
-	/**
-	 * 获取文件操作工作目录
-	 * 
-	 * @return 文件工作目录
-	 */
-	public String getWorkingDirectory();
-
-	/**
-	 * 设置文件操作工作目录
-	 * 
-	 * @param workingDirectory
-	 *            文件工作目录
-	 */
-	public void setWorkingDirectory(String workingDirectory);
-
 	/**
 	 * 判断文件/文件夹是否存在
 	 * 
@@ -162,6 +148,18 @@ public interface Operator {
 	 *             操作异常
 	 */
 	public Nfile preview(String path) throws Exception;
+
+	/**
+	 * 写文件
+	 * 
+	 * @param file
+	 *            源文件
+	 * @param path
+	 *            目标文件路径
+	 * @throws Exception
+	 *             操作异常
+	 */
+	public void write(File file, String path) throws Exception;
 
 	/**
 	 * 写文件

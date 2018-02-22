@@ -50,7 +50,7 @@ public class SimpleDispatchServlet extends HttpServlet {
 			} else if (e instanceof IOException) {
 				throw (IOException) e;
 			}
-			throw new ServletException(e);
+			throw new RuntimeException(e);
 		}
 	}
 

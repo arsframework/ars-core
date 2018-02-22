@@ -26,9 +26,16 @@ import ars.invoke.channel.http.StandardHttpRequester;
  * 
  */
 public class StandardHttpChannel extends AbstractHttpChannel {
-	private ServletFileUpload uploader = new ServletFileUpload(new DiskFileItemFactory()); // 文件上传处理器
+	private ServletFileUpload uploader; // 文件上传处理器
 
 	public ServletFileUpload getUploader() {
+		if (this.uploader == null) {
+			synchronized (this) {
+				if (this.uploader == null) {
+					this.uploader = new ServletFileUpload(new DiskFileItemFactory());
+				}
+			}
+		}
 		return uploader;
 	}
 
@@ -50,7 +57,7 @@ public class StandardHttpChannel extends AbstractHttpChannel {
 	protected Map<String, Object> getParameters(HttpServletRequest request) throws IOException, ServletException {
 		if (ServletFileUpload.isMultipartContent(request)) {
 			try {
-				return Https.getUploadParameters(request, this.uploader);
+				return Https.getUploadParameters(request, this.getUploader());
 			} catch (FileUploadException e) {
 				throw new ServletException(e);
 			}

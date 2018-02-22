@@ -47,7 +47,7 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 			.compile("upload-[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}..+");
 
 	private transient Context context;
-	private transient Map<String, StreamReader> streams = new HashMap<String, StreamReader>();
+	private transient Map<String, StreamReader> streams = new HashMap<String, StreamReader>(0);
 
 	/**
 	 * 数据流读取抽象类

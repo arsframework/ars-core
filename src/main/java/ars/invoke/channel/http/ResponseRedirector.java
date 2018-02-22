@@ -1,7 +1,6 @@
 package ars.invoke.channel.http;
 
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Map.Entry;
 
 import ars.util.Strings;
@@ -17,7 +16,7 @@ import ars.invoke.channel.http.HttpRequester;
 public class ResponseRedirector implements Redirector {
 	private Class<?> response; // 请求结果类型
 	private String redirect; // 固定重定向资源
-	private Map<String, String> redirects = new HashMap<String, String>(0); // 请求资源/重定向资源映射
+	private Map<String, String> redirects; // 请求资源/重定向资源映射
 
 	public Class<?> getResponse() {
 		return response;

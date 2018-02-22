@@ -1829,7 +1829,12 @@ public final class Https {
 				response.setHeader("Content-Disposition",
 						"attachment; filename=" + new String(file.getName().getBytes(), "ISO-8859-1"));
 				response.setHeader("Content-Length", String.valueOf(file.getSize()));
-				Streams.write(file, os);
+				InputStream is = file.getInputStream();
+				try {
+					Streams.write(is, os);
+				} finally {
+					is.close();
+				}
 			} else if (object instanceof byte[]) {
 				os.write((byte[]) object);
 			} else if (object instanceof InputStream) {

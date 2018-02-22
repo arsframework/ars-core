@@ -8,9 +8,9 @@ import org.springframework.context.ApplicationContextAware;
 import ars.util.Strings;
 import ars.invoke.Router;
 import ars.invoke.Invoker;
-import ars.invoke.Invokes;
 import ars.invoke.local.Apis;
 import ars.invoke.local.Function;
+import ars.invoke.local.LocalInvoker;
 
 /**
  * 查找对象实例中所有使用注解的方法，并将接口资源注册
@@ -30,11 +30,11 @@ public class AnnotationMethodApiRegister implements ApplicationContextAware {
 	}
 
 	public AnnotationMethodApiRegister(String prefix, Object target, boolean cover) {
-		this(prefix, target, Invokes.getSingleLocalInvoker(), cover);
+		this(prefix, target, new LocalInvoker(), cover);
 	}
 
 	public AnnotationMethodApiRegister(String prefix, Object target, String pattern) {
-		this(prefix, target, Invokes.getSingleLocalInvoker(), pattern);
+		this(prefix, target, new LocalInvoker(), pattern);
 	}
 
 	public AnnotationMethodApiRegister(String prefix, Object target, Invoker invoker) {

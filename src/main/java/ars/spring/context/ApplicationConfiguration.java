@@ -30,13 +30,13 @@ import ars.invoke.Router;
 import ars.invoke.Channel;
 import ars.invoke.Context;
 import ars.invoke.Invoker;
-import ars.invoke.Invokes;
 import ars.invoke.Messager;
 import ars.invoke.CacheRule;
 import ars.invoke.StandardRouter;
 import ars.invoke.local.Api;
 import ars.invoke.local.Apis;
 import ars.invoke.local.Function;
+import ars.invoke.local.LocalInvoker;
 import ars.invoke.remote.Remotes;
 import ars.invoke.event.InvokeEvent;
 import ars.invoke.event.InvokeListener;
@@ -119,7 +119,7 @@ public class ApplicationConfiguration extends StandardRouter
 			synchronized (this) {
 				if (!this.initialized) {
 					if (this.invoker == null) {
-						this.invoker = Invokes.getSingleLocalInvoker();
+						this.invoker = new LocalInvoker();
 					}
 					if (this.sessionFactory == null) {
 						this.sessionFactory = new CacheSessionFactory();

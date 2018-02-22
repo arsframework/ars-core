@@ -6,13 +6,14 @@ import org.springframework.context.ApplicationContextAware;
 
 import ars.invoke.Router;
 import ars.invoke.Invoker;
-import ars.invoke.Invokes;
 import ars.invoke.Resource;
 import ars.invoke.local.Function;
 import ars.invoke.local.Condition;
+import ars.invoke.local.LocalInvoker;
 import ars.invoke.remote.Node;
 import ars.invoke.remote.Endpoint;
 import ars.invoke.remote.Protocol;
+import ars.invoke.remote.RemoteInvoker;
 
 /**
  * 本地接口资源注册简单实现
@@ -51,7 +52,7 @@ public class SimpleApiRegister implements ApplicationContextAware {
 	}
 
 	public SimpleApiRegister(String api, String uri, Node... nodes) {
-		this(api, Invokes.getSingleRemoteInvoker(), new Endpoint(uri, nodes));
+		this(api, new RemoteInvoker(), new Endpoint(uri, nodes));
 	}
 
 	public SimpleApiRegister(String api, Protocol protocol, String host, int port) {
@@ -59,7 +60,7 @@ public class SimpleApiRegister implements ApplicationContextAware {
 	}
 
 	public SimpleApiRegister(String api, Protocol protocol, String host, int port, String uri) {
-		this(api, Invokes.getSingleRemoteInvoker(), new Endpoint(protocol, host, port, uri));
+		this(api, new RemoteInvoker(), new Endpoint(protocol, host, port, uri));
 	}
 
 	public SimpleApiRegister(String api, Object target, String method) {
@@ -67,7 +68,7 @@ public class SimpleApiRegister implements ApplicationContextAware {
 	}
 
 	public SimpleApiRegister(String api, Object target, String method, Condition... conditions) {
-		this(api, Invokes.getSingleLocalInvoker(), new Function(target, method, conditions));
+		this(api, new LocalInvoker(), new Function(target, method, conditions));
 	}
 
 	public String getApi() {

@@ -1,7 +1,5 @@
 package ars.invoke;
 
-import java.util.Collection;
-
 import ars.util.Strings;
 import ars.invoke.Resource;
 
@@ -21,13 +19,6 @@ public class MultiResource implements Resource {
 			throw new IllegalArgumentException("Illegal resources:" + Strings.toString(resources));
 		}
 		this.resources = resources;
-	}
-
-	public MultiResource(Collection<String> resources) {
-		if (resources == null || resources.isEmpty()) {
-			throw new IllegalArgumentException("Illegal resources:" + Strings.toString(resources));
-		}
-		this.resources = resources.toArray(Strings.EMPTY_ARRAY);
 	}
 
 	public String[] getResources() {

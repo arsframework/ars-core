@@ -17,11 +17,18 @@ import java.lang.annotation.Annotation;
 import ars.util.Beans;
 import ars.util.Strings;
 import ars.util.SimpleTree;
+import ars.invoke.Router;
+import ars.invoke.Channel;
+import ars.invoke.Context;
+import ars.invoke.Messager;
 import ars.invoke.local.Api;
 import ars.invoke.local.Param;
 import ars.invoke.local.Condition;
 import ars.invoke.local.ParamAdapter;
+import ars.invoke.request.Token;
+import ars.invoke.request.Session;
 import ars.invoke.request.Requester;
+import ars.invoke.request.SessionFactory;
 import ars.invoke.request.ParameterInvalidException;
 
 /**
@@ -186,40 +193,33 @@ public final class Apis {
 		Class<?>[] types = method.getParameterTypes();
 		Condition[] conditions = new Condition[types.length];
 		Annotation[][] annotations = method.getParameterAnnotations();
-		for (int i = 0; i < types.length; i++) {
-			String name = null;
-			String regex = null;
-			String value = null;
-			boolean required = false;
-			ParamAdapter adapter = null;
+		outer: for (int i = 0; i < types.length; i++) {
 			for (Annotation annotation : annotations[i]) {
 				if (annotation.annotationType() == Param.class) {
 					Param param = (Param) annotation;
-					name = param.name().trim();
-					value = param.value().trim();
-					regex = param.regex().trim();
-					required = param.required();
-					Class<? extends ParamAdapter> adapterType = param.adapter();
-					if (adapterType != ParamAdapter.class) {
-						adapter = Beans.getInstance(adapterType);
+					String name = param.name().trim();
+					String value = param.value().trim();
+					String regex = param.regex().trim();
+					Class<? extends ParamAdapter> adapter = param.adapter();
+					Condition condition = new Condition();
+					condition.setType(types[i]);
+					if (!name.isEmpty()) {
+						condition.setName(name);
 					}
-					break;
+					if (!value.isEmpty()) {
+						condition.setValue(value);
+					}
+					if (!regex.isEmpty()) {
+						condition.setRegex(regex);
+					}
+					if (adapter != ParamAdapter.class) {
+						condition.setAdapter(Beans.getInstance(adapter));
+					}
+					condition.setRequired(param.required());
+					conditions[i] = condition;
+					continue outer;
 				}
 			}
-			Condition condition = new Condition();
-			condition.setType(types[i]);
-			if (!Strings.isEmpty(name)) {
-				condition.setName(name);
-			}
-			if (!Strings.isEmpty(value)) {
-				condition.setValue(value);
-			}
-			if (!Strings.isEmpty(regex)) {
-				condition.setRegex(regex);
-			}
-			condition.setAdapter(adapter);
-			condition.setRequired(required);
-			conditions[i] = condition;
 		}
 		return conditions;
 	}
@@ -269,29 +269,48 @@ public final class Apis {
 	 * 
 	 * @param requester
 	 *            请求对象
-	 * @param conditions
-	 *            接口方法条件对象数据
+	 * @param function
+	 *            本地资源对象
 	 * @return 本地接口方法参数数组
 	 * @throws Exception
 	 *             操作异常
 	 */
-	public static Object[] getParameters(Requester requester, Condition... conditions) throws Exception {
+	public static Object[] getParameters(Requester requester, Function function) throws Exception {
 		if (requester == null) {
 			throw new IllegalArgumentException("Illegal requester:" + requester);
 		}
+		Condition[] conditions = function.getConditions();
+		Class<?>[] types = function.getMethod().getParameterTypes();
 		Object[] _parameters = new Object[conditions.length];
 		Map<String, Object> parameters = requester.getParameters();
 		for (int i = 0; i < conditions.length; i++) {
+			Class<?> type = types[i];
 			Condition condition = conditions[i];
-			Class<?> type = condition.getType();
-			String name = condition.getName();
-			String regex = condition.getRegex();
-			ParamAdapter adapter = condition.getAdapter();
-			if (Requester.class.isAssignableFrom(type)) {
-				_parameters[i] = requester;
-			} else if (Map.class.isAssignableFrom(type)) {
-				_parameters[i] = parameters;
-			} else if (adapter == null) {
+			if (condition == null) {
+				if (Router.class.isAssignableFrom(type)) {
+					_parameters[i] = requester.getChannel().getContext().getRouter();
+				} else if (Channel.class.isAssignableFrom(type)) {
+					_parameters[i] = requester.getChannel();
+				} else if (Context.class.isAssignableFrom(type)) {
+					_parameters[i] = requester.getChannel().getContext();
+				} else if (Messager.class.isAssignableFrom(type)) {
+					_parameters[i] = requester.getChannel().getContext().getMessager();
+				} else if (Requester.class.isAssignableFrom(type)) {
+					_parameters[i] = requester;
+				} else if (Token.class.isAssignableFrom(type)) {
+					_parameters[i] = requester.getToken();
+				} else if (Session.class.isAssignableFrom(type)) {
+					_parameters[i] = requester.getSession();
+				} else if (SessionFactory.class.isAssignableFrom(type)) {
+					_parameters[i] = requester.getSession().getSessionFactory();
+				} else if (Map.class.isAssignableFrom(type)) {
+					_parameters[i] = parameters;
+				} else {
+					_parameters[i] = requester.getChannel().getContext().getBean(type);
+				}
+			} else if (condition.getAdapter() == null) {
+				String name = condition.getName();
+				String regex = condition.getRegex();
 				try {
 					if (name == null) {
 						_parameters[i] = Beans.isMetaClass(type) ? Beans.toObject(type, condition.getValue())
@@ -311,10 +330,10 @@ public final class Apis {
 					throw new ParameterInvalidException(name, e.getMessage());
 				}
 			} else {
-				_parameters[i] = adapter.adaption(requester, type, parameters);
+				_parameters[i] = condition.getAdapter().adaption(requester, type, parameters);
 			}
-			if (condition.isRequired() && Beans.isEmpty(_parameters[i])) {
-				throw new ParameterInvalidException(name, "required");
+			if (condition != null && condition.isRequired() && Beans.isEmpty(_parameters[i])) {
+				throw new ParameterInvalidException(condition.getName(), "required");
 			}
 		}
 		return _parameters;

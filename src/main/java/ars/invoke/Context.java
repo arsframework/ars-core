@@ -32,4 +32,13 @@ public interface Context {
 	 */
 	public SessionFactory getSessionFactory();
 
+	/**
+	 * 获取上下文对象实例
+	 * 
+	 * @param type
+	 *            对象类型
+	 * @return 对象实例
+	 */
+	public <T> T getBean(Class<T> type);
+
 }

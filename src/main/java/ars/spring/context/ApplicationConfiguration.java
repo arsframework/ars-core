@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.aop.framework.Advised;
 import org.springframework.context.ApplicationEvent;
@@ -273,6 +274,22 @@ public class ApplicationConfiguration extends StandardRouter
 	@Override
 	public SessionFactory getSessionFactory() {
 		return this.sessionFactory;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T getBean(Class<T> type) {
+		if (type == null) {
+			throw new IllegalArgumentException("Illegal type:" + type);
+		}
+		if (ApplicationContext.class.isAssignableFrom(type)) {
+			return (T) this.applicationContext;
+		}
+		try {
+			return this.applicationContext.getBean(type);
+		} catch (NoSuchBeanDefinitionException e) {
+			return null;
+		}
 	}
 
 	@Override

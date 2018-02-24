@@ -1,9 +1,11 @@
 package ars.invoke;
 
+import java.util.Date;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 import ars.util.Beans;
+import ars.util.Dates;
 import ars.util.Strings;
 import ars.invoke.request.Requester;
 
@@ -85,6 +87,51 @@ public final class Invokes {
 			requester = parent;
 		}
 		return requester;
+	}
+
+	/**
+	 * 获取请求日志信息
+	 * 
+	 * @param requester
+	 *            请求对象
+	 * @param value
+	 *            请求结果值
+	 * @return 日志信息
+	 */
+	public static String getLog(Requester requester, Object value) {
+		return getLog(requester, value, new Date());
+	}
+
+	/**
+	 * 获取请求日志信息
+	 * 
+	 * @param requester
+	 *            请求对象
+	 * @param value
+	 *            请求结果值
+	 * @param timestamp
+	 *            时间戳
+	 * @return 日志信息
+	 */
+	public static String getLog(Requester requester, Object value, Date timestamp) {
+		if (requester == null) {
+			throw new IllegalArgumentException("Illegal requester:" + requester);
+		}
+		if (timestamp == null) {
+			throw new IllegalArgumentException("Illegal timestamp:" + timestamp);
+		}
+		StringBuilder info = new StringBuilder().append('\n').append(Dates.format(requester.getCreated(), true))
+				.append(" [").append(requester.getHost()).append(']');
+		if (requester.getUser() != null) {
+			info.append(" [").append(requester.getUser()).append(']');
+		}
+		info.append(" [").append(requester.getUri()).append("] [")
+				.append(Dates.getUnitTime(timestamp.getTime() - requester.getCreated().getTime())).append("]\n")
+				.append(requester.getParameters());
+		if (!(value instanceof Throwable)) {
+			info.append('\n').append(Strings.toString(value));
+		}
+		return info.append('\n').toString();
 	}
 
 	/**

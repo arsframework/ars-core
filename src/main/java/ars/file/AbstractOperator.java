@@ -33,10 +33,7 @@ public abstract class AbstractOperator implements Operator {
 	}
 
 	public AbstractOperator(String workingDirectory) {
-		if (workingDirectory == null) {
-			throw new IllegalArgumentException("Illegal workingDirectory:" + workingDirectory);
-		}
-		this.workingDirectory = Strings.getRealPath(workingDirectory);
+		this.workingDirectory = workingDirectory == null ? Strings.TEMP_PATH : Strings.getRealPath(workingDirectory);
 	}
 
 	@Override

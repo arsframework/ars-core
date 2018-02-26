@@ -147,36 +147,34 @@ public abstract class AbstractTag extends SimpleTagSupport {
 
 	@Override
 	public void doTag() throws JspException, IOException {
-		Object value = null;
 		try {
-			value = this.execute();
-		} catch (Exception e) {
-			value = e;
-		}
-		if (value instanceof IOException) {
-			throw (IOException) value;
-		} else if (value instanceof JspException) {
-			throw (JspException) value;
-		} else if (value instanceof RuntimeException) {
-			throw (RuntimeException) value;
-		} else if (value instanceof Exception) {
-			throw new RuntimeException((Exception) value);
-		} else if (value != null) {
-			if (!Strings.isEmpty(this.group)) {
-				value = Beans.getAssemblePropertyGroups(value, this.group, this.mapping);
-			} else if (!Strings.isEmpty(this.property)) {
-				value = Strings.isEmpty(this.mapping) ? Beans.getAssemblePropertyValue(value, this.property)
-						: Beans.getAssemblePropertyValue(value, this.property, this.mapping);
-			}
-			if (!(value instanceof CharSequence)) {
-				if (this.json) {
-					value = Jsons.format(value);
-				} else if (this.string) {
-					value = Strings.toString(value);
+			Object value = this.execute();
+			if (value != null) {
+				if (!Strings.isEmpty(this.group)) {
+					value = Beans.getAssemblePropertyGroups(value, this.group, this.mapping);
+				} else if (!Strings.isEmpty(this.property)) {
+					value = Strings.isEmpty(this.mapping) ? Beans.getAssemblePropertyValue(value, this.property)
+							: Beans.getAssemblePropertyValue(value, this.property, this.mapping);
+				}
+				if (!(value instanceof CharSequence)) {
+					if (this.json) {
+						value = Jsons.format(value);
+					} else if (this.string) {
+						value = Strings.toString(value);
+					}
 				}
 			}
+			this.setContextValue(value);
+		} catch (Exception e) {
+			if (e instanceof IOException) {
+				throw (IOException) e;
+			} else if (e instanceof JspException) {
+				throw (JspException) e;
+			} else if (e instanceof RuntimeException) {
+				throw (RuntimeException) e;
+			}
+			throw new RuntimeException((Exception) e);
 		}
-		this.setContextValue(value);
 	}
 
 }

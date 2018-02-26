@@ -1626,22 +1626,17 @@ public final class Https {
 		}
 		RequestDispatcher dispatcher = request.getRequestDispatcher(template);
 		final PrintWriter writer = new PrintWriter(new OutputStreamWriter(output));
-		try {
-			for (Entry<String, Object> entry : context.entrySet()) {
-				request.setAttribute(entry.getKey(), entry.getValue());
-			}
-			dispatcher.include(request, new HttpServletResponseWrapper(response) {
-
-				@Override
-				public PrintWriter getWriter() throws IOException {
-					return writer;
-				}
-
-			});
-			writer.flush();
-		} finally {
-			writer.close();
+		for (Entry<String, Object> entry : context.entrySet()) {
+			request.setAttribute(entry.getKey(), entry.getValue());
 		}
+		dispatcher.include(request, new HttpServletResponseWrapper(response) {
+
+			@Override
+			public PrintWriter getWriter() throws IOException {
+				return writer;
+			}
+
+		});
 	}
 
 	/**

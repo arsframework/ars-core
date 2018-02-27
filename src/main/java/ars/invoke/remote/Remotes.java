@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.LinkedList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.Callable;
 
 import ars.util.Nfile;
@@ -51,12 +52,12 @@ public final class Remotes {
 	/**
 	 * 当前节点标识
 	 */
-	private static String client = Strings.LOCALHOST_NAME;
+	private static String client;
 
 	/**
 	 * 文件目录
 	 */
-	private static String directory = Strings.TEMP_PATH;
+	private static String directory;
 
 	/**
 	 * 客户端配置
@@ -78,31 +79,82 @@ public final class Remotes {
 	 * @return 客户端标识
 	 */
 	public static String getClient() {
+		if (client == null) {
+			synchronized (Remotes.class) {
+				if (client == null) {
+					client = Strings.LOCALHOST_NAME;
+				}
+			}
+		}
 		return client;
 	}
 
 	public static void setClient(String client) {
-		Remotes.client = client;
+		if (client == null) {
+			throw new IllegalArgumentException("Illegal client:" + client);
+		}
+		if (Remotes.client != null) {
+			throw new RuntimeException("Remote client has been initialize");
+		}
+		synchronized (Remotes.class) {
+			if (Remotes.client == null) {
+				Remotes.client = client;
+			}
+		}
 	}
 
 	public static String getDirectory() {
+		if (directory == null) {
+			synchronized (Remotes.class) {
+				if (directory == null) {
+					directory = Strings.TEMP_PATH;
+				}
+			}
+		}
 		return directory;
 	}
 
 	public static void setDirectory(String directory) {
-		Remotes.directory = Strings.getRealPath(directory);
-		File path = new File(Remotes.directory);
-		if (!path.exists()) {
-			path.mkdirs();
+		if (directory == null) {
+			throw new IllegalArgumentException("Illegal directory:" + directory);
+		}
+		if (Remotes.directory != null) {
+			throw new RuntimeException("Remote directory has been initialize");
+		}
+		synchronized (Remotes.class) {
+			if (Remotes.directory == null) {
+				Remotes.directory = Strings.getRealPath(directory);
+				File path = new File(Remotes.directory);
+				if (!path.exists()) {
+					path.mkdirs();
+				}
+			}
 		}
 	}
 
 	public static Map<String, String> getConfigure() {
+		if (configure == null) {
+			synchronized (Remotes.class) {
+				if (configure == null) {
+					configure = Collections.emptyMap();
+				}
+			}
+		}
 		return configure;
 	}
 
 	public static void setConfigure(Map<String, String> configure) {
-		Remotes.configure = configure;
+		if (configure == null) {
+			throw new IllegalArgumentException("Illegal configure:" + configure);
+		}
+		if (Remotes.configure != null) {
+			throw new RuntimeException("Remote configure has been initialize");
+		}
+		synchronized (Remotes.class) {
+			if (Remotes.configure == null) {
+				Remotes.configure = Collections.unmodifiableMap(configure);
+			}
+		}
 	}
 
 	/**
@@ -114,7 +166,7 @@ public final class Remotes {
 		if (communicator == null) {
 			synchronized (Remotes.class) {
 				if (communicator == null) {
-					communicator = initializeCommunicator(configure);
+					communicator = initializeCommunicator(getConfigure());
 				}
 			}
 		}
@@ -131,11 +183,12 @@ public final class Remotes {
 		if (communicator == null) {
 			throw new IllegalArgumentException("Illegal communicator:" + communicator);
 		}
-		if (Remotes.communicator == null) {
-			synchronized (Remotes.class) {
-				if (Remotes.communicator == null) {
-					Remotes.communicator = communicator;
-				}
+		if (Remotes.communicator != null) {
+			throw new RuntimeException("Remote communicator has been initialize");
+		}
+		synchronized (Remotes.class) {
+			if (Remotes.communicator == null) {
+				Remotes.communicator = communicator;
 			}
 		}
 	}
@@ -466,7 +519,7 @@ public final class Remotes {
 			}
 		}
 		ResourcePrx _proxy = ResourcePrxHelper.checkedCast(proxy);
-		Iresult iresult = _proxy.invoke(client, token2itoken(token), uri, Jsons.format(parameters));
+		Iresult iresult = _proxy.invoke(getClient(), token2itoken(token), uri, Jsons.format(parameters));
 		if (iresult instanceof Istream) {
 			Istream istream = (Istream) iresult;
 			if (istream.file) {
@@ -552,7 +605,7 @@ public final class Remotes {
 		if (size < 1) {
 			throw new IllegalArgumentException("Illegal size:" + size);
 		}
-		final File file = new File(directory,
+		final File file = new File(getDirectory(),
 				new StringBuilder("download-").append(UUID.randomUUID()).append('.').append(name).toString());
 		ResourcePrx _proxy = ResourcePrxHelper.checkedCast(proxy);
 		LinkedList<Ice.AsyncResult> results = new LinkedList<Ice.AsyncResult>();

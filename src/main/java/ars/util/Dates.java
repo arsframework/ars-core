@@ -15,36 +15,87 @@ import ars.util.Beans;
  * 
  */
 public final class Dates {
-	private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-	private static DateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	private static DateFormat datenanoFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	private static DateFormat dateFormat;
+	private static DateFormat datetimeFormat;
+	private static DateFormat datenanoFormat;
 
 	private Dates() {
 
 	}
 
 	public static DateFormat getDateFormat() {
+		if (dateFormat == null) {
+			synchronized (Dates.class) {
+				if (dateFormat == null) {
+					dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				}
+			}
+		}
 		return dateFormat;
 	}
 
 	public static void setDateFormat(DateFormat dateFormat) {
-		Dates.dateFormat = dateFormat;
+		if (dateFormat == null) {
+			throw new IllegalArgumentException("Illegal dateFormat:" + dateFormat);
+		}
+		if (Dates.dateFormat != null) {
+			throw new RuntimeException("Date format has been initialize");
+		}
+		synchronized (Dates.class) {
+			if (Dates.dateFormat == null) {
+				Dates.dateFormat = dateFormat;
+			}
+		}
 	}
 
 	public static DateFormat getDatetimeFormat() {
+		if (datetimeFormat == null) {
+			synchronized (Dates.class) {
+				if (datetimeFormat == null) {
+					datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				}
+			}
+		}
 		return datetimeFormat;
 	}
 
 	public static void setDatetimeFormat(DateFormat datetimeFormat) {
-		Dates.datetimeFormat = datetimeFormat;
+		if (datetimeFormat == null) {
+			throw new IllegalArgumentException("Illegal datetimeFormat:" + datetimeFormat);
+		}
+		if (Dates.datetimeFormat != null) {
+			throw new RuntimeException("Date time format has been initialize");
+		}
+		synchronized (Dates.class) {
+			if (Dates.datetimeFormat == null) {
+				Dates.datetimeFormat = datetimeFormat;
+			}
+		}
 	}
 
 	public static DateFormat getDatenanoFormat() {
+		if (datenanoFormat == null) {
+			synchronized (Dates.class) {
+				if (datenanoFormat == null) {
+					datenanoFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+				}
+			}
+		}
 		return datenanoFormat;
 	}
 
 	public static void setDatenanoFormat(DateFormat datenanoFormat) {
-		Dates.datenanoFormat = datenanoFormat;
+		if (datenanoFormat == null) {
+			throw new IllegalArgumentException("Illegal datenanoFormat:" + datenanoFormat);
+		}
+		if (Dates.datenanoFormat != null) {
+			throw new RuntimeException("Date nanotime format has been initialize");
+		}
+		synchronized (Dates.class) {
+			if (Dates.datenanoFormat == null) {
+				Dates.datenanoFormat = datenanoFormat;
+			}
+		}
 	}
 
 	/**
@@ -58,7 +109,7 @@ public final class Dates {
 		if (source == null) {
 			throw new IllegalArgumentException("Illegal source:" + source);
 		}
-		return parse(source, datetimeFormat, dateFormat);
+		return parse(source, getDatetimeFormat(), getDateFormat());
 	}
 
 	/**
@@ -133,7 +184,8 @@ public final class Dates {
 		calendar.setTime(date);
 		boolean isDateTime = calendar.get(Calendar.HOUR_OF_DAY) != 0 || calendar.get(Calendar.MINUTE) != 0
 				|| calendar.get(Calendar.SECOND) != 0;
-		return isDateTime ? nano ? datenanoFormat.format(date) : datetimeFormat.format(date) : dateFormat.format(date);
+		return isDateTime ? nano ? getDatenanoFormat().format(date) : getDatetimeFormat().format(date)
+				: getDateFormat().format(date);
 	}
 
 	/**

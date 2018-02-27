@@ -9,7 +9,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
+import java.util.concurrent.ExecutorService;
 
+import org.quartz.Scheduler;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.aop.support.AopUtils;
@@ -57,6 +59,8 @@ public class ApplicationConfiguration extends StandardRouter
 	private String pattern; // 资源地址匹配模式
 	private Invoker invoker; // 资源调用对象
 	private Messager messager; // 消息处理对象
+	private Scheduler scheduler; // 任务调度对象
+	private ExecutorService executor; // 线程池对象
 	private SessionFactory sessionFactory; // 会话工厂
 	private Map<String, String> configure; // 系统配置
 	private ClientConnectionManager httpClientManager; // Http客户端管理器
@@ -77,6 +81,22 @@ public class ApplicationConfiguration extends StandardRouter
 
 	public void setInvoker(Invoker invoker) {
 		this.invoker = invoker;
+	}
+
+	public Scheduler getScheduler() {
+		return scheduler;
+	}
+
+	public void setScheduler(Scheduler scheduler) {
+		this.scheduler = scheduler;
+	}
+
+	public ExecutorService getExecutor() {
+		return executor;
+	}
+
+	public void setExecutor(ExecutorService executor) {
+		this.executor = executor;
 	}
 
 	public Map<String, String> getConfigure() {
@@ -235,6 +255,12 @@ public class ApplicationConfiguration extends StandardRouter
 						}
 					}
 					super.initialize();
+					if (this.executor != null) {
+						Servers.setExecutor(this.executor);
+					}
+					if (this.scheduler != null) {
+						Servers.setScheduler(this.scheduler);
+					}
 					Servers.startup();
 					this.initialized = true;
 				}

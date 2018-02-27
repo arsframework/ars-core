@@ -27,7 +27,7 @@ import ars.util.ObjectAdapter;
  * 
  */
 public final class Jsons {
-	private static ObjectAdapter[] objectAdapters = new ObjectAdapter[0];
+	private static ObjectAdapter[] objectAdapters;
 
 	/**
 	 * Gson通用类型适配器
@@ -69,11 +69,28 @@ public final class Jsons {
 	}
 
 	public static ObjectAdapter[] getObjectAdapters() {
+		if (objectAdapters == null) {
+			synchronized (Jsons.class) {
+				if (objectAdapters == null) {
+					objectAdapters = new ObjectAdapter[0];
+				}
+			}
+		}
 		return objectAdapters;
 	}
 
 	public static void setObjectAdapters(ObjectAdapter... objectAdapters) {
-		Jsons.objectAdapters = objectAdapters;
+		if (objectAdapters == null) {
+			throw new IllegalArgumentException("Illegal objectAdapters:" + objectAdapters);
+		}
+		if (Jsons.objectAdapters != null) {
+			throw new RuntimeException("Json object adapters has been initialize");
+		}
+		synchronized (Jsons.class) {
+			if (Jsons.objectAdapters == null) {
+				Jsons.objectAdapters = objectAdapters;
+			}
+		}
 	}
 
 	/**
@@ -84,8 +101,8 @@ public final class Jsons {
 	 * @return 适配对象
 	 */
 	public static Object adaption(Object object) {
-		if (object != null && objectAdapters.length > 0) {
-			for (ObjectAdapter adapter : objectAdapters) {
+		if (object != null) {
+			for (ObjectAdapter adapter : getObjectAdapters()) {
 				object = adapter.adaption(object);
 			}
 		}

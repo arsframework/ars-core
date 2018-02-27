@@ -274,11 +274,12 @@ public final class Https {
 		if (manager == null) {
 			throw new IllegalArgumentException("Illegal manager:" + manager);
 		}
-		if (Https.manager == null) {
-			synchronized (Https.class) {
-				if (Https.manager == null) {
-					Https.manager = manager;
-				}
+		if (Https.manager != null) {
+			throw new RuntimeException("Http client connection manager has been initialize");
+		}
+		synchronized (Https.class) {
+			if (Https.manager == null) {
+				Https.manager = manager;
 			}
 		}
 	}
@@ -1637,6 +1638,7 @@ public final class Https {
 			}
 
 		});
+		writer.flush();
 	}
 
 	/**

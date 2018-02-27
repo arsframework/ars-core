@@ -40,27 +40,61 @@ import ars.file.office.ChainingReplacedElementFactory;
  * 
  */
 public final class Converts {
-	private static String openOfficeHost = Strings.DEFAULT_LOCALHOST_ADDRESS;
-	private static int openOfficePort = SocketOpenOfficeConnection.DEFAULT_PORT;
+	private static String openOfficeHost;
+	private static int openOfficePort;
 
 	private Converts() {
 
 	}
 
 	public static String getOpenOfficeHost() {
+		if (openOfficeHost == null) {
+			synchronized (Converts.class) {
+				if (openOfficeHost == null) {
+					openOfficeHost = Strings.DEFAULT_LOCALHOST_ADDRESS;
+				}
+			}
+		}
 		return openOfficeHost;
 	}
 
 	public static void setOpenOfficeHost(String openOfficeHost) {
-		Converts.openOfficeHost = openOfficeHost;
+		if (openOfficeHost == null) {
+			throw new IllegalArgumentException("Illegal openOfficeHost:" + openOfficeHost);
+		}
+		if (Converts.openOfficeHost != null) {
+			throw new RuntimeException("Open office host has been initialize");
+		}
+		synchronized (Converts.class) {
+			if (Converts.openOfficeHost == null) {
+				Converts.openOfficeHost = openOfficeHost;
+			}
+		}
 	}
 
 	public static int getOpenOfficePort() {
+		if (openOfficePort < 1) {
+			synchronized (Converts.class) {
+				if (openOfficePort < 1) {
+					openOfficePort = SocketOpenOfficeConnection.DEFAULT_PORT;
+				}
+			}
+		}
 		return openOfficePort;
 	}
 
 	public static void setOpenOfficePort(int openOfficePort) {
-		Converts.openOfficePort = openOfficePort;
+		if (openOfficePort < 1) {
+			throw new IllegalArgumentException("Illegal openOfficePort:" + openOfficePort);
+		}
+		if (Converts.openOfficePort > 0) {
+			throw new RuntimeException("Open office port has been initialize");
+		}
+		synchronized (Converts.class) {
+			if (Converts.openOfficePort < 1) {
+				Converts.openOfficePort = openOfficePort;
+			}
+		}
 	}
 
 	/**
@@ -134,7 +168,8 @@ public final class Converts {
 		if (!output.exists()) {
 			synchronized (output.getPath().intern()) {
 				if (!output.exists()) {
-					OpenOfficeConnection connection = new SocketOpenOfficeConnection(openOfficeHost, openOfficePort);
+					OpenOfficeConnection connection = new SocketOpenOfficeConnection(getOpenOfficeHost(),
+							getOpenOfficePort());
 					connection.connect();
 					try {
 						DocumentConverter converter = new OpenOfficeDocumentConverter(connection);

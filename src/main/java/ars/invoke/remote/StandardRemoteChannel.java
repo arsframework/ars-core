@@ -425,6 +425,8 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 			}
 		} catch (Exception e) {
 			__cb.ice_exception(e);
+		} finally {
+			Invokes.setCurrentRequester(null);
 		}
 	}
 

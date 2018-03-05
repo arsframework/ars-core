@@ -75,7 +75,7 @@ public abstract class AbstractOperator implements Operator {
 						try {
 							Streams.write(input, source);
 							Converts.file2swf(source, target);
-							this.write(new Nfile(target), swf);
+							this.write(target, swf);
 						} finally {
 							source.delete();
 							target.delete();

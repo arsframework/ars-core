@@ -37,8 +37,7 @@ public class StandardMessager implements Messager {
 		ResourceBundle[] bundles = this.localeBundles.get(locale);
 		if (bundles == null) {
 			synchronized (this) {
-				bundles = this.localeBundles.get(locale);
-				if (bundles == null) {
+				if ((bundles = this.localeBundles.get(locale)) == null) {
 					bundles = new ResourceBundle[this.resources.length];
 					for (int i = 0; i < bundles.length; i++) {
 						bundles[i] = ResourceBundle.getBundle(this.resources[i], locale);

@@ -70,11 +70,7 @@ public final class Files {
 			if (source.isDirectory()) {
 				File path = new File(target, source.getName());
 				if (!path.exists()) {
-					synchronized (path.getPath().intern()) {
-						if (!path.exists()) {
-							path.mkdirs();
-						}
-					}
+					path.mkdirs();
 				}
 				for (File child : source.listFiles()) {
 					copy(child, path);
@@ -106,11 +102,7 @@ public final class Files {
 			if (source.isDirectory()) {
 				File path = new File(target, source.getName());
 				if (!path.exists()) {
-					synchronized (path.getPath().intern()) {
-						if (!path.exists()) {
-							path.mkdirs();
-						}
-					}
+					path.mkdirs();
 				}
 				for (File child : source.listFiles()) {
 					move(child, path);

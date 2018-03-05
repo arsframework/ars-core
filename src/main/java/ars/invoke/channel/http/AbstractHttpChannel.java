@@ -272,40 +272,44 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 	@Override
 	public void dispatch(ServletConfig config, HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
-		HttpRequester requester = this.getRequester(this.getUri(request), config, request, response);
-		Invokes.setCurrentRequester(requester);
-
 		Object value = null;
 		Converter converter = null;
-		String template = this.lookupTemplate(requester);
-		if (template == null) {
-			try {
-				value = this.dispatch(requester);
-			} catch (Exception e) {
-				value = e;
-			}
-			if (!Streams.isStream(value) && (converter = this.lookupConverter(requester)) != null) {
+		HttpRequester requester = this.getRequester(this.getUri(request), config, request, response);
+		Invokes.setCurrentRequester(requester);
+		try {
+			String template = this.lookupTemplate(requester);
+			if (template == null) {
+				try {
+					value = this.dispatch(requester);
+				} catch (Exception e) {
+					value = e;
+				}
+				if (!Streams.isStream(value) && (converter = this.lookupConverter(requester)) != null) {
+					value = converter.serialize(value);
+				}
+			} else if (Strings.isEmpty(request.getContentType())
+					|| (converter = this.lookupConverter(requester)) == null) {
+				try {
+					this.render(requester, template, null);
+				} catch (Exception e) {
+					value = e;
+				}
+			} else {
+				try {
+					value = this.view(requester, template, null);
+				} catch (Exception e) {
+					value = e;
+				}
 				value = converter.serialize(value);
 			}
-		} else if (Strings.isEmpty(request.getContentType()) || (converter = this.lookupConverter(requester)) == null) {
-			try {
-				this.render(requester, template, null);
-			} catch (Exception e) {
-				value = e;
+			if (value != null && !this.redirect(requester, value)) {
+				if (value instanceof Exception) {
+					throw (Exception) value;
+				}
+				Https.response(response, value);
 			}
-		} else {
-			try {
-				value = this.view(requester, template, null);
-			} catch (Exception e) {
-				value = e;
-			}
-			value = converter.serialize(value);
-		}
-		if (value != null && !this.redirect(requester, value)) {
-			if (value instanceof Exception) {
-				throw (Exception) value;
-			}
-			Https.response(response, value);
+		} finally {
+			Invokes.setCurrentRequester(null);
 		}
 	}
 

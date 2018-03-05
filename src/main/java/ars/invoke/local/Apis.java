@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.regex.Pattern;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -210,7 +211,7 @@ public final class Apis {
 						condition.setValue(value);
 					}
 					if (!regex.isEmpty()) {
-						condition.setRegex(regex);
+						condition.setPattern(Pattern.compile(regex));
 					}
 					if (adapter != ParamAdapter.class) {
 						condition.setAdapter(Beans.getInstance(adapter));
@@ -310,7 +311,6 @@ public final class Apis {
 				}
 			} else if (condition.getAdapter() == null) {
 				String name = condition.getName();
-				String regex = condition.getRegex();
 				try {
 					if (name == null) {
 						_parameters[i] = Beans.isMetaClass(type) ? Beans.toObject(type, condition.getValue())
@@ -320,8 +320,8 @@ public final class Apis {
 						if (value == null) {
 							value = condition.getValue();
 						}
-						if (regex != null && value instanceof CharSequence
-								&& !Strings.getPattern(regex).matcher((CharSequence) value).matches()) {
+						if (condition.getPattern() != null && value instanceof CharSequence
+								&& !condition.getPattern().matcher((CharSequence) value).matches()) {
 							throw new ParameterInvalidException(name, "invalid");
 						}
 						_parameters[i] = Beans.toObject(type, value);

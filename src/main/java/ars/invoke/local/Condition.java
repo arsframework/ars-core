@@ -1,5 +1,7 @@
 package ars.invoke.local;
 
+import java.util.regex.Pattern;
+
 import ars.invoke.local.ParamAdapter;
 
 /**
@@ -12,7 +14,7 @@ public class Condition {
 	private Class<?> type; // 参数类型
 	private String name; // 参数名称
 	private String value; // 参数默认值
-	private String regex; // 参数正则表达式
+	private Pattern pattern; // 正则表达式匹配模式
 	private boolean required; // 是否必须
 	private ParamAdapter adapter; // 参数适配器
 
@@ -40,12 +42,12 @@ public class Condition {
 		this.value = value;
 	}
 
-	public String getRegex() {
-		return regex;
+	public Pattern getPattern() {
+		return pattern;
 	}
 
-	public void setRegex(String regex) {
-		this.regex = regex;
+	public void setPattern(Pattern pattern) {
+		this.pattern = pattern;
 	}
 
 	public boolean isRequired() {

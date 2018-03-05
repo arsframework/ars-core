@@ -796,8 +796,7 @@ public final class Beans {
 				T instance = (T) singles.get(type);
 				if (instance == null) {
 					synchronized (type) {
-						instance = (T) singles.get(type);
-						if (instance == null) {
+						if ((instance = (T) singles.get(type)) == null) {
 							instance = type.newInstance();
 							singles.put(type, instance);
 						}
@@ -854,8 +853,7 @@ public final class Beans {
 				T instance = (T) singles.get(type);
 				if (instance == null) {
 					synchronized (type) {
-						instance = (T) singles.get(type);
-						if (instance == null) {
+						if ((instance = (T) singles.get(type)) == null) {
 							instance = type.getConstructor(getTypes(arguments)).newInstance(arguments);
 							singles.put(type, instance);
 						}

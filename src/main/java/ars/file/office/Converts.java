@@ -165,20 +165,17 @@ public final class Converts {
 		if (output == null) {
 			throw new IllegalArgumentException("Illegal output:" + output);
 		}
-		if (!output.exists()) {
-			synchronized (output.getPath().intern()) {
-				if (!output.exists()) {
-					OpenOfficeConnection connection = new SocketOpenOfficeConnection(getOpenOfficeHost(),
-							getOpenOfficePort());
-					connection.connect();
-					try {
-						DocumentConverter converter = new OpenOfficeDocumentConverter(connection);
-						converter.convert(input, output);
-					} finally {
-						connection.disconnect();
-					}
-				}
-			}
+		File path = output.getParentFile();
+		if (!path.exists()) {
+			path.mkdirs();
+		}
+		OpenOfficeConnection connection = new SocketOpenOfficeConnection(getOpenOfficeHost(), getOpenOfficePort());
+		connection.connect();
+		try {
+			DocumentConverter converter = new OpenOfficeDocumentConverter(connection);
+			converter.convert(input, output);
+		} finally {
+			connection.disconnect();
 		}
 	}
 

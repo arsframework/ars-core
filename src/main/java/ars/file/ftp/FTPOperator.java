@@ -93,12 +93,8 @@ public class FTPOperator extends AbstractOperator {
 		for (FTPFile file : files) {
 			if (file.isDirectory()) {
 				if (!target.changeWorkingDirectory(file.getName())) {
-					synchronized ((target.printWorkingDirectory() + file.getName()).intern()) {
-						if (!target.changeWorkingDirectory(file.getName())) {
-							target.makeDirectory(file.getName());
-							target.changeWorkingDirectory(file.getName());
-						}
-					}
+					target.makeDirectory(file.getName());
+					target.changeWorkingDirectory(file.getName());
 				}
 				source.changeWorkingDirectory(file.getName());
 				this.copy(source, target, source.listFiles());
@@ -141,12 +137,8 @@ public class FTPOperator extends AbstractOperator {
 		for (FTPFile file : files) {
 			if (file.isDirectory()) {
 				if (!target.changeWorkingDirectory(file.getName())) {
-					synchronized ((target.printWorkingDirectory() + file.getName()).intern()) {
-						if (!target.changeWorkingDirectory(file.getName())) {
-							target.makeDirectory(file.getName());
-							target.changeWorkingDirectory(file.getName());
-						}
-					}
+					target.makeDirectory(file.getName());
+					target.changeWorkingDirectory(file.getName());
 				}
 				source.changeWorkingDirectory(file.getName());
 				this.move(source, target, source.listFiles());
@@ -249,12 +241,8 @@ public class FTPOperator extends AbstractOperator {
 			targetClient = this.connect();
 			if (sourceClient.changeWorkingDirectory(source)) {
 				if (!targetClient.changeWorkingDirectory(target)) {
-					synchronized (target.intern()) {
-						if (!targetClient.changeWorkingDirectory(target)) {
-							targetClient.makeDirectory(target);
-							targetClient.changeWorkingDirectory(target);
-						}
-					}
+					targetClient.makeDirectory(target);
+					targetClient.changeWorkingDirectory(target);
 				}
 				this.copy(sourceClient, targetClient, sourceClient.listFiles());
 			} else {
@@ -262,12 +250,8 @@ public class FTPOperator extends AbstractOperator {
 				try {
 					if (stream != null && sourceClient.getReplyCode() != 550) {
 						if (!targetClient.changeWorkingDirectory(tfile.getPath())) {
-							synchronized (tfile.getPath().intern()) {
-								if (!targetClient.changeWorkingDirectory(tfile.getPath())) {
-									targetClient.makeDirectory(tfile.getPath());
-									targetClient.changeWorkingDirectory(tfile.getPath());
-								}
-							}
+							targetClient.makeDirectory(tfile.getPath());
+							targetClient.changeWorkingDirectory(tfile.getPath());
 						}
 						targetClient.storeFile(sfile.getName(), stream);
 					}
@@ -302,12 +286,8 @@ public class FTPOperator extends AbstractOperator {
 			targetClient = this.connect();
 			if (sourceClient.changeWorkingDirectory(source)) {
 				if (!targetClient.changeWorkingDirectory(target)) {
-					synchronized (target.intern()) {
-						if (!targetClient.changeWorkingDirectory(target)) {
-							targetClient.makeDirectory(target);
-							targetClient.changeWorkingDirectory(target);
-						}
-					}
+					targetClient.makeDirectory(target);
+					targetClient.changeWorkingDirectory(target);
 				}
 				this.move(sourceClient, targetClient, sourceClient.listFiles());
 				sourceClient.removeDirectory(source);
@@ -316,12 +296,8 @@ public class FTPOperator extends AbstractOperator {
 				try {
 					if (stream != null && sourceClient.getReplyCode() != 550) {
 						if (!targetClient.changeWorkingDirectory(tfile.getPath())) {
-							synchronized (tfile.getPath().intern()) {
-								if (!targetClient.changeWorkingDirectory(tfile.getPath())) {
-									targetClient.makeDirectory(tfile.getPath());
-									targetClient.changeWorkingDirectory(tfile.getPath());
-								}
-							}
+							targetClient.makeDirectory(tfile.getPath());
+							targetClient.changeWorkingDirectory(tfile.getPath());
 						}
 						targetClient.storeFile(sfile.getName(), stream);
 						sourceClient.deleteFile(source);
@@ -411,11 +387,7 @@ public class FTPOperator extends AbstractOperator {
 		FTPClient client = this.connect();
 		try {
 			if (!client.changeWorkingDirectory(directory)) {
-				synchronized (directory.intern()) {
-					if (!client.changeWorkingDirectory(directory)) {
-						client.makeDirectory(directory);
-					}
-				}
+				client.makeDirectory(directory);
 			}
 			client.storeFile(path, stream);
 		} finally {

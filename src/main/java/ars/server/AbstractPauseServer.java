@@ -13,7 +13,6 @@ import ars.server.AbstractServer;
 public abstract class AbstractPauseServer extends AbstractServer implements PauseServer {
 	private volatile boolean paused;
 	private volatile boolean pausing;
-	private byte[] lock = new byte[0];
 
 	public AbstractPauseServer() {
 		this(true);
@@ -51,8 +50,8 @@ public abstract class AbstractPauseServer extends AbstractServer implements Paus
 	@Override
 	public void restore() {
 		if (this.isAlive() && this.pausing) {
-			synchronized (this.lock) {
-				this.lock.notify();
+			synchronized (this) {
+				this.notify();
 			}
 			this.pausing = false;
 		}
@@ -67,10 +66,10 @@ public abstract class AbstractPauseServer extends AbstractServer implements Paus
 	public final void run() {
 		while (this.isAlive()) {
 			if (this.pausing) {
-				synchronized (this.lock) {
+				synchronized (this) {
 					paused = true;
 					try {
-						this.lock.wait();
+						this.wait();
 					} catch (InterruptedException e) {
 					}
 					paused = false;

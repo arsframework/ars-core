@@ -19,9 +19,9 @@ import org.springframework.aop.framework.Advised;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.ApplicationContextAware;
 import org.apache.http.conn.ClientConnectionManager;
 
 import ars.util.Jsons;
@@ -34,7 +34,6 @@ import ars.invoke.Channel;
 import ars.invoke.Context;
 import ars.invoke.Invoker;
 import ars.invoke.Messager;
-import ars.invoke.CacheRule;
 import ars.invoke.StandardRouter;
 import ars.invoke.local.Api;
 import ars.invoke.local.Apis;
@@ -119,23 +118,11 @@ public class ApplicationConfiguration extends StandardRouter
 		this.httpClientManager = httpClientManager;
 	}
 
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
-	}
-
-	@Override
-	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof ContextRefreshedEvent && !this.initialized) {
-			this.initialize();
-		} else if (event instanceof ContextClosedEvent && !this.destroied) {
-			this.destroy();
-		}
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
-	public void initialize() {
+	/**
+	 * 系统初始化
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	protected void initialize() {
 		if (!this.initialized) {
 			synchronized (this) {
 				if (!this.initialized) {
@@ -208,12 +195,6 @@ public class ApplicationConfiguration extends StandardRouter
 						}
 					}
 
-					// 设置资源缓存配置
-					Map<String, CacheRule> cacheRules = this.applicationContext.getBeansOfType(CacheRule.class);
-					if (!cacheRules.isEmpty()) {
-						this.setCacheRules(cacheRules.values().toArray(new CacheRule[0]));
-					}
-
 					// 注册事件监听器
 					Map<Class, List<InvokeListener>> listeners = new HashMap<Class, List<InvokeListener>>();
 					try {
@@ -254,7 +235,6 @@ public class ApplicationConfiguration extends StandardRouter
 							channel.setContext(this);
 						}
 					}
-					super.initialize();
 					if (this.executor != null) {
 						Servers.setExecutor(this.executor);
 					}
@@ -265,6 +245,37 @@ public class ApplicationConfiguration extends StandardRouter
 					this.initialized = true;
 				}
 			}
+		}
+	}
+
+	/**
+	 * 系统销毁
+	 */
+	protected void destroy() {
+		if (!this.destroied) {
+			synchronized (this) {
+				if (!this.destroied) {
+					this.sessionFactory.destroy();
+					Https.destroy();
+					Remotes.destroy();
+					Servers.shutdown();
+					this.destroied = true;
+				}
+			}
+		}
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
+	}
+
+	@Override
+	public void onApplicationEvent(ApplicationEvent event) {
+		if (event instanceof ContextRefreshedEvent) {
+			this.initialize();
+		} else if (event instanceof ContextClosedEvent) {
+			this.destroy();
 		}
 	}
 
@@ -315,22 +326,6 @@ public class ApplicationConfiguration extends StandardRouter
 			return this.applicationContext.getBean(type);
 		} catch (NoSuchBeanDefinitionException e) {
 			return null;
-		}
-	}
-
-	@Override
-	public void destroy() {
-		if (!this.destroied) {
-			synchronized (this) {
-				if (!this.destroied) {
-					super.destroy();
-					this.sessionFactory.destroy();
-					Https.destroy();
-					Remotes.destroy();
-					Servers.shutdown();
-					this.destroied = true;
-				}
-			}
 		}
 	}
 

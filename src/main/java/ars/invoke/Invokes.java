@@ -207,7 +207,7 @@ public final class Invokes {
 	 *            源字符串
 	 * @return 目标字符串
 	 */
-	public static String format(Requester requester, String source) {
+	public static String format(Requester requester, CharSequence source) {
 		if (requester == null) {
 			throw new IllegalArgumentException("Illegal requester:" + requester);
 		}
@@ -226,7 +226,7 @@ public final class Invokes {
 		Matcher matcher = PARAM_PATTERN.matcher(source);
 		while (matcher.find()) {
 			buffer.append(source.subSequence(start, matcher.start()));
-			String expression = source.substring(matcher.start() + 2, matcher.end() - 1);
+			CharSequence expression = source.subSequence(matcher.start() + 2, matcher.end() - 1);
 			String name = Strings.split(expression, '.')[1].trim();
 			Object value = requester.getParameter(name);
 			if (value != null) {
@@ -238,9 +238,9 @@ public final class Invokes {
 			if (start < source.length()) {
 				buffer.append(source.subSequence(start, source.length()));
 			}
-			source = buffer.toString();
+			return buffer.toString();
 		}
-		return source;
+		return source.toString();
 	}
 
 }

@@ -1011,15 +1011,11 @@ public final class Https {
 		if (request.getURI().getScheme().equalsIgnoreCase(Protocol.https.toString())) {
 			bindSSL(client);
 		}
-		HttpEntity entity = null;
+		HttpEntity entity = client.execute(request).getEntity();
 		try {
-			entity = client.execute(request).getEntity();
 			return EntityUtils.toByteArray(entity);
 		} finally {
-			request.abort();
-			if (entity != null) {
-				EntityUtils.consumeQuietly(entity);
-			}
+			EntityUtils.consumeQuietly(entity);
 		}
 	}
 
@@ -1139,15 +1135,11 @@ public final class Https {
 		if (request.getURI().getScheme().equalsIgnoreCase(Protocol.https.toString())) {
 			bindSSL(client);
 		}
-		HttpEntity entity = null;
+		HttpEntity entity = client.execute(request).getEntity();
 		try {
-			entity = client.execute(request).getEntity();
-			return EntityUtils.toString(entity);
+			return EntityUtils.toString(entity, Strings.UTF8);
 		} finally {
-			request.abort();
-			if (entity != null) {
-				EntityUtils.consumeQuietly(entity);
-			}
+			EntityUtils.consumeQuietly(entity);
 		}
 	}
 
@@ -1218,6 +1210,112 @@ public final class Https {
 	public static String getString(HttpClient client, String url, Method method, Map<String, Object> parameters)
 			throws IOException {
 		return getString(client, getHttpUriRequest(url, method, parameters));
+	}
+
+	/**
+	 * 获取Http请求结果输入流
+	 * 
+	 * @param request
+	 *            Http请求对象
+	 * @return 数据输入流
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static InputStream getStream(HttpUriRequest request) throws IOException {
+		return getStream(getClient(), request);
+	}
+
+	/**
+	 * 获取Http请求结果输入流
+	 * 
+	 * @param client
+	 *            Http客户端对象
+	 * @param request
+	 *            Http请求对象
+	 * @return 数据输入流
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static InputStream getStream(HttpClient client, final HttpUriRequest request) throws IOException {
+		if (client == null) {
+			throw new IllegalArgumentException("Illegal client:" + client);
+		}
+		if (request == null) {
+			throw new IllegalArgumentException("Illegal request:" + request);
+		}
+		if (request.getURI().getScheme().equalsIgnoreCase(Protocol.https.toString())) {
+			bindSSL(client);
+		}
+		return client.execute(request).getEntity().getContent();
+	}
+
+	/**
+	 * 获取Http请求结果输入流
+	 * 
+	 * @param url
+	 *            请求地址
+	 * @param method
+	 *            请求方式
+	 * @return 数据输入流
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static InputStream getStream(String url, Method method) throws IOException {
+		return getStream(getClient(), url, method);
+	}
+
+	/**
+	 * 获取Http请求结果输入流
+	 * 
+	 * @param client
+	 *            Http客户端对象
+	 * @param url
+	 *            请求地址
+	 * @param method
+	 *            请求方式
+	 * @return 数据输入流
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static InputStream getStream(HttpClient client, String url, Method method) throws IOException {
+		return getStream(client, url, method, Collections.<String, Object>emptyMap());
+	}
+
+	/**
+	 * 获取Http请求结果输入流
+	 * 
+	 * @param url
+	 *            请求地址
+	 * @param method
+	 *            请求方式
+	 * @param parameters
+	 *            请求参数
+	 * @return 数据输入流
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static InputStream getStream(String url, Method method, Map<String, Object> parameters) throws IOException {
+		return getStream(getClient(), url, method, parameters);
+	}
+
+	/**
+	 * 获取Http请求结果输入流
+	 * 
+	 * @param client
+	 *            Http客户端对象
+	 * @param url
+	 *            请求地址
+	 * @param method
+	 *            请求方式
+	 * @param parameters
+	 *            请求参数
+	 * @return 数据输入流
+	 * @throws IOException
+	 *             IO操作异常
+	 */
+	public static InputStream getStream(HttpClient client, String url, Method method, Map<String, Object> parameters)
+			throws IOException {
+		return getStream(client, getHttpUriRequest(url, method, parameters));
 	}
 
 	/**

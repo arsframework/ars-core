@@ -85,7 +85,7 @@ public final class Servers {
 						try {
 							server.stop();
 						} catch (Exception e) {
-							logger.error("Server stop failed", e);
+							logger.error("Server shutdown failed", e);
 						}
 					}
 					started = false;

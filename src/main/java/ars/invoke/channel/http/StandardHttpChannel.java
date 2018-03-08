@@ -80,8 +80,8 @@ public class StandardHttpChannel extends AbstractHttpChannel {
 			identity = Https.getCookie(request, Https.CONTEXT_TOKEN);
 		}
 		Token token = identity == null ? null : new Token(identity);
-		return new StandardHttpRequester(this, config, request, response, null, request.getLocale(), client, host,
-				token, uri, this.getParameters(request));
+		return new StandardHttpRequester(this, config, request, response, this.getRenders(), null, request.getLocale(),
+				client, host, token, uri, this.getParameters(request));
 	}
 
 }

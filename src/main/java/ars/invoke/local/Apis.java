@@ -226,46 +226,6 @@ public final class Apis {
 	}
 
 	/**
-	 * 将参数转换成对象实体，同时移除参数
-	 * 
-	 * @param type
-	 *            对象类型
-	 * @param parameters
-	 *            参数键/值映射
-	 * @return 对象实体
-	 */
-	private static Object param2entity(Class<?> type, Map<String, Object> parameters) {
-		if (type == null) {
-			throw new IllegalArgumentException("Illegal type:" + type);
-		}
-		Class<?> cls = type;
-		Object instance = Beans.getInstance(type);
-		if (parameters != null && !parameters.isEmpty()) {
-			while (cls != Object.class) {
-				Field[] fields = cls.getDeclaredFields();
-				for (Field field : fields) {
-					if (parameters.containsKey(field.getName()) && !Modifier.isStatic(field.getModifiers())) {
-						Object value = parameters.remove(field.getName());
-						if (value == null) {
-							continue;
-						}
-						field.setAccessible(true);
-						try {
-							field.set(instance, Beans.toObject(field.getType(), value));
-						} catch (IllegalAccessException e) {
-							throw new RuntimeException(e);
-						} finally {
-							field.setAccessible(false);
-						}
-					}
-				}
-				cls = cls.getSuperclass();
-			}
-		}
-		return instance;
-	}
-
-	/**
 	 * 获取本地接口方法参数
 	 * 
 	 * @param requester
@@ -282,39 +242,66 @@ public final class Apis {
 		}
 		Condition[] conditions = function.getConditions();
 		Class<?>[] types = function.getMethod().getParameterTypes();
-		Object[] _parameters = new Object[conditions.length];
-		Map<String, Object> parameters = requester.getParameters();
+		Object[] arguments = new Object[conditions.length];
+		Map<String, Object> parameters = new HashMap<String, Object>(requester.getParameters());
 		for (int i = 0; i < conditions.length; i++) {
 			Class<?> type = types[i];
 			Condition condition = conditions[i];
 			if (condition == null) {
 				if (Router.class.isAssignableFrom(type)) {
-					_parameters[i] = requester.getChannel().getContext().getRouter();
+					arguments[i] = requester.getChannel().getContext().getRouter();
 				} else if (Channel.class.isAssignableFrom(type)) {
-					_parameters[i] = requester.getChannel();
+					arguments[i] = requester.getChannel();
 				} else if (Context.class.isAssignableFrom(type)) {
-					_parameters[i] = requester.getChannel().getContext();
+					arguments[i] = requester.getChannel().getContext();
 				} else if (Messager.class.isAssignableFrom(type)) {
-					_parameters[i] = requester.getChannel().getContext().getMessager();
+					arguments[i] = requester.getChannel().getContext().getMessager();
 				} else if (Requester.class.isAssignableFrom(type)) {
-					_parameters[i] = requester;
+					arguments[i] = requester;
 				} else if (Token.class.isAssignableFrom(type)) {
-					_parameters[i] = requester.getToken();
+					arguments[i] = requester.getToken();
 				} else if (Session.class.isAssignableFrom(type)) {
-					_parameters[i] = requester.getSession();
+					arguments[i] = requester.getSession();
 				} else if (SessionFactory.class.isAssignableFrom(type)) {
-					_parameters[i] = requester.getSession().getSessionFactory();
+					arguments[i] = requester.getSession().getSessionFactory();
 				} else if (Map.class.isAssignableFrom(type)) {
-					_parameters[i] = parameters;
+					arguments[i] = parameters;
 				} else {
-					_parameters[i] = requester.getChannel().getContext().getBean(type);
+					arguments[i] = requester.getChannel().getContext().getBean(type);
 				}
 			} else if (condition.getAdapter() == null) {
 				String name = condition.getName();
 				try {
 					if (name == null) {
-						_parameters[i] = Beans.isMetaClass(type) ? Beans.toObject(type, condition.getValue())
-								: param2entity(type, parameters);
+						if (Beans.isMetaClass(type)) {
+							arguments[i] = Beans.toObject(type, condition.getValue());
+						} else {
+							Object instance = Beans.getInstance(type);
+							if (!parameters.isEmpty()) {
+								while (type != Object.class) {
+									Field[] fields = type.getDeclaredFields();
+									for (Field field : fields) {
+										if (parameters.containsKey(field.getName())
+												&& !Modifier.isStatic(field.getModifiers())) {
+											Object value = parameters.remove(field.getName());
+											if (value == null) {
+												continue;
+											}
+											field.setAccessible(true);
+											try {
+												field.set(instance, Beans.toObject(field.getType(), value));
+											} catch (IllegalAccessException e) {
+												throw new RuntimeException(e);
+											} finally {
+												field.setAccessible(false);
+											}
+										}
+									}
+									type = type.getSuperclass();
+								}
+							}
+							arguments[i] = instance;
+						}
 					} else {
 						Object value = parameters.remove(name);
 						if (value == null) {
@@ -324,19 +311,19 @@ public final class Apis {
 								&& !condition.getPattern().matcher((CharSequence) value).matches()) {
 							throw new ParameterInvalidException(name, "invalid");
 						}
-						_parameters[i] = Beans.toObject(type, value);
+						arguments[i] = Beans.toObject(type, value);
 					}
 				} catch (IllegalArgumentException e) {
 					throw new ParameterInvalidException(name, e.getMessage());
 				}
 			} else {
-				_parameters[i] = condition.getAdapter().adaption(requester, type, parameters);
+				arguments[i] = condition.getAdapter().adaption(requester, type);
 			}
-			if (condition != null && condition.isRequired() && Beans.isEmpty(_parameters[i])) {
+			if (condition != null && condition.isRequired() && Beans.isEmpty(arguments[i])) {
 				throw new ParameterInvalidException(condition.getName(), "required");
 			}
 		}
-		return _parameters;
+		return arguments;
 	}
 
 	/**

@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Date;
 import java.util.UUID;
 import java.util.Locale;
-import java.util.HashMap;
 import java.util.Collections;
 
 import ars.util.Strings;
@@ -51,6 +50,9 @@ public class StandardRequester implements Requester {
 		if (Strings.isEmpty(uri)) {
 			throw new IllegalArgumentException("Illegal uri:" + uri);
 		}
+		if (parameters == null) {
+			throw new IllegalArgumentException("Illegal parameters:" + parameters);
+		}
 		this.id = UUID.randomUUID().toString();
 		this.uri = uri;
 		this.host = host;
@@ -59,7 +61,7 @@ public class StandardRequester implements Requester {
 		this.client = client;
 		this.parent = parent;
 		this.channel = channel;
-		this.parameters = parameters == null ? Collections.<String, Object>emptyMap() : parameters;
+		this.parameters = Collections.unmodifiableMap(parameters);
 	}
 
 	@Override
@@ -134,7 +136,7 @@ public class StandardRequester implements Requester {
 
 	@Override
 	public Map<String, Object> getParameters() {
-		return new HashMap<String, Object>(this.parameters);
+		return this.parameters;
 	}
 
 	@Override

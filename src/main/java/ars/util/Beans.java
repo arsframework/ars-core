@@ -1510,9 +1510,6 @@ public final class Beans {
 		if (property == null) {
 			throw new IllegalArgumentException("Illegal property:" + property);
 		}
-		if (mapping == null) {
-			throw new IllegalArgumentException("Illegal mapping:" + mapping);
-		}
 		if (Beans.isEmpty(object)) {
 			return new HashMap<Object, List<Object>>(0);
 		}

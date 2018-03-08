@@ -35,6 +35,8 @@ public interface Context {
 	/**
 	 * 获取上下文对象实例
 	 * 
+	 * @param <T>
+	 *            数据类型
 	 * @param type
 	 *            对象类型
 	 * @return 对象实例

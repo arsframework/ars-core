@@ -129,7 +129,7 @@ public final class Invokes {
 				.append(Dates.getUnitTime(timestamp.getTime() - requester.getCreated().getTime())).append("]\n")
 				.append(requester.getParameters());
 		if (!(value instanceof Throwable)) {
-			info.append('\n').append(Strings.toString(value));
+			info.append('\n').append(value);
 		}
 		return info.append('\n').toString();
 	}

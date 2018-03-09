@@ -1,4 +1,4 @@
-package ars.server;
+package ars.util;
 
 /**
  * 系统后台服务接口

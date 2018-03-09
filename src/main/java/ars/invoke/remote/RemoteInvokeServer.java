@@ -3,11 +3,11 @@ package ars.invoke.remote;
 import java.util.Map;
 
 import ars.util.Strings;
+import ars.util.AbstractServer;
 import ars.invoke.remote.Node;
 import ars.invoke.remote.Remotes;
 import ars.invoke.remote.Protocol;
 import ars.invoke.remote.RemoteChannel;
-import ars.server.AbstractServer;
 
 /**
  * 基于ICE消息中间的远程调用服务
@@ -46,37 +46,32 @@ public class RemoteInvokeServer extends AbstractServer {
 	}
 
 	@Override
-	protected void initialize() {
-		if (this.channels == null) {
-			throw new RuntimeException("Channel has not been initialized");
-		}
+	public void run() {
 		if (this.nodes == null || this.nodes.length == 0) {
 			this.nodes = new Node[] { new Node(Protocol.tcp, Strings.LOCALHOST_ADDRESS, 10000) };
 		}
 		this.communicator = Remotes.initializeCommunicator(this.configure);
-	}
-
-	@Override
-	public void run() {
-		try {
-			Ice.ObjectAdapter adapter = this.communicator.createObjectAdapterWithEndpoints(Remotes.COMMON_ADAPTER_NAME,
-					Remotes.getAddress(this.nodes));
-			for (RemoteChannel channel : this.channels) {
-				adapter.add(channel, Ice.Util.stringToIdentity(channel.getIdentifier()));
-			}
-			adapter.activate();
-			this.communicator.waitForShutdown();
-		} finally {
-			this.destroy();
+		Ice.ObjectAdapter adapter = this.communicator.createObjectAdapterWithEndpoints(Remotes.COMMON_ADAPTER_NAME,
+				Remotes.getAddress(this.nodes));
+		for (RemoteChannel channel : this.channels) {
+			adapter.add(channel, Ice.Util.stringToIdentity(channel.getIdentifier()));
 		}
+		adapter.activate();
+		this.communicator.waitForShutdown();
 	}
 
 	@Override
-	protected void destroy() {
+	public void stop() {
 		if (this.communicator != null) {
-			this.communicator.shutdown();
-			this.communicator.destroy();
+			synchronized (this) {
+				if (this.communicator != null) {
+					this.communicator.shutdown();
+					this.communicator.destroy();
+					this.communicator = null;
+				}
+			}
 		}
+		super.stop();
 	}
 
 }

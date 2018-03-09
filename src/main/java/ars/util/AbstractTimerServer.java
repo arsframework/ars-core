@@ -1,10 +1,12 @@
-package ars.server.timer;
+package ars.util;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-import ars.server.Servers;
-import ars.server.AbstractServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ars.util.AbstractServer;
 
 /**
  * 系统后台定时任务服务抽象类
@@ -15,6 +17,7 @@ import ars.server.AbstractServer;
 public abstract class AbstractTimerServer extends AbstractServer {
 	private Timer timer; // 定时器
 	private int interval = 3; // 执行周期（秒）
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public int getInterval() {
 		return interval;
@@ -36,12 +39,7 @@ public abstract class AbstractTimerServer extends AbstractServer {
 	protected abstract void execute() throws Exception;
 
 	@Override
-	protected void initialize() {
-
-	}
-
-	@Override
-	public final void run() {
+	public void run() {
 		this.timer = new Timer(true);
 		this.timer.schedule(new TimerTask() {
 
@@ -50,7 +48,7 @@ public abstract class AbstractTimerServer extends AbstractServer {
 				try {
 					execute();
 				} catch (Exception e) {
-					Servers.logger.error("Server execute failed", e);
+					logger.error("Timer execute failed", e);
 				}
 			}
 
@@ -62,10 +60,16 @@ public abstract class AbstractTimerServer extends AbstractServer {
 	}
 
 	@Override
-	protected void destroy() {
+	public void stop() {
 		if (this.timer != null) {
-			this.timer.cancel();
+			synchronized (this) {
+				if (this.timer != null) {
+					this.timer.cancel();
+					this.timer = null;
+				}
+			}
 		}
+		super.stop();
 	}
 
 }

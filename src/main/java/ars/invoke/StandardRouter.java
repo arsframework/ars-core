@@ -1,17 +1,24 @@
 package ars.invoke;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.List;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.LinkedList;
 import java.util.Collections;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import ars.util.Cache;
 import ars.util.Strings;
+import ars.util.SimpleCache;
 import ars.invoke.Router;
 import ars.invoke.Invoker;
 import ars.invoke.Resource;
+import ars.invoke.Cacheable;
 import ars.invoke.request.Requester;
 import ars.invoke.event.InvokeEvent;
 import ars.invoke.event.InvokeListener;
@@ -28,7 +35,12 @@ import ars.invoke.request.AccessDeniedException;
  * 
  */
 public class StandardRouter implements Router {
+	private Cache cache; // 缓存处理接口
 	private List<String> apis; // 资源接口集合
+	private Cacheable[] cacheables; // 可缓存资源数组
+	private Map<String, Cacheable> caches; // 缓存目标资源地址/缓存规则映射
+	private Map<String, Set<String>> refreshs; // 触发缓存刷新资源地址映射
+	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 	private final Map<String, String> forwards = new HashMap<String, String>(0); // 请求转发资源映射
 	private final Map<String, InvokeWrapper> wrappers = new HashMap<String, InvokeWrapper>(0); // 请求调用包装器资源映射
 	private final List<InvokeListener<?>> invokeBeforeListeners = new LinkedList<InvokeListener<?>>(); // 请求调用之前监听器集合
@@ -189,7 +201,14 @@ public class StandardRouter implements Router {
 	}
 
 	@Override
-	public List<String> getApis() {
+	public void initialize() {
+		if (this.cache == null) {
+			synchronized (this) {
+				if (this.cache == null) {
+					this.cache = new SimpleCache();
+				}
+			}
+		}
 		if (this.apis == null) {
 			synchronized (this) {
 				if (this.apis == null) {
@@ -199,6 +218,48 @@ public class StandardRouter implements Router {
 				}
 			}
 		}
+		if (this.caches == null || this.refreshs == null) {
+			synchronized (this) {
+				if (this.caches == null || this.refreshs == null) {
+					if (this.cacheables == null || this.cacheables.length == 0) {
+						this.caches = Collections.emptyMap();
+						this.refreshs = Collections.emptyMap();
+					} else {
+						this.caches = new HashMap<String, Cacheable>();
+						this.refreshs = new HashMap<String, Set<String>>();
+						for (int i = 0; i < this.apis.size(); i++) {
+							String api = this.apis.get(i);
+							for (Cacheable cacheable : cacheables) {
+								if (cacheable.getTarget() == null) {
+									throw new RuntimeException("Cacheable target resource can't be empty.");
+								}
+								if (Strings.matches(api, cacheable.getTarget())) {
+									this.caches.put(api, cacheable);
+									break;
+								} else if (!Strings.matches(api, cacheable.getRefresh())) {
+									continue;
+								}
+								for (int n = 0; n < this.apis.size(); n++) {
+									String resource = this.apis.get(n);
+									if (Strings.matches(resource, cacheable.getTarget())) {
+										Set<String> resources = this.refreshs.get(api);
+										if (resources == null) {
+											resources = new HashSet<String>();
+											this.refreshs.put(api, resources);
+										}
+										resources.add(resource);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@Override
+	public List<String> getApis() {
 		return this.apis;
 	}
 
@@ -212,7 +273,45 @@ public class StandardRouter implements Router {
 		Object result = null;
 		try {
 			this.beforeInvoke(requester);
-			result = this.access(requester);
+			Cacheable cacheable = this.caches.get(requester.getUri());
+			if (cacheable == null) {
+				result = this.access(requester);
+				Set<String> refresh = this.refreshs.get(requester.getUri());
+				if (refresh != null && !refresh.isEmpty()) {
+					for (String uri : refresh) {
+						this.lock.writeLock().lock();
+						try {
+							this.cache.remove(new StringBuilder("{").append(uri).append("}*").toString());
+						} finally {
+							this.lock.writeLock().unlock();
+						}
+					}
+				}
+			} else {
+				String key = cacheable.getKey(requester);
+				this.lock.readLock().lock();
+				try {
+					if (this.cache.exists(key)) {
+						result = this.cache.get(key);
+					} else {
+						this.lock.readLock().unlock();
+						this.lock.writeLock().lock();
+						try {
+							if (this.cache.exists(key)) {
+								result = this.cache.get(key);
+							} else {
+								result = this.access(requester);
+								this.cache.set(key, result, cacheable.getTimeout());
+							}
+						} finally {
+							this.lock.writeLock().unlock();
+							this.lock.readLock().lock();
+						}
+					}
+				} finally {
+					this.lock.readLock().unlock();
+				}
+			}
 			this.afterInvoke(requester, result);
 		} catch (Throwable e) {
 			result = e;
@@ -221,14 +320,6 @@ public class StandardRouter implements Router {
 			this.completeInvoke(requester, result);
 		}
 		return result;
-	}
-
-	@Override
-	public void revoke(String api) {
-		if (api == null) {
-			throw new IllegalArgumentException("Illegal api:" + api);
-		}
-		this.wrappers.remove(api);
 	}
 
 	@Override
@@ -248,6 +339,16 @@ public class StandardRouter implements Router {
 			throw new RuntimeException("Api is already registered:" + api);
 		}
 		this.wrappers.put(api, new InvokeWrapper(invoker, resource));
+	}
+
+	@Override
+	public void setCache(Cache cache) {
+		this.cache = cache;
+	}
+
+	@Override
+	public void setCacheables(Cacheable... cacheables) {
+		this.cacheables = cacheables;
 	}
 
 	@Override
@@ -283,6 +384,18 @@ public class StandardRouter implements Router {
 				this.invokeAfterListeners.addAll(list);
 				this.invokeErrorListeners.addAll(list);
 				this.invokeCompleteListeners.addAll(list);
+			}
+		}
+	}
+
+	@Override
+	public void destroy() {
+		if (this.cache != null) {
+			synchronized (this) {
+				if (this.cache != null) {
+					this.cache.destroy();
+					this.cache = null;
+				}
 			}
 		}
 	}

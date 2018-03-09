@@ -30,6 +30,12 @@ public final class Sockets {
 	 *             IO操作异常
 	 */
 	public static Channel tcp(SocketAddress address, byte[] bytes) throws IOException {
+		if (address == null) {
+			throw new IllegalArgumentException("Illegal address:" + address);
+		}
+		if (bytes == null) {
+			throw new IllegalArgumentException("Illegal bytes:" + bytes);
+		}
 		SocketChannel channel = SocketChannel.open();
 		channel.connect(address);
 		channel.write(ByteBuffer.wrap(bytes));
@@ -48,6 +54,12 @@ public final class Sockets {
 	 *             IO操作异常
 	 */
 	public static Channel udp(SocketAddress address, byte[] bytes) throws IOException {
+		if (address == null) {
+			throw new IllegalArgumentException("Illegal address:" + address);
+		}
+		if (bytes == null) {
+			throw new IllegalArgumentException("Illegal bytes:" + bytes);
+		}
 		DatagramChannel channel = DatagramChannel.open();
 		channel.connect(address);
 		channel.write(ByteBuffer.wrap(bytes));

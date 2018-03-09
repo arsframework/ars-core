@@ -32,7 +32,7 @@ public abstract class AbstractInvokeListener<E extends InvokeEvent> implements I
 	public abstract void execute(E event);
 
 	@Override
-	public final void onInvokeEvent(E event) {
+	public void onInvokeEvent(E event) {
 		if (this.pattern == null || Strings.matches(event.getSource().getUri(), this.pattern)) {
 			this.execute(event);
 		}

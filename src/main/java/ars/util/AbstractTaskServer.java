@@ -1,18 +1,21 @@
-package ars.server.task;
+package ars.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.quartz.Job;
 import org.quartz.Trigger;
+import org.quartz.Scheduler;
 import org.quartz.JobDetail;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.TriggerBuilder;
+import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.SchedulerException;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import ars.server.Servers;
-import ars.server.AbstractServer;
+import ars.util.AbstractServer;
 
 /**
  * 计划任务服务抽象实现
@@ -21,8 +24,10 @@ import ars.server.AbstractServer;
  * 
  */
 public abstract class AbstractTaskServer extends AbstractServer {
+	private Scheduler scheduler;
 	private String expression;
 	private boolean concurrent;
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * 任务处理类（如果为内部类则必须是公共的静态内部类）
@@ -45,7 +50,7 @@ public abstract class AbstractTaskServer extends AbstractServer {
 					}
 				}
 			} catch (Exception e) {
-				throw new JobExecutionException(e);
+				server.logger.error("Task execute failed", e);
 			}
 		}
 
@@ -76,10 +81,7 @@ public abstract class AbstractTaskServer extends AbstractServer {
 	protected abstract void execute() throws Exception;
 
 	@Override
-	protected void initialize() {
-		if (this.expression == null) {
-			throw new RuntimeException("Expression has not been initialize");
-		}
+	public void run() {
 		try {
 			JobDetail detail = JobBuilder.newJob(JobHandler.class).build();
 			Trigger trigger = TriggerBuilder.newTrigger()
@@ -87,20 +89,34 @@ public abstract class AbstractTaskServer extends AbstractServer {
 			JobDataMap data = detail.getJobDataMap();
 			data.put("server", this);
 			data.put("concurrent", this.concurrent);
-			Servers.getScheduler().scheduleJob(detail, trigger);
+			this.scheduler = StdSchedulerFactory.getDefaultScheduler();
+			this.scheduler.scheduleJob(detail, trigger);
+			this.scheduler.start();
 		} catch (SchedulerException e) {
 			throw new RuntimeException(e);
+		}
+		try {
+			Thread.currentThread().join();
+		} catch (InterruptedException e) {
 		}
 	}
 
 	@Override
-	public final void run() {
-
-	}
-
-	@Override
-	protected final void destroy() {
-
+	public void stop() {
+		if (this.scheduler != null) {
+			synchronized (this) {
+				if (this.scheduler != null) {
+					try {
+						this.scheduler.shutdown();
+					} catch (SchedulerException e) {
+						this.logger.error("Task shutdown failed", e);
+					} finally {
+						this.scheduler = null;
+					}
+				}
+			}
+		}
+		super.stop();
 	}
 
 }

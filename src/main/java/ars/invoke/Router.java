@@ -3,8 +3,10 @@ package ars.invoke;
 import java.util.Map;
 import java.util.List;
 
+import ars.util.Cache;
 import ars.invoke.Invoker;
 import ars.invoke.Resource;
+import ars.invoke.Cacheable;
 import ars.invoke.request.Requester;
 import ars.invoke.event.InvokeEvent;
 import ars.invoke.event.InvokeListener;
@@ -16,6 +18,11 @@ import ars.invoke.event.InvokeListener;
  * 
  */
 public interface Router {
+	/**
+	 * 初始化资源路由器
+	 */
+	public void initialize();
+
 	/**
 	 * 获取所有接口地址
 	 * 
@@ -40,14 +47,6 @@ public interface Router {
 	 * @return 请求结果
 	 */
 	public Object routing(Requester requester);
-
-	/**
-	 * 撤销注册资源
-	 * 
-	 * @param api
-	 *            接口地址
-	 */
-	public void revoke(String api);
 
 	/**
 	 * 资源注册
@@ -76,6 +75,22 @@ public interface Router {
 	public void register(String api, Invoker invoker, Resource resource, boolean cover);
 
 	/**
+	 * 设置资源缓存处理器
+	 * 
+	 * @param cache
+	 *            缓存处理器
+	 */
+	public void setCache(Cache cache);
+
+	/**
+	 * 设置可缓存资源规则
+	 * 
+	 * @param cacheables
+	 *            可缓存资源规则数组
+	 */
+	public void setCacheables(Cacheable... cacheables);
+
+	/**
 	 * 设置请求转发资源映射
 	 * 
 	 * @param forwards
@@ -94,5 +109,10 @@ public interface Router {
 	 *            事件监听器数组
 	 */
 	public <E extends InvokeEvent> void setListeners(Class<E> type, InvokeListener<E>... listeners);
+
+	/**
+	 * 销毁资源路由器
+	 */
+	public void destroy();
 
 }

@@ -8,9 +8,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.io.Serializable;
 
 import ars.util.Cache;
+import ars.util.Server;
 import ars.util.Strings;
-import ars.server.Server;
-import ars.server.task.AbstractTaskServer;
+import ars.util.AbstractTimerServer;
 
 /**
  * 数据缓存简单实现
@@ -20,12 +20,12 @@ import ars.server.task.AbstractTaskServer;
  */
 public class SimpleCache implements Cache {
 	private boolean destroyed;
-	private final Server cleanup = this.initializeCleanupServer();
+	private final Server cleaner = this.initializeCleanupServer();
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 	private final Map<String, ValueWrapper> values = new HashMap<String, ValueWrapper>();
 
 	public SimpleCache() {
-		this.cleanup.start();
+		this.cleaner.start();
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class SimpleCache implements Cache {
 	 * @return 服务对象
 	 */
 	protected Server initializeCleanupServer() {
-		AbstractTaskServer server = new AbstractTaskServer() {
+		AbstractTimerServer server = new AbstractTimerServer() {
 
 			@Override
 			protected void execute() throws Exception {
@@ -81,8 +81,7 @@ public class SimpleCache implements Cache {
 			}
 
 		};
-		server.setConcurrent(true);
-		server.setExpression("0 0 0/2 * * ?");
+		server.setInterval(2 * 60 * 60);
 		return server;
 	}
 
@@ -185,7 +184,7 @@ public class SimpleCache implements Cache {
 			this.lock.writeLock().lock();
 			try {
 				if (!this.destroyed) {
-					this.cleanup.stop();
+					this.cleaner.stop();
 					this.destroyed = true;
 				}
 			} finally {

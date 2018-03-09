@@ -7,8 +7,10 @@ import java.nio.channels.Selector;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.DatagramChannel;
 
-import ars.server.Servers;
-import ars.server.AbstractServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ars.util.AbstractServer;
 import ars.invoke.channel.socket.SocketServer;
 
 /**
@@ -20,6 +22,7 @@ import ars.invoke.channel.socket.SocketServer;
 public abstract class AbstractUdpServer extends AbstractServer implements SocketServer {
 	private int port = 20000;
 	private Selector selector;
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public int getPort() {
 		return port;
@@ -33,7 +36,7 @@ public abstract class AbstractUdpServer extends AbstractServer implements Socket
 	}
 
 	@Override
-	protected void initialize() {
+	public void run() {
 		try {
 			this.selector = Selector.open();
 			DatagramChannel channel = DatagramChannel.open();
@@ -43,10 +46,6 @@ public abstract class AbstractUdpServer extends AbstractServer implements Socket
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	@Override
-	public final void run() {
 		while (this.isAlive()) {
 			try {
 				if (this.selector.select() > 0) {
@@ -64,16 +63,11 @@ public abstract class AbstractUdpServer extends AbstractServer implements Socket
 					}
 				}
 			} catch (Exception e) {
-				Servers.logger.error("Server execute failed", e);
+				this.logger.error("Server execute failed", e);
 			} finally {
 				this.selector.selectedKeys().clear();
 			}
 		}
-	}
-
-	@Override
-	protected void destroy() {
-
 	}
 
 }

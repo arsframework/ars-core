@@ -4,7 +4,7 @@ import java.io.File;
 
 import ars.util.Files;
 import ars.util.Strings;
-import ars.server.task.AbstractTaskServer;
+import ars.util.AbstractTaskServer;
 
 /**
  * 文件清理服务
@@ -67,18 +67,10 @@ public class FileCleanupServer extends AbstractTaskServer {
 	}
 
 	@Override
-	protected void initialize() {
-		super.initialize();
-		if (this.expired < 1) {
-			throw new RuntimeException("Expired has not been initialize");
-		}
+	protected void execute() throws Exception {
 		if (this.directories == null || this.directories.length == 0) {
 			throw new RuntimeException("Directories has not been initialize");
 		}
-	}
-
-	@Override
-	protected void execute() throws Exception {
 		for (String directory : this.directories) {
 			this.cleanup(new File(directory));
 		}

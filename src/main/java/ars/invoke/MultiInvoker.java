@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
-import ars.server.Servers;
+import ars.util.Servers;
 import ars.invoke.Invoker;
 import ars.invoke.MultiResource;
 import ars.invoke.request.Requester;

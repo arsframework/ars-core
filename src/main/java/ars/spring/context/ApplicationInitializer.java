@@ -22,7 +22,7 @@ public abstract class ApplicationInitializer implements ApplicationListener<Appl
 	protected abstract void execute(ContextRefreshedEvent event);
 
 	@Override
-	public final void onApplicationEvent(ApplicationEvent event) {
+	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof ContextRefreshedEvent && !this.initialized) {
 			this.initialized = true;
 			this.execute((ContextRefreshedEvent) event);

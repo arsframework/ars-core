@@ -1,6 +1,5 @@
 package ars.invoke.channel.http.tags;
 
-import Ice.ObjectPrx;
 import ars.invoke.remote.Remotes;
 import ars.invoke.remote.Protocol;
 import ars.invoke.channel.http.tags.ResourceTag;
@@ -42,7 +41,7 @@ public class RemoteTag extends ResourceTag {
 
 	@Override
 	protected Object execute() throws Exception {
-		ObjectPrx proxy = Remotes.getProxy(this.protocol, this.host, this.port);
+		Ice.ObjectPrx proxy = Remotes.getProxy(this.protocol, this.host, this.port);
 		return Remotes.invoke(proxy, this.getApi(), this.getParameters());
 	}
 

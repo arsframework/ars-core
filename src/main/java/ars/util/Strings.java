@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -504,6 +505,10 @@ public final class Strings {
 		return chars;
 	}
 
+	public static void main(String[] args) {
+		System.out.println(toString(0.1));
+	}
+
 	/**
 	 * 将对象转换成字符串形式
 	 * 
@@ -512,7 +517,9 @@ public final class Strings {
 	 * @return 字符串形式
 	 */
 	public static String toString(Object object) {
-		if (object instanceof CharSequence) {
+		if (object instanceof Float || object instanceof Double) {
+			return new BigDecimal(object.toString()).stripTrailingZeros().toPlainString();
+		} else if (object instanceof CharSequence) {
 			return ((CharSequence) object).toString();
 		} else if (object instanceof Date) {
 			return Dates.format((Date) object);

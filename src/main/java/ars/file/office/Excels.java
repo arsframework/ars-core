@@ -297,22 +297,7 @@ public final class Excels {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T getValue(Cell cell, Class<T> type) {
-		if (cell == null) {
-			return null;
-		} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && Date.class.isAssignableFrom(type)) {
-			return (T) cell.getDateCellValue();
-		}
-		Object value = getValue(cell);
-		if (value == null) {
-			return null;
-		} else if (type == String.class) {
-			if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-				String string = new BigDecimal((Double) value).toString();
-				return string.endsWith(".0") ? (T) string.substring(0, string.length() - 2) : (T) string;
-			}
-			return (T) value.toString();
-		}
-		return (T) Beans.toObject(type, value);
+		return (T) Beans.toObject(type, getValue(cell));
 	}
 
 	/**
@@ -501,39 +486,6 @@ public final class Excels {
 	}
 
 	/**
-	 * 获取Excel文件总行数
-	 * 
-	 * @param file
-	 *            Excel文件
-	 * @return 总行数
-	 * @throws IOException
-	 *             IO操作异常
-	 */
-	public static int getCount(Nfile file) throws IOException {
-		return getCount(file, 0);
-	}
-
-	/**
-	 * 获取Excel文件总行数
-	 * 
-	 * @param file
-	 *            Excel文件
-	 * @param start
-	 *            开始数据行下标（从0开始）
-	 * @return 总行数
-	 * @throws IOException
-	 *             IO操作异常
-	 */
-	public static int getCount(Nfile file, int start) throws IOException {
-		Workbook workbook = getWorkbook(file);
-		try {
-			return getCount(workbook, start);
-		} finally {
-			workbook.close();
-		}
-	}
-
-	/**
 	 * 获取Excel数据总行数
 	 * 
 	 * @param sheet
@@ -603,39 +555,6 @@ public final class Excels {
 			count += getCount(workbook.getSheetAt(i), start);
 		}
 		return count;
-	}
-
-	/**
-	 * 获取Excel文件标题
-	 * 
-	 * @param file
-	 *            Excel文件
-	 * @return 标题数组
-	 * @throws IOException
-	 *             IO操作异常
-	 */
-	public static String[] getTitles(Nfile file) throws IOException {
-		return getTitles(file, 0);
-	}
-
-	/**
-	 * 获取Excel文件标题
-	 * 
-	 * @param file
-	 *            Excel文件
-	 * @param index
-	 *            标题数据行下标（从0开始）
-	 * @return 标题数组
-	 * @throws IOException
-	 *             IO操作异常
-	 */
-	public static String[] getTitles(Nfile file, int index) throws IOException {
-		Workbook workbook = getWorkbook(file);
-		try {
-			return getTitles(workbook, index);
-		} finally {
-			workbook.close();
-		}
 	}
 
 	/**
@@ -744,12 +663,11 @@ public final class Excels {
 		int initialized = 0; // 设置属性个数
 		M entity = Beans.getInstance(type);
 		for (int i = 0; i < fields.length; i++) {
-			Field field = fields[i];
-			Object value = getValue(row.getCell(i), field.getType());
+			Object value = getValue(row.getCell(i));
 			if (value == null) {
 				continue;
 			}
-			Beans.setValue(entity, field, value);
+			Beans.setValue(entity, fields[i], value);
 			initialized++;
 		}
 		return initialized == 0 ? null : entity;
@@ -776,25 +694,6 @@ public final class Excels {
 			throw new IllegalArgumentException("Illegal type:" + type);
 		}
 		return getObject(row, type, Beans.getFields(type, properties));
-	}
-
-	/**
-	 * 从Excel文件中获取对象实体
-	 * 
-	 * @param <M>
-	 *            数据类型
-	 * @param file
-	 *            Excel文件
-	 * @param type
-	 *            对象类型
-	 * @param properties
-	 *            目标对象属性名称数组
-	 * @return 对象实体列表
-	 * @throws IOException
-	 *             IO操作异常
-	 */
-	public static <M> List<M> getObjects(Nfile file, Class<M> type, String... properties) throws IOException {
-		return getObjects(file, 0, type, properties);
 	}
 
 	/**
@@ -833,33 +732,6 @@ public final class Excels {
 	 */
 	public static <M> List<M> getObjects(Workbook workbook, Class<M> type, String... properties) throws IOException {
 		return getObjects(workbook, 0, type, properties);
-	}
-
-	/**
-	 * 从Excel文件中获取对象实体
-	 * 
-	 * @param <M>
-	 *            数据类型
-	 * @param file
-	 *            Excel文件
-	 * @param start
-	 *            开始数据行下标（从0开始）
-	 * @param type
-	 *            对象类型
-	 * @param properties
-	 *            目标对象属性名称数组
-	 * @return 对象实体列表
-	 * @throws IOException
-	 *             IO操作异常
-	 */
-	public static <M> List<M> getObjects(Nfile file, int start, Class<M> type, String... properties)
-			throws IOException {
-		Workbook workbook = getWorkbook(file);
-		try {
-			return getObjects(workbook, start, type, properties);
-		} finally {
-			workbook.close();
-		}
 	}
 
 	/**
@@ -933,23 +805,6 @@ public final class Excels {
 	 * 
 	 * @param <M>
 	 *            数据类型
-	 * @param file
-	 *            Excel文件
-	 * @param reader
-	 *            Excel对象实体读取接口
-	 * @return 对象实体列表
-	 * @throws IOException
-	 *             IO操作异常
-	 */
-	public static <M> List<M> getObjects(Nfile file, Reader<M> reader) throws IOException {
-		return getObjects(file, 0, reader);
-	}
-
-	/**
-	 * 从Excel文件中获取对象实体
-	 * 
-	 * @param <M>
-	 *            数据类型
 	 * @param sheet
 	 *            Excel sheet
 	 * @param reader
@@ -977,30 +832,6 @@ public final class Excels {
 	 */
 	public static <M> List<M> getObjects(Workbook workbook, Reader<M> reader) throws IOException {
 		return getObjects(workbook, 0, reader);
-	}
-
-	/**
-	 * 从Excel文件中获取对象实体
-	 * 
-	 * @param <M>
-	 *            数据类型
-	 * @param file
-	 *            Excel文件
-	 * @param start
-	 *            开始数据行下标（从0开始）
-	 * @param reader
-	 *            Excel对象实体读取接口
-	 * @return 对象实体列表
-	 * @throws IOException
-	 *             IO操作异常
-	 */
-	public static <M> List<M> getObjects(Nfile file, int start, Reader<M> reader) throws IOException {
-		Workbook workbook = getWorkbook(file);
-		try {
-			return getObjects(workbook, start, reader);
-		} finally {
-			workbook.close();
-		}
 	}
 
 	/**
@@ -1150,23 +981,6 @@ public final class Excels {
 	/**
 	 * 将对象实体设置到Excel文件中
 	 * 
-	 * @param file
-	 *            Excel文件
-	 * @param objects
-	 *            对象实体列表
-	 * @param properties
-	 *            需要转换的属性名称数组
-	 * @return 设置数量
-	 * @throws IOException
-	 *             IO操作异常
-	 */
-	public static int setObjects(Nfile file, List<?> objects, String... properties) throws IOException {
-		return setObjects(file, 0, objects, properties);
-	}
-
-	/**
-	 * 将对象实体设置到Excel文件中
-	 * 
 	 * @param sheet
 	 *            Excel sheet
 	 * @param objects
@@ -1196,30 +1010,6 @@ public final class Excels {
 	 */
 	public static int setObjects(Workbook workbook, List<?> objects, String... properties) throws IOException {
 		return setObjects(workbook, 0, objects, properties);
-	}
-
-	/**
-	 * 将对象实体设置到Excel文件中
-	 * 
-	 * @param <M>
-	 *            数据类型
-	 * @param file
-	 *            Excel文件
-	 * @param start
-	 *            开始数据行下标（从0开始）
-	 * @param objects
-	 *            对象实体列表
-	 * @param properties
-	 *            需要转换的属性名称数组
-	 * @return 设置数量
-	 * @throws IOException
-	 *             IO操作异常
-	 */
-	public static <M> int setObjects(Nfile file, int start, List<M> objects, String... properties) throws IOException {
-		Workbook workbook = getWorkbook();
-		int count = setObjects(workbook, start, objects, properties);
-		write(workbook, file);
-		return count;
 	}
 
 	/**
@@ -1298,25 +1088,6 @@ public final class Excels {
 	 * 
 	 * @param <M>
 	 *            数据类型
-	 * @param file
-	 *            Excel文件
-	 * @param objects
-	 *            对象实体列表
-	 * @param writer
-	 *            Excel对象实体写入接口
-	 * @return 设置数量
-	 * @throws IOException
-	 *             IO操作异常
-	 */
-	public static <M> int setObjects(Nfile file, List<M> objects, Writer<M> writer) throws IOException {
-		return setObjects(file, 0, objects, writer);
-	}
-
-	/**
-	 * 将对象实体设置到Excel文件中
-	 * 
-	 * @param <M>
-	 *            数据类型
 	 * @param sheet
 	 *            Excel sheet
 	 * @param objects
@@ -1348,30 +1119,6 @@ public final class Excels {
 	 */
 	public static <M> int setObjects(Workbook workbook, List<M> objects, Writer<M> writer) throws IOException {
 		return setObjects(workbook, 0, objects, writer);
-	}
-
-	/**
-	 * 将对象实体设置到Excel文件中
-	 * 
-	 * @param <M>
-	 *            数据类型
-	 * @param file
-	 *            Excel文件
-	 * @param start
-	 *            开始数据行下标（从0开始）
-	 * @param objects
-	 *            对象实体列表
-	 * @param writer
-	 *            Excel对象实体写入接口
-	 * @return 设置数量
-	 * @throws IOException
-	 *             IO操作异常
-	 */
-	public static <M> int setObjects(Nfile file, int start, List<M> objects, Writer<M> writer) throws IOException {
-		Workbook workbook = getWorkbook();
-		int count = setObjects(workbook, start, objects, writer);
-		write(workbook, file);
-		return count;
 	}
 
 	/**
@@ -1464,21 +1211,6 @@ public final class Excels {
 	/**
 	 * Excel文件迭代
 	 * 
-	 * @param file
-	 *            Excel文件
-	 * @param reader
-	 *            Excel对象实体读取接口
-	 * @return 读取数量
-	 * @throws IOException
-	 *             IO操作异常
-	 */
-	public static int iteration(Nfile file, Reader<?> reader) throws IOException {
-		return iteration(file, 0, reader);
-	}
-
-	/**
-	 * Excel文件迭代
-	 * 
 	 * @param sheet
 	 *            Excel sheet
 	 * @param reader
@@ -1504,31 +1236,6 @@ public final class Excels {
 	 */
 	public static int iteration(Workbook workbook, Reader<?> reader) throws IOException {
 		return iteration(workbook, 0, reader);
-	}
-
-	/**
-	 * Excel文件迭代
-	 * 
-	 * @param file
-	 *            Excel文件
-	 * @param start
-	 *            开始数据行下标（从0开始）
-	 * @param reader
-	 *            Excel对象实体读取接口
-	 * @return 读取数量
-	 * @throws IOException
-	 *             IO操作异常
-	 */
-	public static int iteration(Nfile file, int start, Reader<?> reader) throws IOException {
-		if (file == null) {
-			throw new IllegalArgumentException("Illegal file:" + file);
-		}
-		Workbook workbook = getWorkbook(file);
-		try {
-			return iteration(workbook, start, reader);
-		} finally {
-			workbook.close();
-		}
 	}
 
 	/**

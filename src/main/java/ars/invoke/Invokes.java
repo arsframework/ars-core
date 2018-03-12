@@ -42,33 +42,8 @@ public final class Invokes {
 	 */
 	public static final Pattern TIMESTAMP_PATTERN = Pattern.compile("\\$\\{ *timestamp *\\}", Pattern.CASE_INSENSITIVE);
 
-	private static final ThreadLocal<Requester> currentRequester = new ThreadLocal<Requester>();
-
 	private Invokes() {
 
-	}
-
-	/**
-	 * 获取当前请求对象
-	 * 
-	 * @return 请求对象
-	 */
-	public static Requester getCurrentRequester() {
-		Requester requester = currentRequester.get();
-		if (requester == null) {
-			throw new RuntimeException("No requester found for current thread");
-		}
-		return requester;
-	}
-
-	/**
-	 * 设置当前请求对象
-	 * 
-	 * @param requester
-	 *            请求对象
-	 */
-	public static void setCurrentRequester(Requester requester) {
-		currentRequester.set(requester);
 	}
 
 	/**

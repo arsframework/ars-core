@@ -1,11 +1,11 @@
 package ars.invoke.channel.http.tags;
 
 import java.util.Map;
+
 import java.util.HashMap;
 import java.util.Collections;
 
 import ars.util.Strings;
-import ars.invoke.Invokes;
 import ars.invoke.channel.http.tags.AbstractTag;
 
 /**
@@ -97,7 +97,7 @@ public class ResourceTag extends AbstractTag {
 		if (this.entity != null) {
 			return this.entity;
 		} else if (!Strings.isEmpty(this.api)) {
-			return Invokes.getCurrentRequester().execute(this.api, this.getParameters());
+			return this.getRequester().execute(this.api, this.getParameters());
 		}
 		return null;
 	}

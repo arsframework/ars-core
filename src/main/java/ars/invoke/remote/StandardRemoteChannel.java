@@ -22,7 +22,6 @@ import ars.util.Streams;
 import ars.util.Strings;
 import ars.util.AbstractTimerServer;
 import ars.invoke.Context;
-import ars.invoke.Invokes;
 import ars.invoke.request.Requester;
 import ars.invoke.remote.RemoteChannel;
 import ars.invoke.remote.RemoteRequester;
@@ -391,7 +390,6 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 			Ice.Current __current) {
 		try {
 			Requester requester = this.getRequester(client, token, uri, parameter, __current);
-			Invokes.setCurrentRequester(requester);
 			Object value = this.dispatch(requester);
 			if (value instanceof Exception) {
 				__cb.ice_exception((Exception) value);
@@ -425,8 +423,6 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 			}
 		} catch (Exception e) {
 			__cb.ice_exception(e);
-		} finally {
-			Invokes.setCurrentRequester(null);
 		}
 	}
 

@@ -11,6 +11,8 @@ import javax.servlet.jsp.tagext.SimpleTagSupport;
 import ars.util.Jsons;
 import ars.util.Beans;
 import ars.util.Strings;
+import ars.invoke.request.Requester;
+import ars.invoke.channel.http.Https;
 
 /**
  * 自定义JSP标签抽象类
@@ -111,6 +113,15 @@ public abstract class AbstractTag extends SimpleTagSupport {
 	 *             操作异常
 	 */
 	protected abstract Object execute() throws Exception;
+
+	/**
+	 * 获取当前请求对象
+	 * 
+	 * @return 请求对象
+	 */
+	protected Requester getRequester() {
+		return (Requester) this.getJspContext().getAttribute(Https.CONTEXT_EXECUTOR, PageContext.REQUEST_SCOPE);
+	}
 
 	/**
 	 * 设置JSP标签结果上下文

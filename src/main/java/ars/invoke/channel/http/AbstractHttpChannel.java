@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import ars.util.Streams;
 import ars.util.Strings;
 import ars.invoke.Context;
-import ars.invoke.Invokes;
 import ars.invoke.request.Requester;
 import ars.invoke.convert.Converter;
 import ars.invoke.channel.http.Https;
@@ -224,41 +223,35 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 		Object value = null;
 		Converter converter = null;
 		HttpRequester requester = this.getRequester(this.getUri(request), config, request, response);
-		Invokes.setCurrentRequester(requester);
-		try {
-			String template = this.lookupTemplate(requester);
-			if (template == null) {
-				try {
-					value = this.dispatch(requester);
-				} catch (Exception e) {
-					value = e;
-				}
-				if (!Streams.isStream(value) && (converter = this.lookupConverter(requester)) != null) {
-					value = converter.serialize(value);
-				}
-			} else if (Strings.isEmpty(request.getContentType())
-					|| (converter = this.lookupConverter(requester)) == null) {
-				try {
-					requester.render(template, null);
-				} catch (Exception e) {
-					value = e;
-				}
-			} else {
-				try {
-					value = requester.view(template, null);
-				} catch (Exception e) {
-					value = e;
-				}
+		String template = this.lookupTemplate(requester);
+		if (template == null) {
+			try {
+				value = this.dispatch(requester);
+			} catch (Exception e) {
+				value = e;
+			}
+			if (!Streams.isStream(value) && (converter = this.lookupConverter(requester)) != null) {
 				value = converter.serialize(value);
 			}
-			if (value != null && !this.redirect(requester, value)) {
-				if (value instanceof Exception) {
-					throw (Exception) value;
-				}
-				Https.response(response, value);
+		} else if (Strings.isEmpty(request.getContentType()) || (converter = this.lookupConverter(requester)) == null) {
+			try {
+				requester.render(template, null);
+			} catch (Exception e) {
+				value = e;
 			}
-		} finally {
-			Invokes.setCurrentRequester(null);
+		} else {
+			try {
+				value = requester.view(template, null);
+			} catch (Exception e) {
+				value = e;
+			}
+			value = converter.serialize(value);
+		}
+		if (value != null && !this.redirect(requester, value)) {
+			if (value instanceof Exception) {
+				throw (Exception) value;
+			}
+			Https.response(response, value);
 		}
 	}
 

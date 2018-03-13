@@ -234,6 +234,10 @@ public class StandardHttpRequester extends StandardRequester implements HttpRequ
 
 	@Override
 	public void render(String template, Object content, File file) throws Exception {
+		File directory = file.getParentFile();
+		if (directory != null && !directory.exists()) {
+			directory.mkdirs();
+		}
 		OutputStream os = new FileOutputStream(file);
 		try {
 			this.render(template, content, os);

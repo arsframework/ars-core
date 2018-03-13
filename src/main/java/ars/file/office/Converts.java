@@ -166,7 +166,7 @@ public final class Converts {
 			throw new IllegalArgumentException("Illegal output:" + output);
 		}
 		File path = output.getParentFile();
-		if (!path.exists()) {
+		if (path != null && !path.exists()) {
 			path.mkdirs();
 		}
 		OpenOfficeConnection connection = new SocketOpenOfficeConnection(getOpenOfficeHost(), getOpenOfficePort());

@@ -1,5 +1,6 @@
 package ars.invoke.channel.http;
 
+import java.io.File;
 import java.io.OutputStream;
 
 import javax.servlet.ServletConfig;
@@ -90,6 +91,20 @@ public interface HttpRequester extends Requester {
 	 *             渲染异常
 	 */
 	public void render(String template, Object content) throws Exception;
+
+	/**
+	 * 视图渲染
+	 * 
+	 * @param template
+	 *            视图模板
+	 * @param content
+	 *            渲染内容
+	 * @param file
+	 *            数据输出文件
+	 * @throws Exception
+	 *             渲染异常
+	 */
+	public void render(String template, Object content, File file) throws Exception;
 
 	/**
 	 * 视图渲染

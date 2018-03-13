@@ -24,7 +24,7 @@ import ars.invoke.channel.http.Https;
  */
 public abstract class AbstractHttpInvoker implements Invoker {
 	/**
-	 * 获取响应结果
+	 * 接收响应结果
 	 * 
 	 * @param requester
 	 *            请求对象
@@ -36,7 +36,8 @@ public abstract class AbstractHttpInvoker implements Invoker {
 	 * @throws Exception
 	 *             操作异常
 	 */
-	protected abstract Object response(Requester requester, Endpoint endpoint, HttpResponse response) throws Exception;
+	protected abstract Object accept(HttpRequester requester, Endpoint endpoint, HttpResponse response)
+			throws Exception;
 
 	@Override
 	public Object execute(Requester requester, Resource resource) throws Exception {
@@ -46,27 +47,27 @@ public abstract class AbstractHttpInvoker implements Invoker {
 		for (int i = 0; i < nodes.length; i++) {
 			Node node = nodes[i];
 			String url = Https.getUrl(node, uri == null ? requester.getUri() : uri);
-			HttpUriRequest httpUriRequest = Https.getHttpUriRequest(url.toString(), Https.Method.POST,
+			HttpUriRequest request = Https.getHttpUriRequest(url.toString(), Https.Method.POST,
 					requester.getParameters());
-			httpUriRequest.addHeader(Https.CONTEXT_TOKEN, requester.getToken().getCode());
+			request.addHeader(Https.CONTEXT_TOKEN, requester.getToken().getCode());
 			if (requester instanceof HttpRequester) {
 				HttpServletRequest httpServletRequest = ((HttpRequester) requester).getHttpServletRequest();
 				Enumeration<String> headers = httpServletRequest.getHeaderNames();
 				while (headers.hasMoreElements()) {
 					String header = headers.nextElement();
-					httpUriRequest.setHeader(header, httpServletRequest.getHeader(header));
+					request.setHeader(header, httpServletRequest.getHeader(header));
 				}
 			}
 
 			HttpClient client = Https.getClient(node.getProtocol() == Protocol.https);
 			try {
-				return this.response(requester, endpoint, client.execute(httpUriRequest));
+				return this.accept((HttpRequester) requester, endpoint, client.execute(request));
 			} catch (Exception e) {
 				if (i == nodes.length - 1) {
 					throw e;
 				}
 			} finally {
-				httpUriRequest.abort();
+				request.abort();
 			}
 		}
 		return null;

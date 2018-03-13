@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Collection;
 import java.io.File;
 import java.io.OutputStream;
+import java.io.FileOutputStream;
 import java.io.ByteArrayOutputStream;
 
 import javax.servlet.ServletConfig;
@@ -229,6 +230,16 @@ public class StandardHttpRequester extends StandardRequester implements HttpRequ
 	@Override
 	public void render(String template, Object content) throws Exception {
 		Https.render(this.request, this.response, template, this.getRenderContext(content));
+	}
+
+	@Override
+	public void render(String template, Object content, File file) throws Exception {
+		OutputStream os = new FileOutputStream(file);
+		try {
+			this.render(template, content, os);
+		} finally {
+			os.close();
+		}
 	}
 
 	@Override

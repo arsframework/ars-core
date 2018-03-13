@@ -215,7 +215,7 @@ public class StandardHttpRequester extends StandardRequester implements HttpRequ
 			if ("jsp".equalsIgnoreCase(Files.getSuffix(template))) {
 				return Https.view(this.request, this.response, template, context);
 			}
-			return Files.getString(new File(Https.ROOT_PATH, template));
+			return Files.getString(new File(template));
 		}
 		OutputStream os = new ByteArrayOutputStream();
 		try {
@@ -241,7 +241,7 @@ public class StandardHttpRequester extends StandardRequester implements HttpRequ
 				if ("jsp".equalsIgnoreCase(Files.getSuffix(template))) {
 					Https.render(this.request, this.response, template, context, output);
 				} else {
-					Streams.write(new File(Https.ROOT_PATH, template), os);
+					Streams.write(new File(template), os);
 				}
 			} else {
 				render.execute(this, template, context, os);

@@ -573,6 +573,38 @@ public final class Beans {
 	}
 
 	/**
+	 * 判断两个字典元素是否相同
+	 * 
+	 * @param <K>
+	 *            键类型
+	 * @param <V>
+	 *            值类型
+	 * @param map1
+	 *            字典1
+	 * @param map2
+	 *            字典2
+	 * @return true/false
+	 */
+	public static <K, V> boolean isEqual(Map<K, V> map1, Map<K, V> map2) {
+		if (map1 == map2 || (map1 != null && map2 != null && map1.isEmpty() && map2.isEmpty())) {
+			return true;
+		} else if (map1.size() != map2.size()) {
+			return false;
+		}
+		for (Entry<K, V> entry : map1.entrySet()) {
+			if (!isEqual(entry.getValue(), map2.get(entry.getKey()))) {
+				return false;
+			}
+		}
+		for (Entry<K, V> entry : map2.entrySet()) {
+			if (!isEqual(entry.getValue(), map1.get(entry.getKey()))) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * 判断两个集合中元素是否相同
 	 * 
 	 * @param <T>

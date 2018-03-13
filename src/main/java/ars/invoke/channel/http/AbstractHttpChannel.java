@@ -40,7 +40,7 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 	}
 
 	public void setDirectory(String directory) {
-		this.directory = directory;
+		this.directory = Strings.getRealPath(directory);
 	}
 
 	public Redirector[] getRedirectors() {

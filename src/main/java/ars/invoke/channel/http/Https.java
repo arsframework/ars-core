@@ -1,10 +1,12 @@
 package ars.invoke.channel.http;
 
 import java.io.File;
+import java.io.Reader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.io.OutputStreamWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
@@ -13,6 +15,7 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Collection;
@@ -36,10 +39,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
+import javax.swing.text.html.parser.ParserDelegator;
+import javax.swing.text.html.HTMLEditorKit.ParserCallback;
 
-import org.htmlparser.Parser;
-import org.htmlparser.beans.StringBean;
-import org.htmlparser.util.ParserException;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -91,6 +93,17 @@ public final class Https {
 	 * 应用根路径
 	 */
 	public static final String ROOT_PATH;
+
+	/**
+	 * Html标本标签正则表达匹配对象
+	 */
+	public static final Pattern SCRIPT_PATTERN = Pattern.compile("<script[^>]*?>[\\s\\S]*?<\\/script>",
+			Pattern.CASE_INSENSITIVE);
+
+	/**
+	 * Html解析器
+	 */
+	private static ParserDelegator parserDelegator;
 
 	/**
 	 * 客户端连接管理器
@@ -1618,6 +1631,22 @@ public final class Https {
 	}
 
 	/**
+	 * 获取Html解析器
+	 * 
+	 * @return Html解析器
+	 */
+	private static ParserDelegator getParserDelegator() {
+		if (parserDelegator == null) {
+			synchronized (Https.class) {
+				if (parserDelegator == null) {
+					parserDelegator = new ParserDelegator();
+				}
+			}
+		}
+		return parserDelegator;
+	}
+
+	/**
 	 * 获取html中纯文本
 	 * 
 	 * @param html
@@ -1625,21 +1654,47 @@ public final class Https {
 	 * @return 纯文本
 	 */
 	public static String getText(String html) {
-		if (Strings.isEmpty(html)) {
-			return html;
-		}
 		try {
-			Parser parser = new Parser();
-			parser.setInputHTML(html);
-			StringBean stringBean = new StringBean();
-			stringBean.setLinks(false);
-			stringBean.setCollapse(true);
-			stringBean.setReplaceNonBreakingSpaces(true);
-			parser.visitAllNodesWith(stringBean);
-			return stringBean.getStrings();
-		} catch (ParserException e) {
+			return Strings.isEmpty(html) ? html : getText(new StringReader(html));
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	/**
+	 * 获取html中纯文本
+	 * 
+	 * @param reader
+	 *            html数据流
+	 * @throws IOException
+	 *             IO操作异常
+	 * @return 纯文本
+	 */
+	public static String getText(Reader reader) throws IOException {
+		if (reader == null) {
+			throw new IllegalArgumentException("Illegal reader:" + reader);
+		}
+		final StringBuilder text = new StringBuilder();
+		getParserDelegator().parse(reader, new ParserCallback() {
+
+			@Override
+			public void handleText(char[] data, int pos) {
+				text.append(data);
+			}
+
+		}, true);
+		return text.toString();
+	}
+
+	/**
+	 * 获取安全的Html（过滤掉script标签后的html内容）
+	 * 
+	 * @param html
+	 *            Html内容
+	 * @return Html内容
+	 */
+	public static String getSafeHtml(String html) {
+		return Strings.isEmpty(html) ? html : SCRIPT_PATTERN.matcher(html).replaceAll(Strings.EMPTY_STRING);
 	}
 
 	/**

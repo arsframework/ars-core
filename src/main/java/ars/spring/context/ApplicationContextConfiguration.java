@@ -45,12 +45,12 @@ import ars.invoke.request.SessionFactory;
 import ars.invoke.request.CacheSessionFactory;
 
 /**
- * 基础应用配置
+ * 应用上下文配置
  * 
  * @author yongqiangwu
  * 
  */
-public class BasicApplicationConfiguration extends StandardRouter
+public class ApplicationContextConfiguration extends StandardRouter
 		implements Context, ApplicationContextAware, ApplicationListener<ApplicationEvent> {
 	private String pattern; // 资源地址匹配模式
 	private Invoker invoker; // 资源调用对象

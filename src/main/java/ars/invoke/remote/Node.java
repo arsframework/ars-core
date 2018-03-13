@@ -17,6 +17,18 @@ public class Node implements Serializable {
 	private String host; // 主机地址
 	private int port; // 端口号
 
+	public Node(int port) {
+		this(Protocol.tcp, port);
+	}
+
+	public Node(Protocol protocol, int port) {
+		this(protocol, Strings.DEFAULT_LOCALHOST_ADDRESS, port);
+	}
+
+	public Node(String host, int port) {
+		this(Protocol.tcp, host, port);
+	}
+
 	public Node(Protocol protocol, String host, int port) {
 		if (protocol == null) {
 			throw new IllegalArgumentException("Illegal protocol:" + protocol);

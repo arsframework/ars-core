@@ -6,7 +6,6 @@ import ars.util.Strings;
 import ars.util.AbstractServer;
 import ars.invoke.remote.Node;
 import ars.invoke.remote.Remotes;
-import ars.invoke.remote.Protocol;
 import ars.invoke.remote.RemoteChannel;
 
 /**
@@ -47,8 +46,11 @@ public class RemoteInvokeServer extends AbstractServer {
 
 	@Override
 	public void run() {
+		if (this.channels == null || this.channels.length == 0) {
+			throw new RuntimeException("Remote channels has not been initialize");
+		}
 		if (this.nodes == null || this.nodes.length == 0) {
-			this.nodes = new Node[] { new Node(Protocol.tcp, Strings.LOCALHOST_ADDRESS, 10000) };
+			this.nodes = new Node[] { new Node(10000), new Node(Strings.LOCALHOST_ADDRESS, 10000) };
 		}
 		this.communicator = Remotes.initializeCommunicator(this.configure);
 		Ice.ObjectAdapter adapter = this.communicator.createObjectAdapterWithEndpoints(Remotes.COMMON_ADAPTER_NAME,

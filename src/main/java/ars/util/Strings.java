@@ -505,10 +505,6 @@ public final class Strings {
 		return chars;
 	}
 
-	public static void main(String[] args) {
-		System.out.println(toString(0.1));
-	}
-
 	/**
 	 * 将对象转换成字符串形式
 	 * 

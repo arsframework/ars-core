@@ -3,6 +3,7 @@ package ars.invoke.remote;
 import java.util.Arrays;
 
 import ars.util.Beans;
+import ars.util.Strings;
 import ars.invoke.Resource;
 import ars.invoke.remote.Node;
 
@@ -28,6 +29,30 @@ public class Endpoint implements Resource {
 		}
 		this.uri = uri;
 		this.nodes = nodes;
+	}
+
+	public Endpoint(int port) {
+		this(port, null);
+	}
+
+	public Endpoint(int port, String uri) {
+		this(Protocol.tcp, port, uri);
+	}
+
+	public Endpoint(Protocol protocol, int port) {
+		this(protocol, port, null);
+	}
+
+	public Endpoint(Protocol protocol, int port, String uri) {
+		this(protocol, Strings.DEFAULT_LOCALHOST_ADDRESS, port, uri);
+	}
+
+	public Endpoint(String host, int port) {
+		this(host, port, null);
+	}
+
+	public Endpoint(String host, int port, String uri) {
+		this(Protocol.tcp, host, port, uri);
 	}
 
 	public Endpoint(Protocol protocol, String host, int port) {

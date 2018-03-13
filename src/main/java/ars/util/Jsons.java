@@ -263,8 +263,9 @@ public final class Jsons {
 	 * @return JSON字符串
 	 */
 	public static String format(Object object, boolean min) {
-		return object == null || object instanceof CharSequence ? ((CharSequence) object).toString()
-				: min ? minGson.toJson(object) : gson.toJson(object);
+		return object == null ? null
+				: object instanceof CharSequence ? ((CharSequence) object).toString()
+						: min ? minGson.toJson(object) : gson.toJson(object);
 	}
 
 	/**

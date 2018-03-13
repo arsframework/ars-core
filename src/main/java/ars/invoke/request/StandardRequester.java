@@ -8,7 +8,9 @@ import java.util.Locale;
 import java.util.Collections;
 
 import ars.util.Strings;
+import ars.invoke.Router;
 import ars.invoke.Channel;
+import ars.invoke.Context;
 import ars.invoke.Messager;
 import ars.invoke.request.Token;
 import ars.invoke.request.Requester;
@@ -157,7 +159,15 @@ public class StandardRequester implements Requester {
 
 	@Override
 	public Object execute() {
-		return this.channel.getContext().getRouter().routing(this);
+		Context context = this.channel.getContext();
+		if (context == null) {
+			throw new RuntimeException("Context has not been initialize");
+		}
+		Router router = context.getRouter();
+		if (router == null) {
+			throw new RuntimeException("Router has not been initialize");
+		}
+		return router.routing(this);
 	}
 
 	@Override

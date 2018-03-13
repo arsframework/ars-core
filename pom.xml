@@ -4,7 +4,7 @@
 
 	<groupId>com.arsframework</groupId>
 	<artifactId>ars-core</artifactId>
-	<version>1.6.4</version>
+	<version>1.6.5</version>
 	<packaging>jar</packaging>
 
 	<name>ars-core</name>
@@ -85,14 +85,6 @@
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
 			<version>1.2.2</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.htmlparser/htmlparser -->
-		<dependency>
-			<groupId>org.htmlparser</groupId>
-			<artifactId>htmlparser</artifactId>
-			<version>1.6</version>
 			<scope>provided</scope>
 		</dependency>
 

@@ -17,6 +17,13 @@ import ars.file.query.Query;
  */
 public interface Operator {
 	/**
+	 * 获取工作目录
+	 * 
+	 * @return 工作目录
+	 */
+	public String getWorkingDirectory();
+
+	/**
 	 * 判断文件/文件夹是否存在
 	 * 
 	 * @param path
@@ -137,17 +144,6 @@ public interface Operator {
 	 *             操作异常
 	 */
 	public Nfile read(String path) throws Exception;
-
-	/**
-	 * 获取预览文件
-	 * 
-	 * @param path
-	 *            文件相对路径
-	 * @return 文件
-	 * @throws Exception
-	 *             操作异常
-	 */
-	public Nfile preview(String path) throws Exception;
 
 	/**
 	 * 写文件

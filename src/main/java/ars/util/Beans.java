@@ -330,7 +330,15 @@ public final class Beans {
 	 * @return true/false
 	 */
 	public static <T> boolean isExist(T[] array, T object) {
-		return array != null && array.length > 0 && object != null && Arrays.asList(array).contains(object);
+		if (array == null || array.length == 0 || object == null) {
+			return false;
+		}
+		for (T t : array) {
+			if (isEqual(t, object)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -347,7 +355,18 @@ public final class Beans {
 	 * @return true/false
 	 */
 	public static <T> boolean isExist(T[] array, T object, Comparator<T> comparator) {
-		return array != null && array.length > 0 && object != null && isExist(Arrays.asList(array), object, comparator);
+		if (comparator == null) {
+			throw new IllegalArgumentException("Illegal comparator:" + comparator);
+		}
+		if (array == null || array.length == 0 || object == null) {
+			return false;
+		}
+		for (T t : array) {
+			if (comparator.compare(t, object) == 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -362,8 +381,18 @@ public final class Beans {
 	 * @return true/false
 	 */
 	public static <T> boolean isExist(T[] array, T[] objects) {
-		return array != null && array.length > 0 && objects != null && objects.length > 0
-				&& isExist(Arrays.asList(array), objects);
+		if (array == null || array.length == 0 || objects == null || objects.length == 0) {
+			return false;
+		}
+		outer: for (T o : objects) {
+			for (T t : array) {
+				if (isEqual(t, o)) {
+					continue outer;
+				}
+			}
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -380,8 +409,21 @@ public final class Beans {
 	 * @return true/false
 	 */
 	public static <T> boolean isExist(T[] array, T[] objects, Comparator<T> comparator) {
-		return array != null && array.length > 0 && objects != null && objects.length > 0
-				&& isExist(Arrays.asList(array), objects, comparator);
+		if (comparator == null) {
+			throw new IllegalArgumentException("Illegal comparator:" + comparator);
+		}
+		if (array == null || array.length == 0 || objects == null || objects.length == 0) {
+			return false;
+		}
+		outer: for (T o : objects) {
+			for (T t : array) {
+				if (comparator.compare(t, o) == 0) {
+					continue outer;
+				}
+			}
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -396,7 +438,15 @@ public final class Beans {
 	 * @return true/false
 	 */
 	public static <T> boolean isExist(Collection<T> collection, T object) {
-		return collection != null && collection.size() > 0 && object != null && collection.contains(object);
+		if (collection == null || collection.isEmpty() || object == null) {
+			return false;
+		}
+		for (T t : collection) {
+			if (isEqual(t, object)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -413,11 +463,15 @@ public final class Beans {
 	 * @return true/false
 	 */
 	public static <T> boolean isExist(Collection<T> collection, T object, Comparator<T> comparator) {
-		if (collection != null && collection.size() > 0 && object != null) {
-			for (T _object : collection) {
-				if (comparator.compare(_object, object) == 0) {
-					return true;
-				}
+		if (comparator == null) {
+			throw new IllegalArgumentException("Illegal comparator:" + comparator);
+		}
+		if (collection == null || collection.isEmpty() || object == null) {
+			return false;
+		}
+		for (T t : collection) {
+			if (comparator.compare(t, object) == 0) {
+				return true;
 			}
 		}
 		return false;
@@ -435,15 +489,18 @@ public final class Beans {
 	 * @return true/false
 	 */
 	public static <T> boolean isExist(Collection<T> collection, T[] objects) {
-		if (collection != null && collection.size() > 0 && objects != null && objects.length > 0) {
-			for (T object : objects) {
-				if (!collection.contains(object)) {
-					return false;
+		if (collection == null || collection.isEmpty() || objects == null || objects.length == 0) {
+			return false;
+		}
+		outer: for (T o : objects) {
+			for (T t : collection) {
+				if (isEqual(t, o)) {
+					continue outer;
 				}
 			}
-			return true;
+			return false;
 		}
-		return false;
+		return true;
 	}
 
 	/**
@@ -458,15 +515,18 @@ public final class Beans {
 	 * @return true/false
 	 */
 	public static <T> boolean isExist(Collection<T> collection, Collection<T> objects) {
-		if (collection != null && collection.size() > 0 && objects != null && !objects.isEmpty()) {
-			for (T object : objects) {
-				if (!collection.contains(object)) {
-					return false;
+		if (collection == null || collection.isEmpty() || objects == null || objects.isEmpty()) {
+			return false;
+		}
+		outer: for (T o : objects) {
+			for (T t : collection) {
+				if (isEqual(t, o)) {
+					continue outer;
 				}
 			}
-			return true;
+			return false;
 		}
-		return false;
+		return true;
 	}
 
 	/**
@@ -1962,23 +2022,32 @@ public final class Beans {
 		} else if (object instanceof Map) {
 			return toMap(type, (Map<?, ?>) object);
 		} else if (object instanceof byte[]) {
-			return toArray(type.isArray() ? type.getComponentType() : type, (byte[]) object);
+			return toArray(type.isArray() ? (Class<Object>) type.getComponentType() : (Class<Object>) type,
+					(byte[]) object);
 		} else if (object instanceof char[]) {
-			return toArray(type.isArray() ? type.getComponentType() : type, (char[]) object);
+			return toArray(type.isArray() ? (Class<Object>) type.getComponentType() : (Class<Object>) type,
+					(char[]) object);
 		} else if (object instanceof int[]) {
-			return toArray(type.isArray() ? type.getComponentType() : type, (int[]) object);
+			return toArray(type.isArray() ? (Class<Object>) type.getComponentType() : (Class<Object>) type,
+					(int[]) object);
 		} else if (object instanceof short[]) {
-			return toArray(type.isArray() ? type.getComponentType() : type, (short[]) object);
+			return toArray(type.isArray() ? (Class<Object>) type.getComponentType() : (Class<Object>) type,
+					(short[]) object);
 		} else if (object instanceof long[]) {
-			return toArray(type.isArray() ? type.getComponentType() : type, (long[]) object);
+			return toArray(type.isArray() ? (Class<Object>) type.getComponentType() : (Class<Object>) type,
+					(long[]) object);
 		} else if (object instanceof float[]) {
-			return toArray(type.isArray() ? type.getComponentType() : type, (float[]) object);
+			return toArray(type.isArray() ? (Class<Object>) type.getComponentType() : (Class<Object>) type,
+					(float[]) object);
 		} else if (object instanceof double[]) {
-			return toArray(type.isArray() ? type.getComponentType() : type, (double[]) object);
+			return toArray(type.isArray() ? (Class<Object>) type.getComponentType() : (Class<Object>) type,
+					(double[]) object);
 		} else if (object instanceof boolean[]) {
-			return toArray(type.isArray() ? type.getComponentType() : type, (boolean[]) object);
+			return toArray(type.isArray() ? (Class<Object>) type.getComponentType() : (Class<Object>) type,
+					(boolean[]) object);
 		} else if (object instanceof Object[]) {
-			return toArray(type.isArray() ? type.getComponentType() : type, (Object[]) object);
+			return toArray(type.isArray() ? (Class<Object>) type.getComponentType() : (Class<Object>) type,
+					(Object[]) object);
 		} else if (object != null && !type.isAssignableFrom(object.getClass())) {
 			throw new IllegalArgumentException("Cannot convert " + object + " to " + type);
 		}

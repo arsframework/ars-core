@@ -11,7 +11,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
  * 
  */
 public abstract class ApplicationInitializer implements ApplicationListener<ApplicationEvent> {
-	private boolean initialized = false; // 容器是否已经加载完成
+	private boolean initialized;
 
 	/**
 	 * Spring容器初始化完成后执行方法

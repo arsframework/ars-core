@@ -3,9 +3,10 @@ package ars.spring.context;
 import java.util.Map;
 
 import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.event.ContextRefreshedEvent;
 
 import ars.invoke.remote.Remotes;
-import ars.spring.context.ApplicationDestroyer;
+import ars.spring.context.ApplicationListener;
 
 /**
  * 远程调用应用配置
@@ -13,7 +14,7 @@ import ars.spring.context.ApplicationDestroyer;
  * @author yongqiangwu
  *
  */
-public class RemoteApplicationConfiguration extends ApplicationDestroyer {
+public class RemoteApplicationConfiguration extends ApplicationListener {
 
 	public void setClient(String client) {
 		Remotes.setClient(client);
@@ -32,7 +33,12 @@ public class RemoteApplicationConfiguration extends ApplicationDestroyer {
 	}
 
 	@Override
-	protected void execute(ContextClosedEvent event) {
+	protected void initialize(ContextRefreshedEvent event) {
+
+	}
+
+	@Override
+	protected void destroy(ContextClosedEvent event) {
 		Remotes.destroy();
 	}
 

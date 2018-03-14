@@ -79,6 +79,10 @@ public class ApplicationContextConfiguration extends StandardRouter
 		this.sessionFactory = sessionFactory;
 	}
 
+	public void setExecutor(ExecutorService executor) {
+		Servers.setExecutor(executor);
+	}
+
 	public void setDateFormat(String format) {
 		Dates.setDateFormat(new SimpleDateFormat(format));
 	}
@@ -89,10 +93,6 @@ public class ApplicationContextConfiguration extends StandardRouter
 
 	public void setDatenanoFormat(String format) {
 		Dates.setDatenanoFormat(new SimpleDateFormat(format));
-	}
-
-	public void setExecutor(ExecutorService executor) {
-		Servers.setExecutor(executor);
 	}
 
 	public void setOpenOfficeHost(String host) {

@@ -11,7 +11,7 @@ import org.springframework.context.event.ContextClosedEvent;
  * 
  */
 public abstract class ApplicationDestroyer implements ApplicationListener<ApplicationEvent> {
-	private boolean destroied = false;
+	private boolean destroied;
 
 	/**
 	 * Spring容器销毁后执行方法
@@ -24,8 +24,8 @@ public abstract class ApplicationDestroyer implements ApplicationListener<Applic
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof ContextClosedEvent && !this.destroied) {
-			this.destroied = true;
 			this.execute((ContextClosedEvent) event);
+			this.destroied = true;
 		}
 	}
 

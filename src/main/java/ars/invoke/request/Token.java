@@ -189,7 +189,7 @@ public class Token implements Map<String, Object>, Formable, Serializable {
 	public void validate() throws TokenInvalidException {
 		if (!this.valid) {
 			try {
-				this.attributes = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(code).getBody();
+				this.attributes = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(this.code).getBody();
 			} catch (ExpiredJwtException e) {
 				throw new TokenInvalidException("error.token.expired");
 			} catch (Exception e) {

@@ -1,5 +1,8 @@
 package ars.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ars.util.Server;
 import ars.util.Servers;
 
@@ -12,6 +15,7 @@ import ars.util.Servers;
 public abstract class AbstractServer implements Server, Runnable {
 	private Thread thread;
 	private boolean daemon;
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public boolean isDaemon() {
 		return daemon;

@@ -3,9 +3,6 @@ package ars.util;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ars.util.AbstractServer;
 
 /**
@@ -17,7 +14,6 @@ import ars.util.AbstractServer;
 public abstract class AbstractTimerServer extends AbstractServer {
 	private Timer timer; // 定时器
 	private int interval = 3; // 执行周期（秒）
-	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public int getInterval() {
 		return interval;

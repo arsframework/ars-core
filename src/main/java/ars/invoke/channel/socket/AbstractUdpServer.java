@@ -7,9 +7,6 @@ import java.nio.channels.Selector;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.DatagramChannel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ars.util.AbstractServer;
 import ars.invoke.channel.socket.SocketServer;
 
@@ -22,7 +19,6 @@ import ars.invoke.channel.socket.SocketServer;
 public abstract class AbstractUdpServer extends AbstractServer implements SocketServer {
 	private int port = 20000;
 	private Selector selector;
-	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public int getPort() {
 		return port;

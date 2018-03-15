@@ -1,7 +1,5 @@
 package ars.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.quartz.Job;
 import org.quartz.Trigger;
 import org.quartz.Scheduler;
@@ -27,7 +25,6 @@ public abstract class AbstractTaskServer extends AbstractServer {
 	private Scheduler scheduler;
 	private String expression;
 	private boolean concurrent;
-	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * 任务处理类（如果为内部类则必须是公共的静态内部类）

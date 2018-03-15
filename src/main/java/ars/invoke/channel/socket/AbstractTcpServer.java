@@ -8,9 +8,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.ServerSocketChannel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ars.util.AbstractServer;
 import ars.invoke.channel.socket.SocketServer;
 
@@ -23,7 +20,6 @@ import ars.invoke.channel.socket.SocketServer;
 public abstract class AbstractTcpServer extends AbstractServer implements SocketServer {
 	private int port = 10000;
 	private Selector selector;
-	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public int getPort() {
 		return port;

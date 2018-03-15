@@ -15,6 +15,7 @@ import ars.invoke.remote.Protocol;
 import ars.invoke.remote.Endpoint;
 import ars.invoke.request.Requester;
 import ars.invoke.channel.http.Https;
+import ars.invoke.channel.http.HttpRequester;
 
 /**
  * Http远程调用抽象实现
@@ -36,8 +37,7 @@ public abstract class AbstractHttpInvoker implements Invoker {
 	 * @throws Exception
 	 *             操作异常
 	 */
-	protected abstract Object accept(HttpRequester requester, Endpoint endpoint, HttpResponse response)
-			throws Exception;
+	protected abstract Object accept(Requester requester, Endpoint endpoint, HttpResponse response) throws Exception;
 
 	@Override
 	public Object execute(Requester requester, Resource resource) throws Exception {
@@ -47,27 +47,26 @@ public abstract class AbstractHttpInvoker implements Invoker {
 		for (int i = 0; i < nodes.length; i++) {
 			Node node = nodes[i];
 			String url = Https.getUrl(node, uri == null ? requester.getUri() : uri);
-			HttpUriRequest request = Https.getHttpUriRequest(url.toString(), Https.Method.POST,
+			HttpUriRequest entity = Https.getHttpUriRequest(url.toString(), Https.Method.POST,
 					requester.getParameters());
-			request.addHeader(Https.CONTEXT_TOKEN, requester.getToken().getCode());
+			entity.addHeader(Https.CONTEXT_TOKEN, requester.getToken().getCode());
 			if (requester instanceof HttpRequester) {
-				HttpServletRequest httpServletRequest = ((HttpRequester) requester).getHttpServletRequest();
-				Enumeration<String> headers = httpServletRequest.getHeaderNames();
+				HttpServletRequest request = ((HttpRequester) requester).getHttpServletRequest();
+				Enumeration<String> headers = request.getHeaderNames();
 				while (headers.hasMoreElements()) {
 					String header = headers.nextElement();
-					request.setHeader(header, httpServletRequest.getHeader(header));
+					entity.setHeader(header, request.getHeader(header));
 				}
 			}
-
 			HttpClient client = Https.getClient(node.getProtocol() == Protocol.https);
 			try {
-				return this.accept((HttpRequester) requester, endpoint, client.execute(request));
+				return this.accept(requester, endpoint, client.execute(entity));
 			} catch (Exception e) {
 				if (i == nodes.length - 1) {
 					throw e;
 				}
 			} finally {
-				request.abort();
+				entity.abort();
 			}
 		}
 		return null;

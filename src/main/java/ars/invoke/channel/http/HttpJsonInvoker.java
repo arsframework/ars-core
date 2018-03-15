@@ -6,7 +6,7 @@ import org.apache.http.util.EntityUtils;
 
 import ars.util.Jsons;
 import ars.invoke.remote.Endpoint;
-import ars.invoke.channel.http.HttpRequester;
+import ars.invoke.request.Requester;
 import ars.invoke.channel.http.AbstractHttpInvoker;
 
 /**
@@ -18,7 +18,7 @@ import ars.invoke.channel.http.AbstractHttpInvoker;
 public class HttpJsonInvoker extends AbstractHttpInvoker {
 
 	@Override
-	protected Object accept(HttpRequester requester, Endpoint endpoint, HttpResponse response) throws Exception {
+	protected Object accept(Requester requester, Endpoint endpoint, HttpResponse response) throws Exception {
 		HttpEntity entity = response.getEntity();
 		try {
 			return Jsons.parse(EntityUtils.toString(entity));

@@ -19,14 +19,14 @@ import com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConv
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.fop.svg.PDFTranscoder;
-import org.xhtmlrenderer.pdf.ITextFontResolver;
-import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.apache.batik.transcoder.Transcoder;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.batik.transcoder.image.JPEGTranscoder;
+import org.xhtmlrenderer.pdf.ITextRenderer;
+import org.xhtmlrenderer.pdf.ITextFontResolver;
 
 import ars.util.Files;
 import ars.util.Strings;

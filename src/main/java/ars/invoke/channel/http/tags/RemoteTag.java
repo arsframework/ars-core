@@ -1,5 +1,6 @@
 package ars.invoke.channel.http.tags;
 
+import ars.util.Strings;
 import ars.invoke.remote.Remotes;
 import ars.invoke.remote.Protocol;
 import ars.invoke.channel.http.tags.ResourceTag;
@@ -11,8 +12,8 @@ import ars.invoke.channel.http.tags.ResourceTag;
  * 
  */
 public class RemoteTag extends ResourceTag {
-	private Protocol protocol; // 接口协议
-	private String host; // 主机地址
+	private Protocol protocol = Protocol.tcp; // 接口协议
+	private String host = Strings.DEFAULT_LOCALHOST_ADDRESS; // 主机地址
 	private int port; // 主机端口
 
 	public Protocol getProtocol() {

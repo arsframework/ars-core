@@ -86,12 +86,12 @@
      	</attribute>
      	<attribute>
             <name>protocol</name>
-            <required>true</required>
+            <required>false</required>
             <rtexprvalue>true</rtexprvalue>
      	</attribute>
      	<attribute>
             <name>host</name>
-            <required>true</required>
+            <required>false</required>
             <rtexprvalue>true</rtexprvalue>
      	</attribute>
      	<attribute>

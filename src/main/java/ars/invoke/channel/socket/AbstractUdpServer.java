@@ -17,7 +17,7 @@ import ars.invoke.channel.socket.SocketServer;
  * 
  */
 public abstract class AbstractUdpServer extends AbstractServer implements SocketServer {
-	private int port = 20000;
+	private int port = 10000;
 	private Selector selector;
 
 	public int getPort() {
@@ -37,7 +37,7 @@ public abstract class AbstractUdpServer extends AbstractServer implements Socket
 			this.selector = Selector.open();
 			DatagramChannel channel = DatagramChannel.open();
 			channel.configureBlocking(false);
-			channel.socket().bind(new InetSocketAddress(this.getPort()));
+			channel.socket().bind(new InetSocketAddress(this.port));
 			channel.register(this.selector, SelectionKey.OP_READ);
 		} catch (IOException e) {
 			throw new RuntimeException(e);

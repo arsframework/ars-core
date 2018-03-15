@@ -38,7 +38,7 @@ public abstract class AbstractTcpServer extends AbstractServer implements Socket
 			this.selector = Selector.open();
 			ServerSocketChannel channel = ServerSocketChannel.open();
 			channel.configureBlocking(false);
-			channel.socket().bind(new InetSocketAddress(this.getPort()));
+			channel.socket().bind(new InetSocketAddress(this.port));
 			channel.register(this.selector, SelectionKey.OP_ACCEPT);
 		} catch (IOException e) {
 			throw new RuntimeException(e);

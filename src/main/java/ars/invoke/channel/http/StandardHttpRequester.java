@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import ars.util.Files;
-import ars.util.Streams;
 import ars.util.Strings;
 import ars.invoke.Channel;
 import ars.invoke.request.Token;
@@ -216,7 +215,7 @@ public class StandardHttpRequester extends StandardRequester implements HttpRequ
 			if ("jsp".equalsIgnoreCase(Files.getSuffix(template))) {
 				return Https.view(this.request, this.response, template, context);
 			}
-			return Files.getString(new File(template));
+			throw new RuntimeException("Template render not found:" + template);
 		}
 		OutputStream os = new ByteArrayOutputStream();
 		try {
@@ -229,7 +228,12 @@ public class StandardHttpRequester extends StandardRequester implements HttpRequ
 
 	@Override
 	public void render(String template, Object content) throws Exception {
-		Https.render(this.request, this.response, template, this.getRenderContext(content));
+		OutputStream os = this.response.getOutputStream();
+		try {
+			this.render(template, content, os);
+		} finally {
+			os.close();
+		}
 	}
 
 	@Override
@@ -250,19 +254,14 @@ public class StandardHttpRequester extends StandardRequester implements HttpRequ
 	public void render(String template, Object content, OutputStream output) throws Exception {
 		Render render = this.loolupRender(template);
 		Map<String, Object> context = this.getRenderContext(content);
-		OutputStream os = this.response.getOutputStream();
-		try {
-			if (render == null) {
-				if ("jsp".equalsIgnoreCase(Files.getSuffix(template))) {
-					Https.render(this.request, this.response, template, context, output);
-				} else {
-					Streams.write(new File(template), os);
-				}
+		if (render == null) {
+			if ("jsp".equalsIgnoreCase(Files.getSuffix(template))) {
+				Https.render(this.request, this.response, template, context, output);
 			} else {
-				render.execute(this, template, context, os);
+				throw new RuntimeException("Template render not found:" + template);
 			}
-		} finally {
-			os.close();
+		} else {
+			render.execute(this, template, context, output);
 		}
 	}
 

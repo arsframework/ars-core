@@ -29,19 +29,10 @@ import ars.invoke.channel.http.HttpRequester;
  */
 public abstract class AbstractHttpChannel implements HttpChannel {
 	private Context context; // 应用上下文
-	private String directory; // 文件目录
 	private Redirector[] redirectors = new Redirector[0]; // 请求重定向配置
 	private Map<String, Render> renders = new HashMap<String, Render>(0); // 视图渲染配置
 	private Map<String, String> templates = new HashMap<String, String>(0); // 模板映射
 	private Map<String, Converter> converters = new HashMap<String, Converter>(0); // 数据转换映射
-
-	public String getDirectory() {
-		return directory;
-	}
-
-	public void setDirectory(String directory) {
-		this.directory = Strings.getRealPath(directory);
-	}
 
 	public Redirector[] getRedirectors() {
 		return redirectors;
@@ -143,9 +134,6 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 			if (index > 0) {
 				template = template.substring(0, index);
 			}
-			if (this.directory != null) {
-				template = new StringBuilder(this.directory).append('/').append(template).toString();
-			}
 		}
 		return template;
 	}
@@ -186,9 +174,6 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 				continue;
 			}
 			if (redirect.indexOf('.') > 0) {
-				if (this.directory != null) {
-					redirect = new StringBuilder(this.directory).append('/').append(redirect).toString();
-				}
 				requester.render(redirect, content);
 			} else {
 				String context = requester.getHttpServletRequest().getContextPath();

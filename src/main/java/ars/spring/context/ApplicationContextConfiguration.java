@@ -27,7 +27,6 @@ import ars.util.Dates;
 import ars.util.Strings;
 import ars.util.Servers;
 import ars.util.ObjectAdapter;
-import ars.file.office.Converts;
 import ars.invoke.Router;
 import ars.invoke.Channel;
 import ars.invoke.Context;
@@ -93,14 +92,6 @@ public class ApplicationContextConfiguration extends StandardRouter
 
 	public void setDatenanoFormat(String format) {
 		Dates.setDatenanoFormat(new SimpleDateFormat(format));
-	}
-
-	public void setOpenOfficeHost(String host) {
-		Converts.setOpenOfficeHost(host);
-	}
-
-	public void setOpenOfficePort(int port) {
-		Converts.setOpenOfficePort(port);
 	}
 
 	@Override

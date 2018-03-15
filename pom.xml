@@ -4,7 +4,7 @@
 
 	<groupId>com.arsframework</groupId>
 	<artifactId>ars-core</artifactId>
-	<version>1.7.0</version>
+	<version>1.7.1</version>
 	<packaging>jar</packaging>
 
 	<name>ars-core</name>
@@ -207,6 +207,15 @@
 			<version>3.3</version>
 			<scope>provided</scope>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.freemarker/freemarker -->
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<version>2.3.23</version>
+			<scope>provided</scope>
+		</dependency>
+
 	</dependencies>
 
 	<licenses>

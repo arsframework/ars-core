@@ -9,8 +9,6 @@ import java.awt.image.BufferedImage;
 import java.awt.geom.AffineTransform;
 import java.util.Random;
 
-import ars.util.Randoms;
-
 /**
  * 操作证码工具类
  * 
@@ -18,8 +16,43 @@ import ars.util.Randoms;
  * 
  */
 public final class Opcodes {
+	private static ThreadLocal<Random> threadRandom;
+
 	private Opcodes() {
 
+	}
+
+	/**
+	 * 获取当前随机处理对象
+	 * 
+	 * @return 随机处理对象
+	 */
+	private static Random getCurrentRandom() {
+		if (threadRandom == null) {
+			synchronized (Opcodes.class) {
+				if (threadRandom == null) {
+					threadRandom = new ThreadLocal<Random>();
+					Random random = new Random();
+					threadRandom.set(random);
+					return random;
+				}
+			}
+		}
+		Random random = threadRandom.get();
+		if (random == null) {
+			random = new Random();
+			threadRandom.set(random);
+		}
+		return random;
+	}
+
+	/**
+	 * 移除当前随机处理对象
+	 */
+	private static void removeCurrentRandom() {
+		if (threadRandom != null) {
+			threadRandom.remove();
+		}
 	}
 
 	private static Color getRandomColor(int fc, int bc) {
@@ -29,7 +62,7 @@ public final class Opcodes {
 		if (bc > 255) {
 			bc = 255;
 		}
-		Random random = Randoms.getCurrentRandom();
+		Random random = getCurrentRandom();
 		int r = fc + random.nextInt(bc - fc);
 		int g = fc + random.nextInt(bc - fc);
 		int b = fc + random.nextInt(bc - fc);
@@ -37,7 +70,7 @@ public final class Opcodes {
 	}
 
 	private static void drawLine(Graphics graphics, int number, int width, int height) {
-		Random random = Randoms.getCurrentRandom();
+		Random random = getCurrentRandom();
 		for (int i = 0; i < number; i++) {
 			int x = random.nextInt(width - 1);
 			int y = random.nextInt(height - 1);
@@ -48,7 +81,7 @@ public final class Opcodes {
 	}
 
 	private static void drawYawp(BufferedImage image, float rate, int width, int height) {
-		Random random = Randoms.getCurrentRandom();
+		Random random = getCurrentRandom();
 		int area = (int) (rate * width * height);
 		for (int i = 0; i < area; i++) {
 			image.setRGB(random.nextInt(width), random.nextInt(height), getRandomIntColor());
@@ -57,7 +90,7 @@ public final class Opcodes {
 
 	private static int getRandomIntColor() {
 		int color = 0;
-		Random random = Randoms.getCurrentRandom();
+		Random random = getCurrentRandom();
 		for (int i = 0; i < 3; i++) {
 			color = color << 8;
 			color = color | random.nextInt(255);
@@ -66,7 +99,7 @@ public final class Opcodes {
 	}
 
 	private static void shearX(Graphics graphics, Color color, int width, int height) {
-		Random random = Randoms.getCurrentRandom();
+		Random random = getCurrentRandom();
 		int period = random.nextInt(2);
 		boolean borderGap = true;
 		int frames = 1;
@@ -84,7 +117,7 @@ public final class Opcodes {
 	}
 
 	private static void shearY(Graphics graphics, Color color, int width, int height) {
-		Random random = Randoms.getCurrentRandom();
+		Random random = getCurrentRandom();
 		int period = random.nextInt(40) + 10; // 50;
 		boolean borderGap = true;
 		int frames = 20;
@@ -133,33 +166,37 @@ public final class Opcodes {
 		if (height < 1) {
 			throw new IllegalArgumentException("Illegal height:" + height);
 		}
-		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		Graphics2D graphics = image.createGraphics();
-		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		graphics.setColor(Color.GRAY);// 设置边框色
-		graphics.fillRect(0, 0, width, height);
-		graphics.setColor(getRandomColor(200, 250));// 设置背景色
-		graphics.fillRect(0, 2, width, height - 4);
-		Color color = getRandomColor(160, 200);
-		graphics.setColor(color);// 设置线条的颜色
-		drawLine(graphics, 20, width, height);// 绘制干扰线
-		drawYawp(image, 0.05f, width, height);// 添加噪点
-		shearX(graphics, color, width, height); // 扭曲横柱
-		shearY(graphics, color, width, height); // 扭曲纵柱
-		Random random = Randoms.getCurrentRandom();
-		graphics.setColor(getRandomColor(100, 160));
-		int fontSize = height - 4;
-		graphics.setFont(new Font("Algerian", Font.ITALIC, fontSize));
-		char[] chars = content.toCharArray();
-		for (int i = 0; i < chars.length; i++) {
-			AffineTransform affine = new AffineTransform();
-			affine.setToRotation(Math.PI / 4 * random.nextDouble() * (random.nextBoolean() ? 1 : -1),
-					(width / chars.length) * i + fontSize / 2, height / 2);
-			graphics.setTransform(affine);
-			graphics.drawChars(chars, i, 1, ((width - 10) / chars.length) * i + 5, height / 2 + fontSize / 2 - 10);
+		try {
+			BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+			Graphics2D graphics = image.createGraphics();
+			graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			graphics.setColor(Color.GRAY);// 设置边框色
+			graphics.fillRect(0, 0, width, height);
+			graphics.setColor(getRandomColor(200, 250));// 设置背景色
+			graphics.fillRect(0, 2, width, height - 4);
+			Color color = getRandomColor(160, 200);
+			graphics.setColor(color);// 设置线条的颜色
+			drawLine(graphics, 20, width, height);// 绘制干扰线
+			drawYawp(image, 0.05f, width, height);// 添加噪点
+			shearX(graphics, color, width, height); // 扭曲横柱
+			shearY(graphics, color, width, height); // 扭曲纵柱
+			graphics.setColor(getRandomColor(100, 160));
+			int fontSize = height - 4;
+			graphics.setFont(new Font("Algerian", Font.ITALIC, fontSize));
+			Random random = getCurrentRandom();
+			char[] chars = content.toCharArray();
+			for (int i = 0; i < chars.length; i++) {
+				AffineTransform affine = new AffineTransform();
+				affine.setToRotation(Math.PI / 4 * random.nextDouble() * (random.nextBoolean() ? 1 : -1),
+						(width / chars.length) * i + fontSize / 2, height / 2);
+				graphics.setTransform(affine);
+				graphics.drawChars(chars, i, 1, ((width - 10) / chars.length) * i + 5, height / 2 + fontSize / 2 - 10);
+			}
+			graphics.dispose();
+			return image;
+		} finally {
+			removeCurrentRandom();
 		}
-		graphics.dispose();
-		return image;
 	}
 
 }

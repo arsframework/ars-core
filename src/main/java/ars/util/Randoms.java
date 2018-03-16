@@ -21,8 +21,6 @@ import ars.util.Beans;
  *
  */
 public final class Randoms {
-	private static final ThreadLocal<Random> threadRandom = new ThreadLocal<Random>();
-
 	private Randoms() {
 
 	}
@@ -97,6 +95,7 @@ public final class Randoms {
 	 */
 	public static class RandomBeanFactory<T> {
 		protected final Class<T> type; // 对象类型
+		protected final Random random;
 		private ExcludeStrategy excludeStrategy;
 		private RandomGeneratorFactory randomGeneratorFactory;
 		private final LinkedList<Class<?>> executed = new LinkedList<Class<?>>(); // 已执行对象类型
@@ -106,6 +105,7 @@ public final class Randoms {
 				throw new IllegalArgumentException("Illegal type:" + type);
 			}
 			this.type = type;
+			this.random = new Random();
 		}
 
 		/**
@@ -131,27 +131,27 @@ public final class Randoms {
 				return (M) generator.generate();
 			}
 			if (Enum.class.isAssignableFrom(type)) {
-				return (M) randomEnum((Class<Enum<?>>) type);
+				return (M) randomEnum(this.random, (Class<Enum<?>>) type);
 			} else if (Date.class.isAssignableFrom(type)) {
-				return (M) randomDate();
+				return (M) randomDate(this.random);
 			} else if (type == byte.class || type == Byte.class) {
-				return (M) Byte.valueOf((byte) randomInteger());
+				return (M) Byte.valueOf((byte) randomInteger(this.random));
 			} else if (type == char.class || type == Character.class) {
-				return (M) Strings.CHARS[getCurrentRandom().nextInt(Strings.CHARS.length)];
+				return (M) randomCharacter(this.random);
 			} else if (type == short.class || type == Short.class) {
-				return (M) Short.valueOf((short) randomInteger());
+				return (M) Short.valueOf((short) randomInteger(this.random));
 			} else if (type == float.class || type == Float.class) {
-				return (M) Float.valueOf(randomInteger());
+				return (M) Float.valueOf(randomInteger(this.random));
 			} else if (type == double.class || type == Double.class) {
-				return (M) Double.valueOf(randomInteger());
+				return (M) Double.valueOf(randomInteger(this.random));
 			} else if (type == int.class || type == Integer.class) {
-				return (M) Integer.valueOf(randomInteger());
+				return (M) Integer.valueOf(randomInteger(this.random));
 			} else if (type == long.class || type == Long.class) {
-				return (M) Long.valueOf(randomInteger());
+				return (M) Long.valueOf(randomInteger(this.random));
 			} else if (type == boolean.class || type == Boolean.class) {
-				return (M) Boolean.valueOf(randomBoolean());
+				return (M) Boolean.valueOf(randomBoolean(this.random));
 			} else if (type == String.class) {
-				return (M) randomString();
+				return (M) randomString(this.random);
 			} else if (type.isArray()) {
 				Class<?> component = type.getComponentType();
 				Object[] array = Beans.getArray(component, 1);
@@ -240,20 +240,6 @@ public final class Randoms {
 	}
 
 	/**
-	 * 获取当前线程随机数处理对象
-	 * 
-	 * @return 随机数处理对象
-	 */
-	public static Random getCurrentRandom() {
-		Random random = threadRandom.get();
-		if (random == null) {
-			random = new Random();
-			threadRandom.set(random);
-		}
-		return random;
-	}
-
-	/**
 	 * 随机生成对象实例
 	 * 
 	 * @param <T>
@@ -275,17 +261,32 @@ public final class Randoms {
 	 *            枚举类型
 	 * @return 枚举项
 	 */
-	@SuppressWarnings("unchecked")
 	public static <T extends Enum<?>> T randomEnum(Class<T> type) {
+		return randomEnum(new Random(), type);
+	}
+
+	/**
+	 * 随机生成枚举项
+	 * 
+	 * @param <T>
+	 *            枚举类型
+	 * @param random
+	 *            随机处理对象
+	 * @param type
+	 *            枚举类型
+	 * @return 枚举项
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T extends Enum<?>> T randomEnum(Random random, Class<T> type) {
+		if (random == null) {
+			throw new IllegalArgumentException("Illegal random:" + random);
+		}
 		if (type == null) {
 			throw new IllegalArgumentException("Illegal type:" + type);
 		}
 		try {
 			Object[] values = (Object[]) type.getMethod("values").invoke(type);
-			if (values.length == 0) {
-				return null;
-			}
-			return (T) values[getCurrentRandom().nextInt(values.length)];
+			return values.length == 0 ? null : (T) values[random.nextInt(values.length)];
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -297,7 +298,18 @@ public final class Randoms {
 	 * @return 日期
 	 */
 	public static Date randomDate() {
-		return randomDate(Dates.getFirstDate(), new Date());
+		return randomDate(new Random());
+	}
+
+	/**
+	 * 随机生成日期（以当前年份第一天为最小日期，当前日期为最大日期）
+	 * 
+	 * @param random
+	 *            随机处理对象
+	 * @return 日期
+	 */
+	public static Date randomDate(Random random) {
+		return randomDate(random, Dates.getFirstDate(), new Date());
 	}
 
 	/**
@@ -310,6 +322,24 @@ public final class Randoms {
 	 * @return 日期
 	 */
 	public static Date randomDate(Date min, Date max) {
+		return randomDate(new Random(), min, max);
+	}
+
+	/**
+	 * 随机生成日期
+	 * 
+	 * @param random
+	 *            随机处理对象
+	 * @param min
+	 *            最小日
+	 * @param max
+	 *            最大日期
+	 * @return 日期
+	 */
+	public static Date randomDate(Random random, Date min, Date max) {
+		if (random == null) {
+			throw new IllegalArgumentException("Illegal random:" + random);
+		}
 		if (min == null) {
 			throw new IllegalArgumentException("Illegal min:" + min);
 		}
@@ -319,9 +349,9 @@ public final class Randoms {
 		long start = min.getTime();
 		long time = max.getTime() - start; // 相差毫秒数
 		if (time <= 1000) { // 相差1秒内
-			return new Date(start + getCurrentRandom().nextInt((int) time));
+			return new Date(start + random.nextInt((int) time));
 		}
-		return new Date(start + getCurrentRandom().nextInt((int) (time / 1000)) * 1000);
+		return new Date(start + random.nextInt((int) (time / 1000)) * 1000);
 	}
 
 	/**
@@ -330,7 +360,18 @@ public final class Randoms {
 	 * @return 数字
 	 */
 	public static int randomInteger() {
-		return randomInteger(0, 10);
+		return randomInteger(new Random());
+	}
+
+	/**
+	 * 随机生成数字
+	 * 
+	 * @param random
+	 *            随机处理对象
+	 * @return 数字
+	 */
+	public static int randomInteger(Random random) {
+		return randomInteger(random, 0, 10);
 	}
 
 	/**
@@ -343,10 +384,28 @@ public final class Randoms {
 	 * @return 数字
 	 */
 	public static int randomInteger(int min, int max) {
+		return randomInteger(new Random(), min, max);
+	}
+
+	/**
+	 * 随机生成数字
+	 * 
+	 * @param random
+	 *            随机处理对象
+	 * @param min
+	 *            最小值
+	 * @param max
+	 *            最大值
+	 * @return 数字
+	 */
+	public static int randomInteger(Random random, int min, int max) {
+		if (random == null) {
+			throw new IllegalArgumentException("Illegal random:" + random);
+		}
 		if (max < min) {
 			throw new IllegalArgumentException("Max number can't be less than min number(" + min + "," + max + ")");
 		}
-		return min + getCurrentRandom().nextInt(max - min);
+		return min + random.nextInt(max - min);
 	}
 
 	/**
@@ -355,7 +414,18 @@ public final class Randoms {
 	 * @return 字符串
 	 */
 	public static String randomString() {
-		return randomString(4);
+		return randomString(new Random());
+	}
+
+	/**
+	 * 随机生成字符串（默认长度4）
+	 * 
+	 * @param random
+	 *            随机处理对象
+	 * @return 字符串
+	 */
+	public static String randomString(Random random) {
+		return randomString(random, 4);
 	}
 
 	/**
@@ -372,12 +442,38 @@ public final class Randoms {
 	/**
 	 * 随机生成字符串
 	 * 
+	 * @param random
+	 *            随机处理对象
+	 * @param length
+	 *            字符串长度
+	 * @return 字符串
+	 */
+	public static String randomString(Random random, int length) {
+		return randomString(random, Strings.CHARS, length);
+	}
+
+	/**
+	 * 随机生成字符串
+	 * 
 	 * @param chars
 	 *            随机字符数组
 	 * @return 字符串
 	 */
 	public static String randomString(Character[] chars) {
 		return randomString(chars, 4);
+	}
+
+	/**
+	 * 随机生成字符串
+	 * 
+	 * @param random
+	 *            随机处理对象
+	 * @param chars
+	 *            随机字符数组
+	 * @return 字符串
+	 */
+	public static String randomString(Random random, Character[] chars) {
+		return randomString(random, chars, 4);
 	}
 
 	/**
@@ -390,13 +486,85 @@ public final class Randoms {
 	 * @return 字符串
 	 */
 	public static String randomString(Character[] chars, int length) {
+		return randomString(new Random(), chars, length);
+	}
+
+	/**
+	 * 随机生成字符串
+	 * 
+	 * @param random
+	 *            随机处理对象
+	 * @param chars
+	 *            随机字符数组
+	 * @param length
+	 *            字符串长度
+	 * @return 字符串
+	 */
+	public static String randomString(Random random, Character[] chars, int length) {
+		if (random == null) {
+			throw new IllegalArgumentException("Illegal random:" + random);
+		}
 		if (chars == null || chars.length == 0) {
 			throw new IllegalArgumentException("Illegal chars:" + Strings.toString(chars));
 		}
 		if (length < 1) {
 			throw new IllegalArgumentException("Illegal length:" + length);
 		}
-		return Strings.random(chars, length);
+		StringBuilder buffer = new StringBuilder();
+		for (int i = 0; i < length; i++) {
+			buffer.append(chars[random.nextInt(chars.length)]);
+		}
+		return buffer.toString();
+	}
+
+	/**
+	 * 随机生成字符
+	 * 
+	 * @return 字符
+	 */
+	public static Character randomCharacter() {
+		return randomCharacter(new Random());
+	}
+
+	/**
+	 * 随机生成字符
+	 * 
+	 * @param random
+	 *            随机处理对象
+	 * @return 字符
+	 */
+	public static Character randomCharacter(Random random) {
+		return randomCharacter(random, Strings.CHARS);
+	}
+
+	/**
+	 * 随机生成字符
+	 * 
+	 * @param chars
+	 *            随机字符数组
+	 * @return 字符
+	 */
+	public static Character randomCharacter(Character[] chars) {
+		return randomCharacter(new Random(), chars);
+	}
+
+	/**
+	 * 随机生成字符
+	 * 
+	 * @param random
+	 *            随机处理对象
+	 * @param chars
+	 *            随机字符数组
+	 * @return 字符
+	 */
+	public static Character randomCharacter(Random random, Character[] chars) {
+		if (random == null) {
+			throw new IllegalArgumentException("Illegal random:" + random);
+		}
+		if (chars == null || chars.length == 0) {
+			throw new IllegalArgumentException("Illegal chars:" + Strings.toString(chars));
+		}
+		return chars[random.nextInt(chars.length)];
 	}
 
 	/**
@@ -405,7 +573,21 @@ public final class Randoms {
 	 * @return 真假值
 	 */
 	public static boolean randomBoolean() {
-		return getCurrentRandom().nextBoolean();
+		return randomBoolean(new Random());
+	}
+
+	/**
+	 * 随机生成真假值
+	 * 
+	 * @param random
+	 *            随机处理对象
+	 * @return 真假值
+	 */
+	public static boolean randomBoolean(Random random) {
+		if (random == null) {
+			throw new IllegalArgumentException("Illegal random:" + random);
+		}
+		return random.nextBoolean();
 	}
 
 }

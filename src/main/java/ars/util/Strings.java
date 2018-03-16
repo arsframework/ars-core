@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.List;
 import java.util.Date;
-import java.util.Random;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -544,133 +543,27 @@ public final class Strings {
 	}
 
 	/**
-	 * 获取0~10之前的随机数（不包含10）
+	 * 获取随机字符串
 	 * 
 	 * @param length
 	 *            随机数长度
 	 * @return 随机数字符串
 	 */
 	public static String random(int length) {
-		return random(length, true);
-	}
-
-	/**
-	 * 获取0~10之前的随机数（不包含10）
-	 * 
-	 * @param length
-	 *            随机数长度
-	 * @param repeat
-	 *            是否允许重复
-	 * @return 随机数字符串
-	 */
-	public static String random(int length, boolean repeat) {
-		return random(length, 10, repeat);
+		return Randoms.randomString(length);
 	}
 
 	/**
 	 * 获取随机数
 	 * 
-	 * @param length
-	 *            随机数长度
-	 * @param max
-	 *            随机数最大值（不包含）
-	 * @return 随机数字符串
-	 */
-	public static String random(int length, int max) {
-		return random(length, max, true);
-	}
-
-	/**
-	 * 获取随机数
-	 * 
-	 * @param length
-	 *            随机数长度
-	 * @param max
-	 *            随机数最大值（不包含）
-	 * @param repeat
-	 *            是否允许重复
-	 * @return 随机数字符串
-	 */
-	public static String random(int length, int max, boolean repeat) {
-		if (length < 1) {
-			throw new IllegalArgumentException("Illegal length:" + length);
-		}
-		if (max < length) {
-			throw new IllegalArgumentException("Illegal max:" + max);
-		}
-		Random random = Randoms.getCurrentRandom();
-		StringBuilder buffer = new StringBuilder();
-		for (int i = 0; i < length; i++) {
-			if (repeat) {
-				buffer.append(random.nextInt(max));
-			} else {
-				int number = -1;
-				next: while (true) {
-					number = random.nextInt(max);
-					for (int j = 0; j < buffer.length(); j++) {
-						if (buffer.charAt(j) == number) {
-							continue next;
-						}
-					}
-					break;
-				}
-				buffer.append(number);
-			}
-		}
-		return buffer.toString();
-	}
-
-	/**
-	 * 获取随机数
-	 * 
-	 * @param source
-	 *            随机数源
+	 * @param chars
+	 *            随机字符数组
 	 * @param length
 	 *            随机数长度
 	 * @return 随机数组
 	 */
-	public static String random(Object[] source, int length) {
-		return random(source, length, true);
-	}
-
-	/**
-	 * 获取随机数
-	 * 
-	 * @param source
-	 *            随机数源
-	 * @param length
-	 *            随机数长度
-	 * @param repeat
-	 *            是否允许重复
-	 * @return 随机数组
-	 */
-	public static String random(Object[] source, int length, boolean repeat) {
-		if (source == null) {
-			throw new IllegalArgumentException("Illegal source:" + source);
-		}
-		if (length < 1) {
-			throw new IllegalArgumentException("Illegal length:" + length);
-		}
-		Random random = Randoms.getCurrentRandom();
-		StringBuilder buffer = new StringBuilder();
-		for (int i = 0; i < length; i++) {
-			if (repeat) {
-				buffer.append(source[random.nextInt(source.length)]);
-			} else {
-				Object object;
-				next: while (true) {
-					object = source[random.nextInt(source.length)];
-					for (int j = 0; j < buffer.length(); j++) {
-						if (object.equals(buffer.charAt(j))) {
-							continue next;
-						}
-					}
-					break;
-				}
-				buffer.append(object);
-			}
-		}
-		return buffer.toString();
+	public static String random(Character[] chars, int length) {
+		return Randoms.randomString(chars, length);
 	}
 
 	/**

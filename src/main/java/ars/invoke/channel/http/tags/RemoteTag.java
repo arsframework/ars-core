@@ -1,8 +1,21 @@
 package ars.invoke.channel.http.tags;
 
+import java.util.Map;
+import java.util.Enumeration;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.util.EntityUtils;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpUriRequest;
+
+import ars.util.Jsons;
 import ars.util.Strings;
 import ars.invoke.remote.Remotes;
 import ars.invoke.remote.Protocol;
+import ars.invoke.channel.http.Https;
+import ars.invoke.channel.http.HttpRequester;
 import ars.invoke.channel.http.tags.ResourceTag;
 
 /**
@@ -42,8 +55,32 @@ public class RemoteTag extends ResourceTag {
 
 	@Override
 	protected Object execute() throws Exception {
+		HttpRequester requester = this.getRequester();
+		Map<String, Object> parameters = this.getParameters();
+		if (this.protocol == Protocol.http || this.protocol == Protocol.https) {
+			String url = Https.getUrl(this.protocol, this.host, this.port, this.getApi());
+			HttpUriRequest uriRequest = Https.getHttpUriRequest(url, Https.Method.POST, parameters);
+			HttpServletRequest servletRequest = requester.getHttpServletRequest();
+			Enumeration<String> headers = servletRequest.getHeaderNames();
+			while (headers.hasMoreElements()) {
+				String header = headers.nextElement();
+				uriRequest.setHeader(header, servletRequest.getHeader(header));
+			}
+			uriRequest.addHeader(Https.CONTEXT_TOKEN, requester.getToken().getCode());
+			HttpClient client = Https.getClient(this.protocol == Protocol.https);
+			try {
+				HttpEntity entity = client.execute(uriRequest).getEntity();
+				try {
+					return Jsons.parse(EntityUtils.toString(entity));
+				} finally {
+					EntityUtils.consumeQuietly(entity);
+				}
+			} finally {
+				uriRequest.abort();
+			}
+		}
 		Ice.ObjectPrx proxy = Remotes.getProxy(this.protocol, this.host, this.port);
-		return Remotes.invoke(proxy, this.getApi(), this.getParameters());
+		return Remotes.invoke(proxy, requester.getToken(), this.getApi(), parameters);
 	}
 
 }

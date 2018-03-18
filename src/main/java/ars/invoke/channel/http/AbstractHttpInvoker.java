@@ -21,7 +21,7 @@ import ars.invoke.channel.http.HttpRequester;
  * Http远程调用抽象实现
  * 
  * @author yongqiangwu
- *
+ * 
  */
 public abstract class AbstractHttpInvoker implements Invoker {
 	/**
@@ -47,26 +47,25 @@ public abstract class AbstractHttpInvoker implements Invoker {
 		for (int i = 0; i < nodes.length; i++) {
 			Node node = nodes[i];
 			String url = Https.getUrl(node, uri == null ? requester.getUri() : uri);
-			HttpUriRequest entity = Https.getHttpUriRequest(url.toString(), Https.Method.POST,
-					requester.getParameters());
-			entity.addHeader(Https.CONTEXT_TOKEN, requester.getToken().getCode());
+			HttpUriRequest uriRequest = Https.getHttpUriRequest(url, Https.Method.POST, requester.getParameters());
 			if (requester instanceof HttpRequester) {
-				HttpServletRequest request = ((HttpRequester) requester).getHttpServletRequest();
-				Enumeration<String> headers = request.getHeaderNames();
+				HttpServletRequest servletRequest = ((HttpRequester) requester).getHttpServletRequest();
+				Enumeration<String> headers = servletRequest.getHeaderNames();
 				while (headers.hasMoreElements()) {
 					String header = headers.nextElement();
-					entity.setHeader(header, request.getHeader(header));
+					uriRequest.setHeader(header, servletRequest.getHeader(header));
 				}
 			}
+			uriRequest.addHeader(Https.CONTEXT_TOKEN, requester.getToken().getCode());
 			HttpClient client = Https.getClient(node.getProtocol() == Protocol.https);
 			try {
-				return this.accept(requester, endpoint, client.execute(entity));
+				return this.accept(requester, endpoint, client.execute(uriRequest));
 			} catch (Exception e) {
 				if (i == nodes.length - 1) {
 					throw e;
 				}
 			} finally {
-				entity.abort();
+				uriRequest.abort();
 			}
 		}
 		return null;

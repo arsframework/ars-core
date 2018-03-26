@@ -34,8 +34,8 @@ public final class Invokes {
 	/**
 	 * 请求参数匹配模式
 	 */
-	public static final Pattern PARAM_PATTERN = Pattern.compile("\\$\\{ *param\\.[^ }]+ *\\}",
-			Pattern.CASE_INSENSITIVE);
+	public static final Pattern PARAM_PATTERN = Pattern
+			.compile("\\$\\{ *param\\.[^ }]+ *\\}", Pattern.CASE_INSENSITIVE);
 
 	/**
 	 * 时间戳匹配模式
@@ -74,7 +74,7 @@ public final class Invokes {
 	 * @return 日志信息
 	 */
 	public static String getLog(Requester requester, Object value) {
-		return getLog(requester, value, new Date());
+		return getLog(requester, new Date(), value);
 	}
 
 	/**
@@ -82,13 +82,13 @@ public final class Invokes {
 	 * 
 	 * @param requester
 	 *            请求对象
-	 * @param value
-	 *            请求结果值
 	 * @param timestamp
 	 *            时间戳
+	 * @param value
+	 *            请求结果值
 	 * @return 日志信息
 	 */
-	public static String getLog(Requester requester, Object value, Date timestamp) {
+	public static String getLog(Requester requester, Date timestamp, Object value) {
 		if (requester == null) {
 			throw new IllegalArgumentException("Illegal requester:" + requester);
 		}

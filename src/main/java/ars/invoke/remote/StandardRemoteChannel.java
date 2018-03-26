@@ -54,7 +54,7 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 	 * 如果数据流超过10秒为被读取则自动关闭并销毁
 	 * 
 	 * @author yongqiangwu
-	 *
+	 * 
 	 */
 	abstract class StreamReader {
 		protected final String id;
@@ -146,7 +146,7 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 	 * 文件流读取实现
 	 * 
 	 * @author yongqiangwu
-	 *
+	 * 
 	 */
 	class FileStreamReader extends StreamReader {
 		protected final long size;
@@ -195,7 +195,7 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 	 * 输入流读取实现
 	 * 
 	 * @author yongqiangwu
-	 *
+	 * 
 	 */
 	class InputStreamReader extends StreamReader {
 		protected final InputStream stream;
@@ -228,7 +228,7 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 	 * 字节数组读取实现
 	 * 
 	 * @author yongqiangwu
-	 *
+	 * 
 	 */
 	class ByteArrayStreamReader extends StreamReader {
 		protected final byte[] bytes;
@@ -261,7 +261,7 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 	 * 字节通道读取实现
 	 * 
 	 * @author yongqiangwu
-	 *
+	 * 
 	 */
 	class ByteChannelStreamReader extends StreamReader {
 		protected final ReadableByteChannel channel;
@@ -307,18 +307,16 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 			Object value = entry.getValue();
 			if (value instanceof CharSequence && UPLOAD_FILE_PATTERN.matcher((CharSequence) value).matches()) {
 				String name = ((CharSequence) value).toString();
-				entry.setValue(
-						new Nfile(name.substring(name.indexOf('.') + 1), new File(Remotes.getDirectory(), name)));
+				entry.setValue(new Nfile(name.substring(name.indexOf('.') + 1), new File(Remotes.getDirectory(), name)));
 			} else if (value instanceof Object[]) {
 				Object[] array = (Object[]) value;
 				if (array.length > 0) {
 					for (int i = 0; i < array.length; i++) {
 						Object item = array[i];
-						if (item instanceof CharSequence
-								&& UPLOAD_FILE_PATTERN.matcher((CharSequence) item).matches()) {
+						if (item instanceof CharSequence && UPLOAD_FILE_PATTERN.matcher((CharSequence) item).matches()) {
 							String name = ((CharSequence) item).toString();
-							array[i] = new Nfile(name.substring(name.indexOf('.') + 1),
-									new File(Remotes.getDirectory(), name));
+							array[i] = new Nfile(name.substring(name.indexOf('.') + 1), new File(
+									Remotes.getDirectory(), name));
 						}
 					}
 				}
@@ -328,11 +326,10 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 					Iterator<Object> iterator = collection.iterator();
 					while (iterator.hasNext()) {
 						Object item = iterator.next();
-						if (item instanceof CharSequence
-								&& UPLOAD_FILE_PATTERN.matcher((CharSequence) item).matches()) {
+						if (item instanceof CharSequence && UPLOAD_FILE_PATTERN.matcher((CharSequence) item).matches()) {
 							String name = ((CharSequence) item).toString();
-							collection.add(new Nfile(name.substring(name.indexOf('.') + 1),
-									new File(Remotes.getDirectory(), name)));
+							collection.add(new Nfile(name.substring(name.indexOf('.') + 1), new File(Remotes
+									.getDirectory(), name)));
 							iterator.remove();
 						}
 					}
@@ -376,11 +373,6 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 	}
 
 	@Override
-	public Object dispatch(Requester requester) throws Exception {
-		return requester.execute();
-	}
-
-	@Override
 	public String getIdentifier() {
 		return Remotes.COMMON_CHANNEL_NAME;
 	}
@@ -390,7 +382,7 @@ public class StandardRemoteChannel extends _ResourceDisp implements RemoteChanne
 			Ice.Current __current) {
 		try {
 			Requester requester = this.getRequester(client, token, uri, parameter, __current);
-			Object value = this.dispatch(requester);
+			Object value = requester.execute();
 			if (value instanceof Exception) {
 				__cb.ice_exception((Exception) value);
 			} else if (value instanceof File) {

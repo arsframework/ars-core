@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import ars.util.Streams;
 import ars.util.Strings;
 import ars.invoke.Context;
-import ars.invoke.request.Requester;
 import ars.invoke.convert.Converter;
 import ars.invoke.channel.http.Https;
 import ars.invoke.channel.http.Render;
@@ -198,11 +197,6 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 	}
 
 	@Override
-	public Object dispatch(Requester requester) throws Exception {
-		return requester.execute();
-	}
-
-	@Override
 	public void dispatch(ServletConfig config, HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		Object value = null;
@@ -211,7 +205,7 @@ public abstract class AbstractHttpChannel implements HttpChannel {
 		String template = this.lookupTemplate(requester);
 		if (template == null) {
 			try {
-				value = this.dispatch(requester);
+				value = requester.execute();
 			} catch (Exception e) {
 				value = e;
 			}

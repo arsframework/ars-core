@@ -15,87 +15,145 @@ import ars.util.Beans;
  * 
  */
 public final class Dates {
-	private static DateFormat dateFormat;
-	private static DateFormat datetimeFormat;
-	private static DateFormat datenanoFormat;
+	private static String datePattern; // 日期格式模式
+	private static String datetimePattern; // 日期时间格式模式
+	private static String datenanoPattern; // 日期时间毫秒格式模式
+	private static ThreadLocal<DateFormat> threadDateFormat, threadDatetimeFormat, threadDatenanoFormat;
 
 	private Dates() {
 
 	}
 
-	public static DateFormat getDateFormat() {
-		if (dateFormat == null) {
+	public static String getDatePattern() {
+		if (datePattern == null) {
 			synchronized (Dates.class) {
-				if (dateFormat == null) {
-					dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				if (datePattern == null) {
+					datePattern = "yyyy-MM-dd";
 				}
 			}
 		}
-		return dateFormat;
+		return datePattern;
 	}
 
-	public static void setDateFormat(DateFormat dateFormat) {
-		if (dateFormat == null) {
-			throw new IllegalArgumentException("Illegal dateFormat:" + dateFormat);
+	public static void setDatePattern(String datePattern) {
+		if (datePattern == null) {
+			throw new IllegalArgumentException("Illegal datePattern:" + datePattern);
 		}
-		if (Dates.dateFormat != null) {
-			throw new RuntimeException("Date format has been initialize");
+		if (Dates.datePattern != null) {
+			throw new RuntimeException("Date pattern has been initialize");
 		}
 		synchronized (Dates.class) {
-			if (Dates.dateFormat == null) {
-				Dates.dateFormat = dateFormat;
+			if (Dates.datePattern == null) {
+				Dates.datePattern = datePattern;
 			}
 		}
 	}
 
-	public static DateFormat getDatetimeFormat() {
-		if (datetimeFormat == null) {
+	public static String getDatetimePattern() {
+		if (datetimePattern == null) {
 			synchronized (Dates.class) {
-				if (datetimeFormat == null) {
-					datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				if (datetimePattern == null) {
+					datetimePattern = "yyyy-MM-dd HH:mm:ss";
 				}
 			}
 		}
-		return datetimeFormat;
+		return datetimePattern;
 	}
 
-	public static void setDatetimeFormat(DateFormat datetimeFormat) {
-		if (datetimeFormat == null) {
-			throw new IllegalArgumentException("Illegal datetimeFormat:" + datetimeFormat);
+	public static void setDatetimePattern(String datetimePattern) {
+		if (datetimePattern == null) {
+			throw new IllegalArgumentException("Illegal datetimePattern:" + datetimePattern);
 		}
-		if (Dates.datetimeFormat != null) {
-			throw new RuntimeException("Date time format has been initialize");
+		if (Dates.datetimePattern != null) {
+			throw new RuntimeException("Date time pattern has been initialize");
 		}
 		synchronized (Dates.class) {
-			if (Dates.datetimeFormat == null) {
-				Dates.datetimeFormat = datetimeFormat;
+			if (Dates.datetimePattern == null) {
+				Dates.datetimePattern = datetimePattern;
 			}
 		}
 	}
 
-	public static DateFormat getDatenanoFormat() {
-		if (datenanoFormat == null) {
+	public static String getDatenanoPattern() {
+		if (datenanoPattern == null) {
 			synchronized (Dates.class) {
-				if (datenanoFormat == null) {
-					datenanoFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+				if (datenanoPattern == null) {
+					datenanoPattern = "yyyy-MM-dd HH:mm:ss.SSS";
 				}
 			}
 		}
-		return datenanoFormat;
+		return datenanoPattern;
 	}
 
-	public static void setDatenanoFormat(DateFormat datenanoFormat) {
-		if (datenanoFormat == null) {
-			throw new IllegalArgumentException("Illegal datenanoFormat:" + datenanoFormat);
+	public static void setDatenanoPattern(String datenanoPattern) {
+		if (datenanoPattern == null) {
+			throw new IllegalArgumentException("Illegal datenanoPattern:" + datenanoPattern);
 		}
-		if (Dates.datenanoFormat != null) {
+		if (Dates.datenanoPattern != null) {
 			throw new RuntimeException("Date nanotime format has been initialize");
 		}
 		synchronized (Dates.class) {
-			if (Dates.datenanoFormat == null) {
-				Dates.datenanoFormat = datenanoFormat;
+			if (Dates.datenanoPattern == null) {
+				Dates.datenanoPattern = datenanoPattern;
 			}
 		}
+	}
+
+	/**
+	 * 获取日期格式化处理对象
+	 * 
+	 * @return 日期格式化处理对象
+	 */
+	public static DateFormat getDateFormat() {
+		if (threadDateFormat == null) {
+			synchronized (Dates.class) {
+				if (threadDateFormat == null) {
+					threadDateFormat = new ThreadLocal<DateFormat>();
+					DateFormat format = new SimpleDateFormat(getDatePattern());
+					threadDateFormat.set(format);
+					return format;
+				}
+			}
+		}
+		return threadDateFormat.get();
+	}
+
+	/**
+	 * 获取日期时间格式化处理对象
+	 * 
+	 * @return 日期时间格式化处理对象
+	 */
+	public static DateFormat getDatetimeFormat() {
+		if (threadDatetimeFormat == null) {
+			synchronized (Dates.class) {
+				if (threadDatetimeFormat == null) {
+					threadDatetimeFormat = new ThreadLocal<DateFormat>();
+					DateFormat format = new SimpleDateFormat(getDatetimePattern());
+					threadDatetimeFormat.set(format);
+					return format;
+				}
+			}
+		}
+		return threadDatetimeFormat.get();
+	}
+
+	/**
+	 * 获取日期时间毫秒格式化处理对象
+	 * 
+	 * @return 日期时间毫秒格式化处理对象
+	 */
+	public static DateFormat getDatenanoFormat() {
+		if (threadDatenanoFormat == null) {
+			synchronized (Dates.class) {
+				if (threadDatenanoFormat == null) {
+					threadDatenanoFormat = new ThreadLocal<DateFormat>();
+					DateFormat format = new SimpleDateFormat(getDatenanoPattern());
+					threadDatenanoFormat.set(format);
+					return format;
+				}
+			}
+		}
+		return threadDatenanoFormat.get();
 	}
 
 	/**
@@ -117,17 +175,17 @@ public final class Dates {
 	 * 
 	 * @param source
 	 *            日期时间字符串形式
-	 * @param formats
-	 *            格式数组
+	 * @param patterns
+	 *            格式模式数组
 	 * @return 日期时间对象
 	 */
-	public static Date parse(String source, String... formats) {
+	public static Date parse(String source, String... patterns) {
 		if (source == null) {
 			throw new IllegalArgumentException("Illegal source:" + source);
 		}
-		for (String format : formats) {
+		for (String pattern : patterns) {
 			try {
-				return new SimpleDateFormat(format).parse(source);
+				return new SimpleDateFormat(pattern).parse(source);
 			} catch (ParseException e) {
 			}
 		}

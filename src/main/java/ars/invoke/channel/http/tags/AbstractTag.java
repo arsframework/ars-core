@@ -48,6 +48,7 @@ public abstract class AbstractTag extends SimpleTagSupport {
 	private String mapping; // 映射属性名称，与property配合使用，返回Map对象
 	private boolean json; // 是否将对象转换成JSON字符串
 	private boolean string; // 是否将对象转换成字符串
+	private int depth = 2; // json转换对象属性下钻深度
 
 	public String getVar() {
 		return var;
@@ -103,6 +104,14 @@ public abstract class AbstractTag extends SimpleTagSupport {
 
 	public void setString(boolean string) {
 		this.string = string;
+	}
+
+	public int getDepth() {
+		return depth;
+	}
+
+	public void setDepth(int depth) {
+		this.depth = depth;
 	}
 
 	/**
@@ -169,7 +178,7 @@ public abstract class AbstractTag extends SimpleTagSupport {
 				}
 				if (!(value instanceof CharSequence)) {
 					if (this.json) {
-						value = Jsons.format(value);
+						value = Jsons.format(value, this.depth);
 					} else if (this.string) {
 						value = Strings.toString(value);
 					}

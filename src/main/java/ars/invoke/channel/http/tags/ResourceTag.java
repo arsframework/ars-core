@@ -17,7 +17,7 @@ import ars.invoke.channel.http.tags.AbstractTag;
 public class ResourceTag extends AbstractTag {
 	private String api; // 接口地址
 	private Object param; // 参数，支持键/值对形式或字符串形式。如果为字符串则多个条件使用“,”号隔开；如果参数值为多个值，则使用“[]”包围，并且每个值使用“,”号隔开。
-	private Object condition; // 附件条件，参数格式同param；附加条件中的参数将覆盖param参数。
+	private Object append; // 追加条件，参数格式同param；附加条件中的参数将覆盖param参数。
 	private String remove; // 排除条件，多个条件之间使用“,”号隔开
 	private Object entity; // 对象实体
 
@@ -37,12 +37,12 @@ public class ResourceTag extends AbstractTag {
 		this.param = param instanceof String ? ((String) param).trim() : param;
 	}
 
-	public Object getCondition() {
-		return condition;
+	public Object getAppend() {
+		return append;
 	}
 
-	public void setCondition(Object condition) {
-		this.condition = condition instanceof String ? ((String) condition).trim() : condition;
+	public void setAppend(Object append) {
+		this.append = append instanceof String ? ((String) append).trim() : append;
 	}
 
 	public String getRemove() {
@@ -69,20 +69,20 @@ public class ResourceTag extends AbstractTag {
 	@SuppressWarnings("unchecked")
 	protected Map<String, Object> getParameters() {
 		Map<String, Object> param = this.param instanceof Map ? (Map<String, Object>) this.param
-				: this.param instanceof String ? Strings.toMap((String) this.param)
-						: Collections.<String, Object>emptyMap();
-		Map<String, Object> condition = this.condition instanceof Map ? (Map<String, Object>) this.condition
-				: this.condition instanceof String ? Strings.toMap((String) this.condition)
-						: Collections.<String, Object>emptyMap();
-		if (param.isEmpty() && condition.isEmpty()) {
+				: this.param instanceof String ? Strings.toMap((String) this.param) : Collections
+						.<String, Object> emptyMap();
+		Map<String, Object> appends = this.append instanceof Map ? (Map<String, Object>) this.append
+				: this.append instanceof String ? Strings.toMap((String) this.append) : Collections
+						.<String, Object> emptyMap();
+		if (param.isEmpty() && appends.isEmpty()) {
 			return new HashMap<String, Object>(0);
 		}
-		Map<String, Object> parameters = new HashMap<String, Object>(param.size() + condition.size());
+		Map<String, Object> parameters = new HashMap<String, Object>(param.size() + appends.size());
 		if (!param.isEmpty()) {
 			parameters.putAll(param);
 		}
-		if (!condition.isEmpty()) {
-			parameters.putAll(condition);
+		if (!appends.isEmpty()) {
+			parameters.putAll(appends);
 		}
 		if (this.remove != null && !parameters.isEmpty()) {
 			for (String key : Strings.split(this.remove, ',')) {

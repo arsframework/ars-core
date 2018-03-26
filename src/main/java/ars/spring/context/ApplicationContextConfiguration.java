@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -49,8 +48,8 @@ import ars.invoke.request.CacheSessionFactory;
  * @author yongqiangwu
  * 
  */
-public class ApplicationContextConfiguration extends StandardRouter
-		implements Context, ApplicationContextAware, ApplicationListener<ApplicationEvent> {
+public class ApplicationContextConfiguration extends StandardRouter implements Context, ApplicationContextAware,
+		ApplicationListener<ApplicationEvent> {
 	private String pattern; // 资源地址匹配模式
 	private Invoker invoker; // 资源调用对象
 	private Messager messager; // 消息处理对象
@@ -82,16 +81,16 @@ public class ApplicationContextConfiguration extends StandardRouter
 		Servers.setExecutor(executor);
 	}
 
-	public void setDateFormat(String format) {
-		Dates.setDateFormat(new SimpleDateFormat(format));
+	public void setDatePattern(String pattern) {
+		Dates.setDatePattern(pattern);
 	}
 
-	public void setDatetimeFormat(String format) {
-		Dates.setDatetimeFormat(new SimpleDateFormat(format));
+	public void setDatetimePattern(String pattern) {
+		Dates.setDatetimePattern(pattern);
 	}
 
-	public void setDatenanoFormat(String format) {
-		Dates.setDatenanoFormat(new SimpleDateFormat(format));
+	public void setDatenanoPattern(String pattern) {
+		Dates.setDatenanoPattern(pattern);
 	}
 
 	@Override
@@ -146,8 +145,8 @@ public class ApplicationContextConfiguration extends StandardRouter
 					// 注册事件监听器
 					Map<Class, List<InvokeListener>> listeners = new HashMap<Class, List<InvokeListener>>();
 					try {
-						for (Entry<String, InvokeListener> entry : this.applicationContext
-								.getBeansOfType(InvokeListener.class).entrySet()) {
+						for (Entry<String, InvokeListener> entry : this.applicationContext.getBeansOfType(
+								InvokeListener.class).entrySet()) {
 							InvokeListener target = null;
 							InvokeListener listener = entry.getValue();
 							if (AopUtils.isAopProxy(listener)) {

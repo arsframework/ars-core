@@ -15,10 +15,10 @@ import ars.util.Strings;
 import ars.file.Describe;
 import ars.file.Describe.Property;
 import ars.file.query.Query;
-import ars.file.query.condition.Order;
-import ars.file.query.condition.Condition;
-import ars.file.query.condition.Conditions;
-import ars.file.query.condition.Like.Position;
+import ars.file.query.Queries;
+import ars.file.query.Queries.Order;
+import ars.file.query.Queries.Condition;
+import ars.file.query.Queries.Like.Position;
 
 /**
  * 文件查询集合抽象实现
@@ -74,7 +74,7 @@ public abstract class AbstractQuery implements Query {
 	@Override
 	public Query eq(Property property, Object value) {
 		if (property != null && value != null) {
-			this.conditions.add(Conditions.eq(property, value));
+			this.conditions.add(Queries.eq(property, value));
 		}
 		return this;
 	}
@@ -82,7 +82,7 @@ public abstract class AbstractQuery implements Query {
 	@Override
 	public Query ne(Property property, Object value) {
 		if (property != null && value != null) {
-			this.conditions.add(Conditions.ne(property, value));
+			this.conditions.add(Queries.ne(property, value));
 		}
 		return this;
 	}
@@ -90,7 +90,7 @@ public abstract class AbstractQuery implements Query {
 	@Override
 	public Query gt(Property property, Object value) {
 		if (property != null && value != null) {
-			this.conditions.add(Conditions.gt(property, value));
+			this.conditions.add(Queries.gt(property, value));
 		}
 		return this;
 	}
@@ -98,7 +98,7 @@ public abstract class AbstractQuery implements Query {
 	@Override
 	public Query ge(Property property, Object value) {
 		if (property != null && value != null) {
-			this.conditions.add(Conditions.ge(property, value));
+			this.conditions.add(Queries.ge(property, value));
 		}
 		return this;
 	}
@@ -106,7 +106,7 @@ public abstract class AbstractQuery implements Query {
 	@Override
 	public Query lt(Property property, Object value) {
 		if (property != null && value != null) {
-			this.conditions.add(Conditions.lt(property, value));
+			this.conditions.add(Queries.lt(property, value));
 		}
 		return this;
 	}
@@ -114,7 +114,7 @@ public abstract class AbstractQuery implements Query {
 	@Override
 	public Query le(Property property, Object value) {
 		if (property != null && value != null) {
-			this.conditions.add(Conditions.le(property, value));
+			this.conditions.add(Queries.le(property, value));
 		}
 		return this;
 	}
@@ -122,7 +122,7 @@ public abstract class AbstractQuery implements Query {
 	@Override
 	public Query between(Property property, Object low, Object high) {
 		if (property != null && low != null && high != null) {
-			this.conditions.add(Conditions.between(property, low, high));
+			this.conditions.add(Queries.between(property, low, high));
 		}
 		return this;
 	}
@@ -130,7 +130,7 @@ public abstract class AbstractQuery implements Query {
 	@Override
 	public Query start(Property property, String value) {
 		if (property != null && value != null) {
-			this.conditions.add(Conditions.like(property, value, Position.BEGIN));
+			this.conditions.add(Queries.like(property, value, Position.BEGIN));
 		}
 		return this;
 	}
@@ -138,7 +138,7 @@ public abstract class AbstractQuery implements Query {
 	@Override
 	public Query end(Property property, String value) {
 		if (property != null && value != null) {
-			this.conditions.add(Conditions.like(property, value, Position.END));
+			this.conditions.add(Queries.like(property, value, Position.END));
 		}
 		return this;
 	}
@@ -146,7 +146,7 @@ public abstract class AbstractQuery implements Query {
 	@Override
 	public Query like(Property property, String value) {
 		if (property != null && value != null) {
-			this.conditions.add(Conditions.like(property, value, Position.ANY));
+			this.conditions.add(Queries.like(property, value, Position.ANY));
 		}
 		return this;
 	}
@@ -222,7 +222,7 @@ public abstract class AbstractQuery implements Query {
 	public Query asc(Property... properties) {
 		if (properties != null && properties.length > 0) {
 			for (Property property : properties) {
-				this.orders.add(Conditions.asc(property));
+				this.orders.add(Queries.asc(property));
 			}
 		}
 		return this;
@@ -232,7 +232,7 @@ public abstract class AbstractQuery implements Query {
 	public Query desc(Property... properties) {
 		if (properties != null && properties.length > 0) {
 			for (Property property : properties) {
-				this.orders.add(Conditions.desc(property));
+				this.orders.add(Queries.desc(property));
 			}
 		}
 		return this;
@@ -249,7 +249,7 @@ public abstract class AbstractQuery implements Query {
 		if (!this.loaded) {
 			this.describes = this.execute(this.path, this.spread, this.conditions.toArray(new Condition[0]));
 			if (!this.orders.isEmpty()) {
-				Conditions.sort(this.describes, this.orders.toArray(new Order[0]));
+				Queries.sort(this.describes, this.orders.toArray(new Order[0]));
 			}
 			this.loaded = true;
 		}

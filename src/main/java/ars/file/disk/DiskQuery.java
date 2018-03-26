@@ -7,8 +7,8 @@ import java.util.LinkedList;
 
 import ars.file.Describe;
 import ars.file.query.AbstractQuery;
-import ars.file.query.condition.Condition;
-import ars.file.query.condition.Conditions;
+import ars.file.query.Queries;
+import ars.file.query.Queries.Condition;
 
 /**
  * 磁盘文件查询集合实现
@@ -32,7 +32,7 @@ public class DiskQuery extends AbstractQuery {
 					public boolean accept(File file) {
 						Describe describe = new Describe(file);
 						describe.setPath(describe.getPath().substring(workingDirectory.length()));
-						if (Conditions.isSatisfy(describe, conditions)) {
+						if (Queries.isSatisfy(describe, conditions)) {
 							describes.add(describe);
 						}
 						if (spread && describe.isDirectory()) {

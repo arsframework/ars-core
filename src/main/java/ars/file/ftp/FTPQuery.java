@@ -10,16 +10,16 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFileFilter;
 
 import ars.file.Describe;
-import ars.file.ftp.ClientFactory;
+import ars.file.query.Queries;
 import ars.file.query.AbstractQuery;
-import ars.file.query.condition.Condition;
-import ars.file.query.condition.Conditions;
+import ars.file.query.Queries.Condition;
+import ars.file.ftp.ClientFactory;
 
 /**
  * FTP文件查询集合实现
  * 
  * @author yongqiangwu
- *
+ * 
  */
 public class FTPQuery extends AbstractQuery {
 	protected final ClientFactory clientFactory;
@@ -53,7 +53,7 @@ public class FTPQuery extends AbstractQuery {
 							describe.setSize(file.getSize());
 							describe.setModified(file.getTimestamp().getTime());
 							describe.setDirectory(file.isDirectory());
-							if (Conditions.isSatisfy(describe, conditions)) {
+							if (Queries.isSatisfy(describe, conditions)) {
 								describes.add(describe);
 							}
 							if (spread && describe.isDirectory()) {

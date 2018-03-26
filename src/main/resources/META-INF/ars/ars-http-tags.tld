@@ -23,7 +23,7 @@
             <rtexprvalue>true</rtexprvalue>
      	</attribute>
      	<attribute>
-            <name>condition</name>
+            <name>append</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
      	</attribute>
@@ -59,6 +59,11 @@
      	</attribute>
      	<attribute>
             <name>string</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+     	</attribute>
+     	<attribute>
+            <name>depth</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
      	</attribute>
@@ -105,7 +110,7 @@
             <rtexprvalue>true</rtexprvalue>
      	</attribute>
      	<attribute>
-            <name>condition</name>
+            <name>append</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
      	</attribute>

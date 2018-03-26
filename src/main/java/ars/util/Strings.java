@@ -110,8 +110,8 @@ public final class Strings {
 	/**
 	 * IP正则表达式匹配模式
 	 */
-	public static final Pattern PATTERN_IP = Pattern.compile(
-			"^(25[0-5]|2[0-4]\\d|[0-1]\\d{2}|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|[0-1]\\d{2}|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|[0-1]\\d{2}|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|[0-1]\\d{2}|[1-9]?\\d)$");
+	public static final Pattern PATTERN_IP = Pattern
+			.compile("^(25[0-5]|2[0-4]\\d|[0-1]\\d{2}|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|[0-1]\\d{2}|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|[0-1]\\d{2}|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|[0-1]\\d{2}|[1-9]?\\d)$");
 
 	/**
 	 * URL正则表达式匹配模式
@@ -386,10 +386,9 @@ public final class Strings {
 			throw new IllegalArgumentException("Illegal hex:" + hex);
 		}
 		int length = hex.length() / 2;
-		char[] chars = hex.toUpperCase().toCharArray();
 		byte[] bytes = new byte[length];
 		for (int i = 0, pos = 0; i < length; i++, pos = i * 2) {
-			bytes[i] = (byte) (charToByte(chars[pos]) << 4 | charToByte(chars[pos + 1]));
+			bytes[i] = (byte) (charToByte(hex.charAt(pos)) << 4 | charToByte(hex.charAt(pos + 1)));
 		}
 		return bytes;
 	}
@@ -573,30 +572,8 @@ public final class Strings {
 	 *            字符串
 	 * @return true/false
 	 */
-	public static boolean isEmpty(String source) {
-		return source == null || source.isEmpty();
-	}
-
-	/**
-	 * 判断字符串数组是否为空
-	 * 
-	 * @param sources
-	 *            字符串数组
-	 * @return true/false
-	 */
-	public static boolean isEmpty(String[] sources) {
-		return sources == null || sources.length == 0;
-	}
-
-	/**
-	 * 判断字符串集合是否为空
-	 * 
-	 * @param sources
-	 *            字符串集合
-	 * @return true/false
-	 */
-	public static boolean isEmpty(Collection<String> sources) {
-		return sources == null || sources.isEmpty();
+	public static boolean isEmpty(CharSequence source) {
+		return source == null || source.length() == 0;
 	}
 
 	/**
@@ -606,12 +583,31 @@ public final class Strings {
 	 *            字符串
 	 * @return true/false
 	 */
-	public static boolean isSpace(String source) {
+	public static boolean isSpace(CharSequence source) {
 		if (isEmpty(source)) {
 			return false;
 		}
-		for (int i = 0; i < source.length(); i++) {
-			if (source.charAt(i) != ' ') {
+		for (int i = 0, len = source.length(); i < len; i++) {
+			if (!Character.isWhitespace(source.charAt(i))) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * 判断字符串是否为空白
+	 * 
+	 * @param source
+	 *            字符串
+	 * @return true/false
+	 */
+	public static boolean isBlank(CharSequence source) {
+		if (isEmpty(source)) {
+			return true;
+		}
+		for (int i = 0, len = source.length(); i < len; i++) {
+			if (!Character.isWhitespace(source.charAt(i))) {
 				return false;
 			}
 		}
@@ -625,8 +621,8 @@ public final class Strings {
 	 *            字符串
 	 * @return true/false
 	 */
-	public static boolean isIP(String source) {
-		return !isEmpty(source) && PATTERN_IP.matcher(source).matches();
+	public static boolean isIP(CharSequence source) {
+		return !isBlank(source) && PATTERN_IP.matcher(source).matches();
 	}
 
 	/**
@@ -636,8 +632,8 @@ public final class Strings {
 	 *            字符串
 	 * @return true/false
 	 */
-	public static boolean isUrl(String source) {
-		return !isEmpty(source) && PATTERN_URL.matcher(source).matches();
+	public static boolean isUrl(CharSequence source) {
+		return !isBlank(source) && PATTERN_URL.matcher(source).matches();
 	}
 
 	/**
@@ -647,8 +643,8 @@ public final class Strings {
 	 *            字符串
 	 * @return true/false
 	 */
-	public static boolean isEmail(String source) {
-		return !isEmpty(source) && PATTERN_EMAIL.matcher(source).matches();
+	public static boolean isEmail(CharSequence source) {
+		return !isBlank(source) && PATTERN_EMAIL.matcher(source).matches();
 	}
 
 	/**
@@ -658,8 +654,8 @@ public final class Strings {
 	 *            字符串
 	 * @return true/false
 	 */
-	public static boolean isNumber(String source) {
-		return !isEmpty(source) && PATTERN_NUMBER.matcher(source).matches();
+	public static boolean isNumber(CharSequence source) {
+		return !isBlank(source) && PATTERN_NUMBER.matcher(source).matches();
 	}
 
 	/**
@@ -669,8 +665,8 @@ public final class Strings {
 	 *            字符串
 	 * @return true/false
 	 */
-	public static boolean isLetter(String source) {
-		return !isEmpty(source) && PATTERN_LETTER.matcher(source).matches();
+	public static boolean isLetter(CharSequence source) {
+		return !isBlank(source) && PATTERN_LETTER.matcher(source).matches();
 	}
 
 	/**
@@ -737,7 +733,7 @@ public final class Strings {
 		StringBuilder buffer = new StringBuilder();
 		for (int i = 0, slen = source.length(); i < slen; i++) {
 			char c = source.charAt(i);
-			if (c != ' ' && c != '\n') {
+			if (!Character.isWhitespace(c)) {
 				buffer.append(c);
 			}
 		}
@@ -1600,12 +1596,12 @@ public final class Strings {
 	 * @return true/false
 	 */
 	public static boolean isList(CharSequence source) {
-		if (source == null || source.length() == 0) {
+		if (isBlank(source)) {
 			return false;
 		}
 		for (int i = 0; i < source.length(); i++) {
 			char c = source.charAt(i);
-			if (c == ' ') {
+			if (Character.isWhitespace(c)) {
 				continue;
 			} else if (c != '[') {
 				return false;
@@ -1614,7 +1610,7 @@ public final class Strings {
 		}
 		for (int i = source.length() - 1; i > -1; i--) {
 			char c = source.charAt(i);
-			if (c == ' ') {
+			if (Character.isWhitespace(c)) {
 				continue;
 			} else if (c != ']') {
 				return false;
@@ -1632,7 +1628,7 @@ public final class Strings {
 	 * @return 对象列表
 	 */
 	public static List<?> toList(CharSequence source) {
-		if (source == null || source.length() == 0) {
+		if (isBlank(source)) {
 			return new ArrayList<Object>(0);
 		}
 		int skip = 0;
@@ -1640,7 +1636,7 @@ public final class Strings {
 		List<StringBuilder> buffers = new LinkedList<StringBuilder>();
 		for (int i = 1; i < source.length() - 1; i++) {
 			char c = source.charAt(i);
-			if (c == ' ') {
+			if (Character.isWhitespace(c)) {
 				continue;
 			} else if (c == ',' && skip == 0) {
 				buffers.add(buffer);
@@ -1676,7 +1672,7 @@ public final class Strings {
 	 * @return 键/值对
 	 */
 	public static Map<String, Object> toMap(String... expressions) {
-		if (isEmpty(expressions)) {
+		if (expressions == null || expressions.length == 0) {
 			return new HashMap<String, Object>(0);
 		}
 		List<StringBuilder> buffers = new LinkedList<StringBuilder>();
@@ -1706,11 +1702,11 @@ public final class Strings {
 			}
 			int split = buffer.indexOf("=");
 			String key = split < 0 ? buffer.toString().trim() : buffer.substring(0, split).trim();
-			if (key.isEmpty()) {
+			if (isBlank(key)) {
 				continue;
 			}
 			String value = split < 0 ? null : buffer.substring(split + 1).trim();
-			map.put(key, isList(value) ? toList(value) : isEmpty(value) ? null : value);
+			map.put(key, isList(value) ? toList(value) : isBlank(value) ? null : value);
 		}
 		return map;
 	}
@@ -1725,7 +1721,7 @@ public final class Strings {
 	 * @return true/false
 	 */
 	public static boolean matches(String source, String pattern) {
-		if (source == null || source.isEmpty() || pattern == null || pattern.isEmpty()) {
+		if (source == null || pattern == null) {
 			return false;
 		} else if (pattern.length() == 1 && pattern.charAt(0) == '*') {
 			return true;
@@ -1774,7 +1770,7 @@ public final class Strings {
 	 * @return 实际路径
 	 */
 	public static String getRealPath(String path) {
-		if (isEmpty(path)) {
+		if (isBlank(path)) {
 			return CURRENT_PATH;
 		} else if (path.startsWith("./")) {
 			return new File(CURRENT_PATH, path.substring(1)).getPath();
@@ -1799,45 +1795,6 @@ public final class Strings {
 			return url.getFile();
 		}
 		return path;
-	}
-
-	/**
-	 * 将驼峰式字符串以“_”号进行拆分
-	 * 
-	 * @param source
-	 *            被拆分源字符串
-	 * @return 拆分后字符串
-	 */
-	public static String splitHumpString(String source) {
-		return splitHumpString(source, false);
-	}
-
-	/**
-	 * 将驼峰式字符串以“_”号进行拆分
-	 * 
-	 * @param source
-	 *            被拆分源字符串
-	 * @param capital
-	 *            是否大写
-	 * @return 拆分后字符串
-	 */
-	public static String splitHumpString(String source, boolean capital) {
-		if (isEmpty(source) || isEmpty(source)) {
-			return source;
-		}
-		StringBuilder chars = new StringBuilder();
-		for (int i = 0; i < source.length(); i++) {
-			char c = source.charAt(i);
-			if (Character.isUpperCase(c)) {
-				if (i > 0) {
-					chars.append('_');
-				}
-				chars.append(capital ? c : Character.toLowerCase(c));
-			} else {
-				chars.append(capital ? Character.toUpperCase(c) : c);
-			}
-		}
-		return chars.toString();
 	}
 
 	/**

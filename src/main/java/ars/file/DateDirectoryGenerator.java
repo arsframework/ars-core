@@ -13,7 +13,6 @@ import ars.file.DirectoryGenerator;
  */
 public class DateDirectoryGenerator implements DirectoryGenerator {
 	protected final String format;
-	private SimpleDateFormat formater;
 
 	public DateDirectoryGenerator() {
 		this("yyyyMM");
@@ -24,12 +23,11 @@ public class DateDirectoryGenerator implements DirectoryGenerator {
 			throw new IllegalArgumentException("Illegal format:" + format);
 		}
 		this.format = format;
-		this.formater = new SimpleDateFormat(this.format);
 	}
 
 	@Override
 	public String generate(String name) {
-		return this.formater.format(new Date());
+		return new SimpleDateFormat(this.format).format(new Date());
 	}
 
 }

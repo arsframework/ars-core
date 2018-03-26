@@ -3,7 +3,8 @@ package ars.util;
 import java.util.Map;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Collection;
 
 import ars.util.Strings;
 
@@ -19,12 +20,52 @@ public final class Conditions {
 	}
 
 	/**
-	 * 查询逻辑接口
+	 * 条件接口
 	 * 
 	 * @author yongqiangwu
 	 * 
 	 */
-	public static interface Logic {
+	public static interface Condition {
+
+	}
+
+	/**
+	 * 条件包装器抽象实现
+	 * 
+	 * @author wuyq
+	 * 
+	 */
+	public static abstract class AbstractConditionWrapper implements Condition {
+		private final List<Condition> conditions = new LinkedList<Condition>(); // 条件集合
+
+		public AbstractConditionWrapper(Condition... conditions) {
+			if (conditions == null || conditions.length == 0) {
+				throw new IllegalArgumentException("Illegal conditions:" + Strings.toString(conditions));
+			}
+			for (Condition condition : conditions) {
+				this.conditions.add(condition);
+			}
+		}
+
+		public AbstractConditionWrapper(Collection<Condition> conditions) {
+			if (conditions == null || conditions.isEmpty()) {
+				throw new IllegalArgumentException("Illegal conditions:" + Strings.toString(conditions));
+			}
+			this.conditions.addAll(conditions);
+		}
+
+		public AbstractConditionWrapper(Map<String, Object> conditions) {
+			if (conditions == null || conditions.isEmpty()) {
+				throw new IllegalArgumentException("Illegal conditions:" + conditions);
+			}
+			for (Entry<String, Object> entry : conditions.entrySet()) {
+				this.conditions.add(new Match(entry.getKey(), entry.getValue()));
+			}
+		}
+
+		public List<Condition> getConditions() {
+			return conditions;
+		}
 
 	}
 
@@ -34,44 +75,32 @@ public final class Conditions {
 	 * @author yongqiangwu
 	 * 
 	 */
-	public static class Or implements Logic {
-		private Logic[] logics;
+	public static class Or extends AbstractConditionWrapper {
 
-		public Or(Logic... logics) {
-			if (logics == null || logics.length == 0) {
-				throw new IllegalArgumentException("Illegal logics:" + Strings.toString(logics));
-			}
-			this.logics = logics;
+		public Or(Condition... conditions) {
+			super(conditions);
+		}
+
+		public Or(Collection<Condition> conditions) {
+			super(conditions);
 		}
 
 		public Or(Map<String, Object> conditions) {
-			if (conditions == null || conditions.isEmpty()) {
-				throw new IllegalArgumentException("Illegal conditions:" + conditions);
-			}
-			List<Logic> logics = new ArrayList<Logic>(conditions.size());
-			for (Entry<String, Object> entry : conditions.entrySet()) {
-				logics.add(new Condition(entry.getKey(), entry.getValue()));
-			}
-			this.logics = logics.toArray(new Logic[0]);
-		}
-
-		public Logic[] getLogics() {
-			return logics;
+			super(conditions);
 		}
 
 		@Override
 		public String toString() {
 			StringBuilder buffer = new StringBuilder();
-			for (Logic logic : this.logics) {
+			for (Condition condition : this.getConditions()) {
 				if (buffer.length() > 0) {
 					buffer.append(" or ");
 				}
-				boolean isCondition = logic instanceof Condition;
-				if (!isCondition) {
+				if (!(condition instanceof Match)) {
 					buffer.append('(');
 				}
-				buffer.append(logic);
-				if (!isCondition) {
+				buffer.append(condition);
+				if (!(condition instanceof Match)) {
 					buffer.append(')');
 				}
 			}
@@ -86,44 +115,32 @@ public final class Conditions {
 	 * @author yongqiangwu
 	 * 
 	 */
-	public static class And implements Logic {
-		private Logic[] logics;
+	public static class And extends AbstractConditionWrapper {
 
-		public And(Logic... logics) {
-			if (logics == null || logics.length == 0) {
-				throw new IllegalArgumentException("Illegal logics:" + Strings.toString(logics));
-			}
-			this.logics = logics;
+		public And(Condition... conditions) {
+			super(conditions);
+		}
+
+		public And(Collection<Condition> conditions) {
+			super(conditions);
 		}
 
 		public And(Map<String, Object> conditions) {
-			if (conditions == null || conditions.isEmpty()) {
-				throw new IllegalArgumentException("Illegal conditions:" + conditions);
-			}
-			List<Logic> logics = new ArrayList<Logic>(conditions.size());
-			for (Entry<String, Object> entry : conditions.entrySet()) {
-				logics.add(new Condition(entry.getKey(), entry.getValue()));
-			}
-			this.logics = logics.toArray(new Logic[0]);
-		}
-
-		public Logic[] getLogics() {
-			return logics;
+			super(conditions);
 		}
 
 		@Override
 		public String toString() {
 			StringBuilder buffer = new StringBuilder();
-			for (Logic logic : this.logics) {
+			for (Condition condition : this.getConditions()) {
 				if (buffer.length() > 0) {
 					buffer.append(" and ");
 				}
-				boolean isCondition = logic instanceof Condition;
-				if (!isCondition) {
+				if (!(condition instanceof Match)) {
 					buffer.append('(');
 				}
-				buffer.append(logic);
-				if (!isCondition) {
+				buffer.append(condition);
+				if (!(condition instanceof Match)) {
 					buffer.append(')');
 				}
 			}
@@ -133,17 +150,17 @@ public final class Conditions {
 	}
 
 	/**
-	 * 条件逻辑实现
+	 * 条件匹配逻辑实现
 	 * 
 	 * @author yongqiangwu
 	 * 
 	 */
-	public static class Condition implements Logic {
+	public static class Match implements Condition {
 		private String key;
 		private Object value;
 
-		public Condition(String key, Object value) {
-			if (Strings.isEmpty(key)) {
+		public Match(String key, Object value) {
+			if (Strings.isBlank(key)) {
 				throw new IllegalArgumentException("Illegal key:" + key);
 			}
 			this.key = key;
@@ -160,7 +177,8 @@ public final class Conditions {
 
 		@Override
 		public String toString() {
-			return new StringBuilder(this.key).append('=').append(this.value).toString();
+			StringBuilder buffer = new StringBuilder(this.key).append('=');
+			return this.value == null ? buffer.toString() : buffer.append(this.value).toString();
 		}
 
 	}
@@ -168,19 +186,19 @@ public final class Conditions {
 	/**
 	 * 条件表达式逻辑对象转换
 	 * 
-	 * @param source
+	 * @param expression
 	 *            条件表达式
 	 * @return 条件逻辑对象
 	 */
-	public static Logic parse(String source) {
-		if (Strings.isEmpty(source)) {
+	public static Condition parse(String expression) {
+		if (Strings.isBlank(expression)) {
 			return null;
 		}
 		boolean continued = false;
 		int offset = 0, start = 0, end = 0;
-		List<String> setions = new ArrayList<String>();
-		for (int i = 0; i < source.length(); i++) {
-			char c = source.charAt(i);
+		List<String> setions = new LinkedList<String>();
+		for (int i = 0; i < expression.length(); i++) {
+			char c = expression.charAt(i);
 			if (c == '(') {
 				if (start == end) {
 					offset = i;
@@ -188,7 +206,7 @@ public final class Conditions {
 				start++;
 			} else if (c == ')') {
 				if (start == ++end) {
-					setions.add(source.substring(offset, i + 1));
+					setions.add(expression.substring(offset, i + 1));
 					start = 0;
 					end = 0;
 					offset = i + 1;
@@ -197,10 +215,10 @@ public final class Conditions {
 			} else if (start == end) {
 				int index = 0;
 				String handle = null;
-				if ((i > 3 && (handle = source.substring(index = i - 3, i + 1)).equalsIgnoreCase(" or "))
-						|| (i > 4 && (handle = source.substring(index = i - 4, i + 1)).equalsIgnoreCase(" and "))) {
+				if ((i > 3 && (handle = expression.substring(index = i - 3, i + 1)).equalsIgnoreCase(" or "))
+						|| (i > 4 && (handle = expression.substring(index = i - 4, i + 1)).equalsIgnoreCase(" and "))) {
 					if (!continued) {
-						setions.add(source.substring(offset, index));
+						setions.add(expression.substring(offset, index));
 					}
 					offset = i + 1;
 					continued = false;
@@ -209,14 +227,14 @@ public final class Conditions {
 			}
 		}
 		if (start != end) {
-			throw new IllegalArgumentException("Illegal source:" + source);
+			throw new IllegalArgumentException("Illegal expression:" + expression);
 		}
-		if (offset < source.length()) {
-			setions.add(source.substring(offset));
+		if (offset < expression.length()) {
+			setions.add(expression.substring(offset));
 		}
-		Logic logic = null;
+		Condition condition = null;
 		for (int i = 0; i < setions.size(); i += 2) {
-			Logic _logic = null;
+			Condition _condition = null;
 			String setion = setions.get(i).trim();
 			if (setion.isEmpty()) {
 				continue;
@@ -226,42 +244,34 @@ public final class Conditions {
 				if (setion.isEmpty()) {
 					continue;
 				}
-				_logic = parse(setion);
+				_condition = parse(setion);
 			} else {
 				int split = setion.indexOf("=");
 				String key = split < 0 ? setion.trim() : setion.substring(0, split).trim();
-				if (key.isEmpty()) {
+				if (Strings.isBlank(key)) {
 					continue;
 				}
 				String value = split < 0 ? null : setion.substring(split + 1).trim();
-				_logic = new Condition(key,
-						Strings.isList(value) ? Strings.toList(value) : Strings.isEmpty(value) ? null : value);
+				_condition = new Match(key, Strings.isList(value) ? Strings.toList(value)
+						: Strings.isBlank(value) ? null : value);
 			}
-			if (logic == null) {
-				logic = _logic;
+			if (condition == null) {
+				condition = _condition;
 			} else if (setions.get(i - 1).equals("or")) {
-				if (logic instanceof Or) {
-					Logic[] logics = ((Or) logic).getLogics();
-					Logic[] merges = new Logic[logics.length + 1];
-					System.arraycopy(logics, 0, merges, 0, logics.length);
-					merges[merges.length - 1] = _logic;
-					logic = new Or(merges);
+				if (condition instanceof Or) {
+					((Or) condition).getConditions().add(_condition);
 				} else {
-					logic = new Or(logic, _logic);
+					condition = new Or(condition, _condition);
 				}
 			} else {
-				if (logic instanceof And) {
-					Logic[] logics = ((And) logic).getLogics();
-					Logic[] merges = new Logic[logics.length + 1];
-					System.arraycopy(logics, 0, merges, 0, logics.length);
-					merges[merges.length - 1] = _logic;
-					logic = new And(merges);
+				if (condition instanceof And) {
+					((And) condition).getConditions().add(_condition);
 				} else {
-					logic = new And(logic, _logic);
+					condition = new And(condition, _condition);
 				}
 			}
 		}
-		return logic;
+		return condition;
 	}
 
 }

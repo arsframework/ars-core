@@ -1627,8 +1627,8 @@ public final class Beans {
 	 *            分组
 	 * @param source
 	 *            对象源
-	 * @param object
-	 *            目标对象
+	 * @param current
+	 *            当前对象
 	 * @param property
 	 *            键属性名称
 	 * @param mapping

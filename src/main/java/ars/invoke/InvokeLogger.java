@@ -64,7 +64,7 @@ public class InvokeLogger implements InvokeListener<InvokeCompleteEvent> {
         } else if (value instanceof Throwable) {
             logger.error(message, (Throwable) value);
         } else {
-            logger.debug(message);
+            logger.info(message);
         }
     }
 

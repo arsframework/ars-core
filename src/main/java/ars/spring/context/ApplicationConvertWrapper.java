@@ -28,7 +28,6 @@ public class ApplicationConvertWrapper extends StandardConvertWrapper implements
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.logger.info("Register throwable resolvers on {}", this.converter);
         Map<String, ThrowableResolver> throwableResolvers = applicationContext.getBeansOfType(ThrowableResolver.class);
         if (!throwableResolvers.isEmpty()) {
             this.setThrowableResolvers(throwableResolvers.values().toArray(new ThrowableResolver[0]));

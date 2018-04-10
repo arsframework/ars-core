@@ -13,33 +13,29 @@ import ars.invoke.channel.http.StandardHttpChannel;
 
 /**
  * 基于Spring MVC 请求调度控制器实现
- * 
- * @author yongqiangwu
- * 
+ *
+ * @author wuyongqiang
  */
 @Controller
 public class SimpleDispatchController extends StandardHttpChannel implements ServletConfigAware {
-	private ServletConfig config;
+    private ServletConfig config;
 
-	@Override
-	public void setServletConfig(ServletConfig config) {
-		this.config = config;
-	}
+    @Override
+    public void setServletConfig(ServletConfig config) {
+        this.config = config;
+    }
 
-	/**
-	 * 请求调度
-	 * 
-	 * @param request
-	 *            Http请求对象
-	 * @param response
-	 *            Http响应对象
-	 * @throws Exception
-	 *             操作异常
-	 */
-	@RequestMapping(value = "/**", method = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
-			RequestMethod.DELETE })
-	public void dispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		this.dispatch(this.config, request, response);
-	}
+    /**
+     * 请求调度
+     *
+     * @param request  Http请求对象
+     * @param response Http响应对象
+     * @throws Exception 操作异常
+     */
+    @RequestMapping(value = "/**", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
+        RequestMethod.DELETE})
+    public void dispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        this.dispatch(this.config, request, response);
+    }
 
 }

@@ -22,16 +22,13 @@ package ars.invoke.remote.slice;
 
 /**
  * 文件下载
- * 
  **/
 
 public interface AMD_Resource_download extends Ice.AMDCallback {
-	/**
-	 * ice_response indicates that the operation completed successfully.
-	 * 
-	 * @param __ret
-	 *            (return value) 文件数据字节数组
-	 * 
-	 **/
-	void ice_response(byte[] __ret);
+    /**
+     * ice_response indicates that the operation completed successfully.
+     *
+     * @param __ret (return value) 文件数据字节数组
+     **/
+    void ice_response(byte[] __ret);
 }

@@ -7,26 +7,25 @@ import ars.invoke.request.Requester;
 
 /**
  * 请求调用事件
- * 
- * @author yongqiangwu
- * 
+ *
+ * @author wuyongqiang
  */
 public abstract class InvokeEvent extends EventObject {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private Date timestamp = new Date(); // 时间戳
+    private Date timestamp = new Date(); // 时间戳
 
-	public InvokeEvent(Requester requester) {
-		super(requester);
-	}
+    public InvokeEvent(Requester requester) {
+        super(requester);
+    }
 
-	public Date getTimestamp() {
-		return timestamp;
-	}
+    public Date getTimestamp() {
+        return timestamp;
+    }
 
-	@Override
-	public Requester getSource() {
-		return (Requester) super.getSource();
-	}
+    @Override
+    public Requester getSource() {
+        return (Requester) super.getSource();
+    }
 
 }

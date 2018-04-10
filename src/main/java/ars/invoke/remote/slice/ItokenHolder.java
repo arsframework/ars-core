@@ -21,10 +21,10 @@
 package ars.invoke.remote.slice;
 
 public final class ItokenHolder extends Ice.Holder<Itoken> {
-	public ItokenHolder() {
-	}
+    public ItokenHolder() {
+    }
 
-	public ItokenHolder(Itoken value) {
-		super(value);
-	}
+    public ItokenHolder(Itoken value) {
+        super(value);
+    }
 }

@@ -22,7 +22,6 @@ package ars.invoke.remote.slice;
 
 /**
  * 文件上传
- * 
  **/
 
 public abstract class Callback_Resource_upload extends Ice.OnewayCallback {

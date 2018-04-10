@@ -2,34 +2,33 @@ package ars.invoke.remote;
 
 /**
  * 远程调用协议
- * 
- * @author yongqiangwu
- * 
+ *
+ * @author wuyongqiang
  */
 public enum Protocol {
-	/**
-	 * TCP
-	 */
-	tcp,
+    /**
+     * TCP
+     */
+    tcp,
 
-	/**
-	 * UDP
-	 */
-	udp,
+    /**
+     * UDP
+     */
+    udp,
 
-	/**
-	 * SSL
-	 */
-	ssl,
+    /**
+     * SSL
+     */
+    ssl,
 
-	/**
-	 * HTTP
-	 */
-	http,
+    /**
+     * HTTP
+     */
+    http,
 
-	/**
-	 * HTTPS
-	 */
-	https;
+    /**
+     * HTTPS
+     */
+    https;
 
 }

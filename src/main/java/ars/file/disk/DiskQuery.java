@@ -11,37 +11,36 @@ import ars.file.query.Queries;
 import ars.file.query.Queries.Condition;
 
 /**
- * 磁盘文件查询集合实现
- * 
- * @author yongqiangwu
- * 
+ * 基于本地磁盘的文件查询集合实现
+ *
+ * @author wuyongqiang
  */
 public class DiskQuery extends AbstractQuery {
 
-	public DiskQuery(String workingDirectory) {
-		super(workingDirectory);
-	}
+    public DiskQuery(String workingDirectory) {
+        super(workingDirectory);
+    }
 
-	@Override
-	public List<Describe> execute(String path, final boolean spread, final Condition... conditions) {
-		final List<Describe> describes = new LinkedList<Describe>();
-		(path == null ? new File(this.workingDirectory) : new File(this.workingDirectory, path))
-				.listFiles(new FileFilter() {
+    @Override
+    public List<Describe> execute(String path, final boolean spread, final Condition... conditions) {
+        final List<Describe> describes = new LinkedList<Describe>();
+        (path == null ? new File(this.workingDirectory) : new File(this.workingDirectory, path))
+            .listFiles(new FileFilter() {
 
-					@Override
-					public boolean accept(File file) {
-						Describe describe = new Describe(file);
-						describe.setPath(describe.getPath().substring(workingDirectory.length()));
-						if (Queries.isSatisfy(describe, conditions)) {
-							describes.add(describe);
-						}
-						if (spread && describe.isDirectory()) {
-							describes.addAll(execute(describe.getPath(), spread, conditions));
-						}
-						return false;
-					}
-				});
-		return describes;
-	}
+                @Override
+                public boolean accept(File file) {
+                    Describe describe = new Describe(file);
+                    describe.setPath(describe.getPath().substring(workingDirectory.length()));
+                    if (Queries.isSatisfy(describe, conditions)) {
+                        describes.add(describe);
+                    }
+                    if (spread && describe.isDirectory()) {
+                        describes.addAll(execute(describe.getPath(), spread, conditions));
+                    }
+                    return false;
+                }
+            });
+        return describes;
+    }
 
 }

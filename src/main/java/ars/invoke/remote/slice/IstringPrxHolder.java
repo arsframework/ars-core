@@ -21,12 +21,12 @@
 package ars.invoke.remote.slice;
 
 public final class IstringPrxHolder {
-	public IstringPrxHolder() {
-	}
+    public IstringPrxHolder() {
+    }
 
-	public IstringPrxHolder(IstringPrx value) {
-		this.value = value;
-	}
+    public IstringPrxHolder(IstringPrx value) {
+        this.value = value;
+    }
 
-	public IstringPrx value;
+    public IstringPrx value;
 }

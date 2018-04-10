@@ -11,20 +11,19 @@ import ars.util.Strings;
 
 /**
  * 接口映射注解
- * 
- * @author yongqiangwu
- * 
+ *
+ * @author wuyongqiang
  */
 @Inherited
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.METHOD })
+@Target({ElementType.TYPE, ElementType.METHOD})
 public @interface Api {
-	/**
-	 * 获取接口映射的uri地址
-	 * 
-	 * @return uri地址
-	 */
-	public String value() default Strings.EMPTY_STRING;
+    /**
+     * 获取接口映射的uri地址
+     *
+     * @return uri地址
+     */
+    public String value() default Strings.EMPTY_STRING;
 
 }

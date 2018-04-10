@@ -6,27 +6,25 @@ import org.springframework.context.event.ContextRefreshedEvent;
 
 /**
  * 基于Spring应用初始化接口抽象实现
- * 
- * @author yongqiangwu
- * 
+ *
+ * @author wuyongqiang
  */
 public abstract class ApplicationInitializer implements ApplicationListener<ApplicationEvent> {
-	private boolean initialized;
+    private boolean initialized;
 
-	/**
-	 * Spring容器初始化完成后执行方法
-	 * 
-	 * @param event
-	 *            Spring上下文加载完成事件
-	 */
-	protected abstract void execute(ContextRefreshedEvent event);
+    /**
+     * Spring容器初始化完成后执行方法
+     *
+     * @param event Spring上下文加载完成事件
+     */
+    protected abstract void execute(ContextRefreshedEvent event);
 
-	@Override
-	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof ContextRefreshedEvent && !this.initialized) {
-			this.initialized = true;
-			this.execute((ContextRefreshedEvent) event);
-		}
-	}
+    @Override
+    public void onApplicationEvent(ApplicationEvent event) {
+        if (event instanceof ContextRefreshedEvent && !this.initialized) {
+            this.initialized = true;
+            this.execute((ContextRefreshedEvent) event);
+        }
+    }
 
 }

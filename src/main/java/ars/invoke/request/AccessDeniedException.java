@@ -4,20 +4,19 @@ import ars.invoke.InvokeException;
 
 /**
  * 拒绝访问异常
- * 
- * @author yongqiangwu
- * 
+ *
+ * @author wuyongqiang
  */
 public class AccessDeniedException extends InvokeException {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public AccessDeniedException(String message) {
-		super(message);
-	}
+    public AccessDeniedException(String message) {
+        super(message);
+    }
 
-	@Override
-	public Throwable fillInStackTrace() {
-		return this;
-	}
+    @Override
+    public Throwable fillInStackTrace() {
+        return this;
+    }
 
 }

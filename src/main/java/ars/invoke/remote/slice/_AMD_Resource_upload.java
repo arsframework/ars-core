@@ -21,14 +21,14 @@
 package ars.invoke.remote.slice;
 
 final class _AMD_Resource_upload extends IceInternal.IncomingAsync implements AMD_Resource_upload {
-	public _AMD_Resource_upload(IceInternal.Incoming in) {
-		super(in);
-	}
+    public _AMD_Resource_upload(IceInternal.Incoming in) {
+        super(in);
+    }
 
-	public void ice_response() {
-		if (__validateResponse(true)) {
-			__writeEmptyParams();
-			__response();
-		}
-	}
+    public void ice_response() {
+        if (__validateResponse(true)) {
+            __writeEmptyParams();
+            __response();
+        }
+    }
 }

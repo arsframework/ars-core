@@ -22,7 +22,6 @@ package ars.invoke.remote.slice;
 
 /**
  * 请求结果
- *
  **/
 public interface IresultPrx extends Ice.ObjectPrx {
 }

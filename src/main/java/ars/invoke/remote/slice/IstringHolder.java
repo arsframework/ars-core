@@ -21,22 +21,22 @@
 package ars.invoke.remote.slice;
 
 public final class IstringHolder extends Ice.ObjectHolderBase<Istring> {
-	public IstringHolder() {
-	}
+    public IstringHolder() {
+    }
 
-	public IstringHolder(Istring value) {
-		this.value = value;
-	}
+    public IstringHolder(Istring value) {
+        this.value = value;
+    }
 
-	public void patch(Ice.Object v) {
-		if (v == null || v instanceof Istring) {
-			value = (Istring) v;
-		} else {
-			IceInternal.Ex.throwUOE(type(), v);
-		}
-	}
+    public void patch(Ice.Object v) {
+        if (v == null || v instanceof Istring) {
+            value = (Istring) v;
+        } else {
+            IceInternal.Ex.throwUOE(type(), v);
+        }
+    }
 
-	public String type() {
-		return Istring.ice_staticId();
-	}
+    public String type() {
+        return Istring.ice_staticId();
+    }
 }

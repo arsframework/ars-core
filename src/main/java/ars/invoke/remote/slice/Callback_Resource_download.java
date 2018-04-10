@@ -22,12 +22,11 @@ package ars.invoke.remote.slice;
 
 /**
  * 文件下载
- * 
  **/
 
 public abstract class Callback_Resource_download extends IceInternal.TwowayCallback
-		implements Ice.TwowayCallbackArg1<byte[]> {
-	public final void __completed(Ice.AsyncResult __result) {
-		ResourcePrxHelper.__download_completed(this, __result);
-	}
+    implements Ice.TwowayCallbackArg1<byte[]> {
+    public final void __completed(Ice.AsyncResult __result) {
+        ResourcePrxHelper.__download_completed(this, __result);
+    }
 }

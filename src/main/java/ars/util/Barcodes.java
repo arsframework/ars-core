@@ -18,87 +18,77 @@ import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 
-import ars.util.Strings;
-
 /**
  * 条码工具类
- * 
- * @author yongqiangwu
- * 
+ *
+ * @author wuyongqiang
  */
 public final class Barcodes {
-	private Barcodes() {
+    private Barcodes() {
 
-	}
+    }
 
-	/**
-	 * 将内容编码
-	 * 
-	 * @param content
-	 *            图片内容
-	 * @return 图片对象
-	 * @throws IOException
-	 *             IO操作异常
-	 */
-	public static BufferedImage encode(String content) throws IOException {
-		return encode(content, BarcodeFormat.QR_CODE, 200, 200);
-	}
+    /**
+     * 将内容编码
+     *
+     * @param content 图片内容
+     * @return 图片对象
+     * @throws IOException IO操作异常
+     */
+    public static BufferedImage encode(String content) throws IOException {
+        return encode(content, BarcodeFormat.QR_CODE, 200, 200);
+    }
 
-	/**
-	 * 将内容编码
-	 * 
-	 * @param content
-	 *            图片内容
-	 * @param format
-	 *            图片格式
-	 * @param width
-	 *            图片宽度
-	 * @param height
-	 *            图片高度
-	 * @return 图片对象
-	 */
-	public static BufferedImage encode(String content, BarcodeFormat format, int width, int height) {
-		if (content == null) {
-			throw new IllegalArgumentException("Illegal content:" + content);
-		}
-		if (format == null) {
-			throw new IllegalArgumentException("Illegal format:" + format);
-		}
-		if (width < 1) {
-			throw new IllegalArgumentException("Illegal width:" + width);
-		}
-		if (height < 1) {
-			throw new IllegalArgumentException("Illegal height:" + height);
-		}
-		Map<EncodeHintType, Object> hints = new HashMap<EncodeHintType, Object>(1, 1);
-		hints.put(EncodeHintType.CHARACTER_SET, Strings.UTF8);
-		try {
-			BitMatrix matrix = new MultiFormatWriter().encode(content, format, width, height, hints);
-			return MatrixToImageWriter.toBufferedImage(matrix);
-		} catch (WriterException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    /**
+     * 将内容编码
+     *
+     * @param content 图片内容
+     * @param format  图片格式
+     * @param width   图片宽度
+     * @param height  图片高度
+     * @return 图片对象
+     */
+    public static BufferedImage encode(String content, BarcodeFormat format, int width, int height) {
+        if (content == null) {
+            throw new IllegalArgumentException("Content must not be null");
+        }
+        if (format == null) {
+            throw new IllegalArgumentException("BarcodeFormat must not be null");
+        }
+        if (width < 1) {
+            throw new IllegalArgumentException("Width must not be null");
+        }
+        if (height < 1) {
+            throw new IllegalArgumentException("Height must not be null");
+        }
+        Map<EncodeHintType, Object> hints = new HashMap<EncodeHintType, Object>(1, 1);
+        hints.put(EncodeHintType.CHARACTER_SET, Strings.UTF8);
+        try {
+            BitMatrix matrix = new MultiFormatWriter().encode(content, format, width, height, hints);
+            return MatrixToImageWriter.toBufferedImage(matrix);
+        } catch (WriterException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	/**
-	 * 内容解码
-	 * 
-	 * @param image
-	 *            图片对象
-	 * @return 图形内容
-	 */
-	public static String decode(BufferedImage image) {
-		if (image == null) {
-			throw new IllegalArgumentException("Illegal image:" + image);
-		}
-		Map<DecodeHintType, Object> hints = new HashMap<DecodeHintType, Object>(1, 1);
-		hints.put(DecodeHintType.CHARACTER_SET, Strings.UTF8);
-		BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(new BufferedImageLuminanceSource(image)));
-		try {
-			return new MultiFormatReader().decode(bitmap, hints).getText();
-		} catch (ReaderException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    /**
+     * 内容解码
+     *
+     * @param image 图片对象
+     * @return 图形内容
+     */
+    public static String decode(BufferedImage image) {
+        if (image == null) {
+            throw new IllegalArgumentException("BufferedImage must not be null");
+        }
+        Map<DecodeHintType, Object> hints = new HashMap<DecodeHintType, Object>(1, 1);
+        hints.put(DecodeHintType.CHARACTER_SET, Strings.UTF8);
+        BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(new BufferedImageLuminanceSource(image)));
+        try {
+            return new MultiFormatReader().decode(bitmap, hints).getText();
+        } catch (ReaderException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

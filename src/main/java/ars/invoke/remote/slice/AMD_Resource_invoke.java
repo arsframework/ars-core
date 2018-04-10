@@ -22,18 +22,15 @@ package ars.invoke.remote.slice;
 
 /**
  * 远程调用
- * 
+ * <p>
  * 如果参数包含文件，则需要先将文件上传，然后将参数名称修改为：__file_ + 实际参数名称
- * 
  **/
 
 public interface AMD_Resource_invoke extends Ice.AMDCallback {
-	/**
-	 * ice_response indicates that the operation completed successfully.
-	 * 
-	 * @param __ret
-	 *            (return value) 结果对象
-	 * 
-	 **/
-	void ice_response(Iresult __ret);
+    /**
+     * ice_response indicates that the operation completed successfully.
+     *
+     * @param __ret (return value) 结果对象
+     **/
+    void ice_response(Iresult __ret);
 }

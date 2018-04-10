@@ -8,24 +8,19 @@ import ars.invoke.Channel;
 
 /**
  * Http请求通道接口
- * 
- * @author yongqiangwu
- * 
+ *
+ * @author wuyongqiang
  */
 public interface HttpChannel extends Channel {
-	/**
-	 * 请求调度
-	 * 
-	 * @param config
-	 *            Servlet配制对象
-	 * @param request
-	 *            HTTP请求对象
-	 * @param response
-	 *            HTTP响应对象
-	 * @throws Exception
-	 *             操作异常
-	 */
-	public void dispatch(ServletConfig config, HttpServletRequest request, HttpServletResponse response)
-			throws Exception;
+    /**
+     * 请求调度
+     *
+     * @param config   Servlet配制对象
+     * @param request  HTTP请求对象
+     * @param response HTTP响应对象
+     * @throws Exception 操作异常
+     */
+    public void dispatch(ServletConfig config, HttpServletRequest request, HttpServletResponse response)
+        throws Exception;
 
 }

@@ -21,91 +21,90 @@ import com.itextpdf.text.pdf.PdfContentByte;
 
 /**
  * SVG元素对象
- * 
- * @author yongqiangwu
- * 
+ *
+ * @author wuyongqiang
  */
 public class SVGReplacedElement implements ITextReplacedElement {
-	private Point location = new Point(0, 0);
-	private Document svg;
-	private int cssWidth;
-	private int cssHeight;
+    private Point location = new Point(0, 0);
+    private Document svg;
+    private int cssWidth;
+    private int cssHeight;
 
-	public SVGReplacedElement(Document svg, int cssWidth, int cssHeight) {
-		this.cssWidth = cssWidth;
-		this.cssHeight = cssHeight;
-		this.svg = svg;
-	}
+    public SVGReplacedElement(Document svg, int cssWidth, int cssHeight) {
+        this.cssWidth = cssWidth;
+        this.cssHeight = cssHeight;
+        this.svg = svg;
+    }
 
-	@Override
-	public void detach(LayoutContext c) {
+    @Override
+    public void detach(LayoutContext c) {
 
-	}
+    }
 
-	@Override
-	public int getBaseline() {
-		return 0;
-	}
+    @Override
+    public int getBaseline() {
+        return 0;
+    }
 
-	@Override
-	public int getIntrinsicWidth() {
-		return cssWidth;
-	}
+    @Override
+    public int getIntrinsicWidth() {
+        return cssWidth;
+    }
 
-	@Override
-	public int getIntrinsicHeight() {
-		return cssHeight;
-	}
+    @Override
+    public int getIntrinsicHeight() {
+        return cssHeight;
+    }
 
-	@Override
-	public boolean hasBaseline() {
-		return false;
-	}
+    @Override
+    public boolean hasBaseline() {
+        return false;
+    }
 
-	@Override
-	public boolean isRequiresInteractivePaint() {
-		return false;
-	}
+    @Override
+    public boolean isRequiresInteractivePaint() {
+        return false;
+    }
 
-	@Override
-	public Point getLocation() {
-		return location;
-	}
+    @Override
+    public Point getLocation() {
+        return location;
+    }
 
-	@Override
-	public void setLocation(int x, int y) {
-		this.location.x = x;
-		this.location.y = y;
-	}
+    @Override
+    public void setLocation(int x, int y) {
+        this.location.x = x;
+        this.location.y = y;
+    }
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public void paint(RenderingContext renderingContext, ITextOutputDevice outputDevice, BlockBox blockBox) {
-		PdfContentByte cb = outputDevice.getWriter().getDirectContent();
-		float width = (float) (this.cssWidth / outputDevice.getDotsPerPoint());
-		float height = (float) (this.cssHeight / outputDevice.getDotsPerPoint());
+    @SuppressWarnings("deprecation")
+    @Override
+    public void paint(RenderingContext renderingContext, ITextOutputDevice outputDevice, BlockBox blockBox) {
+        PdfContentByte cb = outputDevice.getWriter().getDirectContent();
+        float width = (float) (this.cssWidth / outputDevice.getDotsPerPoint());
+        float height = (float) (this.cssHeight / outputDevice.getDotsPerPoint());
 
-		PdfTemplate template = cb.createTemplate(width, height);
-		Graphics2D g2d = template.createGraphics(width, height);
-		PrintTranscoder prm = new PrintTranscoder();
-		TranscoderInput ti = new TranscoderInput(this.svg);
-		prm.transcode(ti, null);
-		PageFormat pg = new PageFormat();
-		Paper pp = new Paper();
-		pp.setSize(width, height);
-		pp.setImageableArea(0, 0, width, height);
-		pg.setPaper(pp);
-		prm.print(g2d, pg, 0);
-		g2d.dispose();
+        PdfTemplate template = cb.createTemplate(width, height);
+        Graphics2D g2d = template.createGraphics(width, height);
+        PrintTranscoder prm = new PrintTranscoder();
+        TranscoderInput ti = new TranscoderInput(this.svg);
+        prm.transcode(ti, null);
+        PageFormat pg = new PageFormat();
+        Paper pp = new Paper();
+        pp.setSize(width, height);
+        pp.setImageableArea(0, 0, width, height);
+        pg.setPaper(pp);
+        prm.print(g2d, pg, 0);
+        g2d.dispose();
 
-		PageBox page = renderingContext.getPage();
-		float x = blockBox.getAbsX() + page.getMarginBorderPadding(renderingContext, CalculatedStyle.LEFT);
-		float y = (page.getBottom() - (blockBox.getAbsY() + this.cssHeight))
-				+ page.getMarginBorderPadding(renderingContext, CalculatedStyle.BOTTOM);
-		x /= outputDevice.getDotsPerPoint();
-		y /= outputDevice.getDotsPerPoint();
+        PageBox page = renderingContext.getPage();
+        float x = blockBox.getAbsX() + page.getMarginBorderPadding(renderingContext, CalculatedStyle.LEFT);
+        float y = (page.getBottom() - (blockBox.getAbsY() + this.cssHeight))
+            + page.getMarginBorderPadding(renderingContext, CalculatedStyle.BOTTOM);
+        x /= outputDevice.getDotsPerPoint();
+        y /= outputDevice.getDotsPerPoint();
 
-		cb.addTemplate(template, x, y);
-	}
+        cb.addTemplate(template, x, y);
+    }
 
 }

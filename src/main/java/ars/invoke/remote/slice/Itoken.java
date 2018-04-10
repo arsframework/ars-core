@@ -22,104 +22,103 @@ package ars.invoke.remote.slice;
 
 /**
  * 请求令牌
- *
  **/
 public class Itoken implements java.lang.Cloneable, java.io.Serializable {
-	public String code;
+    public String code;
 
-	public int timeout;
+    public int timeout;
 
-	public String attributes;
+    public String attributes;
 
-	public Itoken() {
-		code = "";
-		attributes = "";
-	}
+    public Itoken() {
+        code = "";
+        attributes = "";
+    }
 
-	public Itoken(String code, int timeout, String attributes) {
-		this.code = code;
-		this.timeout = timeout;
-		this.attributes = attributes;
-	}
+    public Itoken(String code, int timeout, String attributes) {
+        this.code = code;
+        this.timeout = timeout;
+        this.attributes = attributes;
+    }
 
-	public boolean equals(java.lang.Object rhs) {
-		if (this == rhs) {
-			return true;
-		}
-		Itoken _r = null;
-		if (rhs instanceof Itoken) {
-			_r = (Itoken) rhs;
-		}
+    public boolean equals(java.lang.Object rhs) {
+        if (this == rhs) {
+            return true;
+        }
+        Itoken _r = null;
+        if (rhs instanceof Itoken) {
+            _r = (Itoken) rhs;
+        }
 
-		if (_r != null) {
-			if (code != _r.code) {
-				if (code == null || _r.code == null || !code.equals(_r.code)) {
-					return false;
-				}
-			}
-			if (timeout != _r.timeout) {
-				return false;
-			}
-			if (attributes != _r.attributes) {
-				if (attributes == null || _r.attributes == null || !attributes.equals(_r.attributes)) {
-					return false;
-				}
-			}
+        if (_r != null) {
+            if (code != _r.code) {
+                if (code == null || _r.code == null || !code.equals(_r.code)) {
+                    return false;
+                }
+            }
+            if (timeout != _r.timeout) {
+                return false;
+            }
+            if (attributes != _r.attributes) {
+                if (attributes == null || _r.attributes == null || !attributes.equals(_r.attributes)) {
+                    return false;
+                }
+            }
 
-			return true;
-		}
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public int hashCode() {
-		int __h = 5381;
-		__h = IceInternal.HashUtil.hashAdd(__h, "::ars::invoke::remote::slice::Itoken");
-		__h = IceInternal.HashUtil.hashAdd(__h, code);
-		__h = IceInternal.HashUtil.hashAdd(__h, timeout);
-		__h = IceInternal.HashUtil.hashAdd(__h, attributes);
-		return __h;
-	}
+    public int hashCode() {
+        int __h = 5381;
+        __h = IceInternal.HashUtil.hashAdd(__h, "::ars::invoke::remote::slice::Itoken");
+        __h = IceInternal.HashUtil.hashAdd(__h, code);
+        __h = IceInternal.HashUtil.hashAdd(__h, timeout);
+        __h = IceInternal.HashUtil.hashAdd(__h, attributes);
+        return __h;
+    }
 
-	public Itoken clone() {
-		Itoken c = null;
-		try {
-			c = (Itoken) super.clone();
-		} catch (CloneNotSupportedException ex) {
-			assert false; // impossible
-		}
-		return c;
-	}
+    public Itoken clone() {
+        Itoken c = null;
+        try {
+            c = (Itoken) super.clone();
+        } catch (CloneNotSupportedException ex) {
+            assert false; // impossible
+        }
+        return c;
+    }
 
-	public void __write(IceInternal.BasicStream __os) {
-		__os.writeString(code);
-		__os.writeInt(timeout);
-		__os.writeString(attributes);
-	}
+    public void __write(IceInternal.BasicStream __os) {
+        __os.writeString(code);
+        __os.writeInt(timeout);
+        __os.writeString(attributes);
+    }
 
-	public void __read(IceInternal.BasicStream __is) {
-		code = __is.readString();
-		timeout = __is.readInt();
-		attributes = __is.readString();
-	}
+    public void __read(IceInternal.BasicStream __is) {
+        code = __is.readString();
+        timeout = __is.readInt();
+        attributes = __is.readString();
+    }
 
-	static public void __write(IceInternal.BasicStream __os, Itoken __v) {
-		if (__v == null) {
-			__nullMarshalValue.__write(__os);
-		} else {
-			__v.__write(__os);
-		}
-	}
+    static public void __write(IceInternal.BasicStream __os, Itoken __v) {
+        if (__v == null) {
+            __nullMarshalValue.__write(__os);
+        } else {
+            __v.__write(__os);
+        }
+    }
 
-	static public Itoken __read(IceInternal.BasicStream __is, Itoken __v) {
-		if (__v == null) {
-			__v = new Itoken();
-		}
-		__v.__read(__is);
-		return __v;
-	}
+    static public Itoken __read(IceInternal.BasicStream __is, Itoken __v) {
+        if (__v == null) {
+            __v = new Itoken();
+        }
+        __v.__read(__is);
+        return __v;
+    }
 
-	private static final Itoken __nullMarshalValue = new Itoken();
+    private static final Itoken __nullMarshalValue = new Itoken();
 
-	public static final long serialVersionUID = -189512765L;
+    public static final long serialVersionUID = -189512765L;
 }

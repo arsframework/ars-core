@@ -22,14 +22,13 @@ package ars.invoke.remote.slice;
 
 /**
  * 远程调用
- * 
+ * <p>
  * 如果参数包含文件，则需要先将文件上传，然后将参数名称修改为：__file_ + 实际参数名称
- * 
  **/
 
 public abstract class Callback_Resource_invoke extends IceInternal.TwowayCallback
-		implements Ice.TwowayCallbackArg1<ars.invoke.remote.slice.Iresult> {
-	public final void __completed(Ice.AsyncResult __result) {
-		ResourcePrxHelper.__invoke_completed(this, __result);
-	}
+    implements Ice.TwowayCallbackArg1<ars.invoke.remote.slice.Iresult> {
+    public final void __completed(Ice.AsyncResult __result) {
+        ResourcePrxHelper.__invoke_completed(this, __result);
+    }
 }

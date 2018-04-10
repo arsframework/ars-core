@@ -4,16 +4,15 @@ import java.util.Map;
 
 /**
  * 对象可格式化接口
- * 
- * @author yongqiangwu
- * 
+ *
+ * @author wuyongqiang
  */
 public interface Formable {
-	/**
-	 * 对象键/值对格式化
-	 * 
-	 * @return 键/值对
-	 */
-	public Map<String, Object> format();
+    /**
+     * 对象键/值对格式化
+     *
+     * @return 键/值对
+     */
+    public Map<String, Object> format();
 
 }

@@ -21,22 +21,22 @@
 package ars.invoke.remote.slice;
 
 public final class ResourceHolder extends Ice.ObjectHolderBase<Resource> {
-	public ResourceHolder() {
-	}
+    public ResourceHolder() {
+    }
 
-	public ResourceHolder(Resource value) {
-		this.value = value;
-	}
+    public ResourceHolder(Resource value) {
+        this.value = value;
+    }
 
-	public void patch(Ice.Object v) {
-		if (v == null || v instanceof Resource) {
-			value = (Resource) v;
-		} else {
-			IceInternal.Ex.throwUOE(type(), v);
-		}
-	}
+    public void patch(Ice.Object v) {
+        if (v == null || v instanceof Resource) {
+            value = (Resource) v;
+        } else {
+            IceInternal.Ex.throwUOE(type(), v);
+        }
+    }
 
-	public String type() {
-		return _ResourceDisp.ice_staticId();
-	}
+    public String type() {
+        return _ResourceDisp.ice_staticId();
+    }
 }

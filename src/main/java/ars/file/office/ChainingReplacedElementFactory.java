@@ -13,48 +13,47 @@ import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 
 /**
  * 连接替换元素工厂对象
- * 
- * @author yongqiangwu
- * 
+ *
+ * @author wuyongqiang
  */
 public class ChainingReplacedElementFactory implements ReplacedElementFactory {
-	private List<ReplacedElementFactory> replacedElementFactories = new ArrayList<ReplacedElementFactory>();
+    private List<ReplacedElementFactory> replacedElementFactories = new ArrayList<ReplacedElementFactory>();
 
-	public void addReplacedElementFactory(ReplacedElementFactory replacedElementFactory) {
-		this.replacedElementFactories.add(0, replacedElementFactory);
-	}
+    public void addReplacedElementFactory(ReplacedElementFactory replacedElementFactory) {
+        this.replacedElementFactories.add(0, replacedElementFactory);
+    }
 
-	@Override
-	public ReplacedElement createReplacedElement(LayoutContext c, BlockBox box, UserAgentCallback uac, int cssWidth,
-			int cssHeight) {
-		for (ReplacedElementFactory replacedElementFactory : this.replacedElementFactories) {
-			ReplacedElement element = replacedElementFactory.createReplacedElement(c, box, uac, cssWidth, cssHeight);
-			if (element != null) {
-				return element;
-			}
-		}
-		return null;
-	}
+    @Override
+    public ReplacedElement createReplacedElement(LayoutContext c, BlockBox box, UserAgentCallback uac, int cssWidth,
+                                                 int cssHeight) {
+        for (ReplacedElementFactory replacedElementFactory : this.replacedElementFactories) {
+            ReplacedElement element = replacedElementFactory.createReplacedElement(c, box, uac, cssWidth, cssHeight);
+            if (element != null) {
+                return element;
+            }
+        }
+        return null;
+    }
 
-	@Override
-	public void reset() {
-		for (ReplacedElementFactory replacedElementFactory : this.replacedElementFactories) {
-			replacedElementFactory.reset();
-		}
-	}
+    @Override
+    public void reset() {
+        for (ReplacedElementFactory replacedElementFactory : this.replacedElementFactories) {
+            replacedElementFactory.reset();
+        }
+    }
 
-	@Override
-	public void remove(Element e) {
-		for (ReplacedElementFactory replacedElementFactory : this.replacedElementFactories) {
-			replacedElementFactory.remove(e);
-		}
-	}
+    @Override
+    public void remove(Element e) {
+        for (ReplacedElementFactory replacedElementFactory : this.replacedElementFactories) {
+            replacedElementFactory.remove(e);
+        }
+    }
 
-	@Override
-	public void setFormSubmissionListener(FormSubmissionListener listener) {
-		for (ReplacedElementFactory replacedElementFactory : this.replacedElementFactories) {
-			replacedElementFactory.setFormSubmissionListener(listener);
-		}
-	}
+    @Override
+    public void setFormSubmissionListener(FormSubmissionListener listener) {
+        for (ReplacedElementFactory replacedElementFactory : this.replacedElementFactories) {
+            replacedElementFactory.setFormSubmissionListener(listener);
+        }
+    }
 
 }

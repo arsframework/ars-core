@@ -22,100 +22,99 @@ package ars.invoke.remote.slice;
 
 /**
  * 数据流结果类型
- *
  **/
 public class Istream extends Iresult {
-	public Istream() {
-		super();
-		id = "";
-		name = "";
-	}
+    public Istream() {
+        super();
+        id = "";
+        name = "";
+    }
 
-	public Istream(String id, String name, long size, boolean file) {
-		this.id = id;
-		this.name = name;
-		this.size = size;
-		this.file = file;
-	}
+    public Istream(String id, String name, long size, boolean file) {
+        this.id = id;
+        this.name = name;
+        this.size = size;
+        this.file = file;
+    }
 
-	private static class __F implements Ice.ObjectFactory {
-		public Ice.Object create(String type) {
-			assert (type.equals(ice_staticId()));
-			return new Istream();
-		}
+    private static class __F implements Ice.ObjectFactory {
+        public Ice.Object create(String type) {
+            assert (type.equals(ice_staticId()));
+            return new Istream();
+        }
 
-		public void destroy() {
-		}
-	}
+        public void destroy() {
+        }
+    }
 
-	private static Ice.ObjectFactory _factory = new __F();
+    private static Ice.ObjectFactory _factory = new __F();
 
-	public static Ice.ObjectFactory ice_factory() {
-		return _factory;
-	}
+    public static Ice.ObjectFactory ice_factory() {
+        return _factory;
+    }
 
-	public static final String[] __ids = { "::Ice::Object", "::ars::invoke::remote::slice::Iresult",
-			"::ars::invoke::remote::slice::Istream" };
+    public static final String[] __ids = {"::Ice::Object", "::ars::invoke::remote::slice::Iresult",
+        "::ars::invoke::remote::slice::Istream"};
 
-	public boolean ice_isA(String s) {
-		return java.util.Arrays.binarySearch(__ids, s) >= 0;
-	}
+    public boolean ice_isA(String s) {
+        return java.util.Arrays.binarySearch(__ids, s) >= 0;
+    }
 
-	public boolean ice_isA(String s, Ice.Current __current) {
-		return java.util.Arrays.binarySearch(__ids, s) >= 0;
-	}
+    public boolean ice_isA(String s, Ice.Current __current) {
+        return java.util.Arrays.binarySearch(__ids, s) >= 0;
+    }
 
-	public String[] ice_ids() {
-		return __ids;
-	}
+    public String[] ice_ids() {
+        return __ids;
+    }
 
-	public String[] ice_ids(Ice.Current __current) {
-		return __ids;
-	}
+    public String[] ice_ids(Ice.Current __current) {
+        return __ids;
+    }
 
-	public String ice_id() {
-		return __ids[2];
-	}
+    public String ice_id() {
+        return __ids[2];
+    }
 
-	public String ice_id(Ice.Current __current) {
-		return __ids[2];
-	}
+    public String ice_id(Ice.Current __current) {
+        return __ids[2];
+    }
 
-	public static String ice_staticId() {
-		return __ids[2];
-	}
+    public static String ice_staticId() {
+        return __ids[2];
+    }
 
-	protected void __writeImpl(IceInternal.BasicStream __os) {
-		__os.startWriteSlice(ice_staticId(), -1, false);
-		__os.writeString(id);
-		__os.writeString(name);
-		__os.writeLong(size);
-		__os.writeBool(file);
-		__os.endWriteSlice();
-		super.__writeImpl(__os);
-	}
+    protected void __writeImpl(IceInternal.BasicStream __os) {
+        __os.startWriteSlice(ice_staticId(), -1, false);
+        __os.writeString(id);
+        __os.writeString(name);
+        __os.writeLong(size);
+        __os.writeBool(file);
+        __os.endWriteSlice();
+        super.__writeImpl(__os);
+    }
 
-	protected void __readImpl(IceInternal.BasicStream __is) {
-		__is.startReadSlice();
-		id = __is.readString();
-		name = __is.readString();
-		size = __is.readLong();
-		file = __is.readBool();
-		__is.endReadSlice();
-		super.__readImpl(__is);
-	}
+    protected void __readImpl(IceInternal.BasicStream __is) {
+        __is.startReadSlice();
+        id = __is.readString();
+        name = __is.readString();
+        size = __is.readLong();
+        file = __is.readBool();
+        __is.endReadSlice();
+        super.__readImpl(__is);
+    }
 
-	public String id;
+    public String id;
 
-	public String name;
+    public String name;
 
-	public long size;
+    public long size;
 
-	public boolean file;
+    public boolean file;
 
-	public Istream clone() {
-		return (Istream) super.clone();
-	}
+    public Istream clone() {
+        return (Istream) super.clone();
+    }
 
-	public static final long serialVersionUID = -1399821043L;
+    public static final long serialVersionUID = -1399821043L;
 }

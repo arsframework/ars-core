@@ -14,44 +14,51 @@ import ars.invoke.channel.http.HttpChannel;
 
 /**
  * 请求调度Servlet简单实现
- * 
- * @author yongqiangwu
- * 
+ *
+ * @author wuyongqiang
  */
 public class SimpleDispatchServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected HttpChannel channel; // Http请求通道
-	protected ApplicationContext applicationContext; // Spring应用上下文
+    private HttpChannel channel; // Http请求通道
+    private ApplicationContext applicationContext; // Spring应用上下文
 
-	@Override
-	public void init() throws ServletException {
-		super.init();
-		this.applicationContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-		this.channel = this.applicationContext.getBean(HttpChannel.class);
-	}
+    public HttpChannel getChannel() {
+        return this.channel;
+    }
 
-	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		this.doPost(request, response);
-	}
+    public ApplicationContext getApplicationContext() {
+        return this.applicationContext;
+    }
 
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		try {
-			this.channel.dispatch(this.getServletConfig(), request, response);
-		} catch (Exception e) {
-			if (e instanceof RuntimeException) {
-				throw (RuntimeException) e;
-			} else if (e instanceof ServletException) {
-				throw (ServletException) e;
-			} else if (e instanceof IOException) {
-				throw (IOException) e;
-			}
-			throw new RuntimeException(e);
-		}
-	}
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        this.applicationContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        this.channel = this.applicationContext.getBean(HttpChannel.class);
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+        this.doPost(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+        try {
+            this.channel.dispatch(this.getServletConfig(), request, response);
+        } catch (Exception e) {
+            if (e instanceof RuntimeException) {
+                throw (RuntimeException) e;
+            } else if (e instanceof ServletException) {
+                throw (ServletException) e;
+            } else if (e instanceof IOException) {
+                throw (IOException) e;
+            }
+            throw new RuntimeException(e);
+        }
+    }
 
 }

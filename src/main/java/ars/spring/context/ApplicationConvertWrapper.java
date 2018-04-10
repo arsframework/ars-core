@@ -1,5 +1,7 @@
 package ars.spring.context;
 
+import java.util.Map;
+
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -11,39 +13,26 @@ import ars.invoke.convert.StandardConvertWrapper;
 
 /**
  * 基于Spring上下文对象数据转换实现
- * 
- * @author yongqiangwu
- * 
+ *
+ * @author wuyongqiang
  */
-public class ApplicationConvertWrapper implements Converter, ApplicationContextAware {
-	protected Converter converter;
+public class ApplicationConvertWrapper extends StandardConvertWrapper implements Converter, ApplicationContextAware {
 
-	public ApplicationConvertWrapper() {
-		this(new JsonConverter());
-	}
+    public ApplicationConvertWrapper() {
+        this(new JsonConverter());
+    }
 
-	public ApplicationConvertWrapper(Converter converter) {
-		if (converter == null) {
-			throw new IllegalArgumentException("Illegal converter:" + converter);
-		}
-		this.converter = converter;
-	}
+    public ApplicationConvertWrapper(Converter converter) {
+        super(converter);
+    }
 
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		ThrowableResolver[] throwableResolvers = applicationContext.getBeansOfType(ThrowableResolver.class).values()
-				.toArray(new ThrowableResolver[0]);
-		this.converter = new StandardConvertWrapper(this.converter, throwableResolvers);
-	}
-
-	@Override
-	public String serialize(Object object) {
-		return this.converter.serialize(object);
-	}
-
-	@Override
-	public Object deserialize(String string) {
-		return this.converter.deserialize(string);
-	}
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.logger.info("Register throwable resolvers on {}", this.converter);
+        Map<String, ThrowableResolver> throwableResolvers = applicationContext.getBeansOfType(ThrowableResolver.class);
+        if (!throwableResolvers.isEmpty()) {
+            this.setThrowableResolvers(throwableResolvers.values().toArray(new ThrowableResolver[0]));
+        }
+    }
 
 }

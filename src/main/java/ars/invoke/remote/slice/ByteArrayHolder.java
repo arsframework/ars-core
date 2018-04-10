@@ -21,10 +21,10 @@
 package ars.invoke.remote.slice;
 
 public final class ByteArrayHolder extends Ice.Holder<byte[]> {
-	public ByteArrayHolder() {
-	}
+    public ByteArrayHolder() {
+    }
 
-	public ByteArrayHolder(byte[] value) {
-		super(value);
-	}
+    public ByteArrayHolder(byte[] value) {
+        super(value);
+    }
 }

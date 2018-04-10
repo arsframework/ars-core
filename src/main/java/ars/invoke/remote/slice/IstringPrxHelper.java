@@ -24,115 +24,104 @@ package ars.invoke.remote.slice;
  * Provides type-specific helper functions.
  **/
 public final class IstringPrxHelper extends Ice.ObjectPrxHelperBase implements IstringPrx {
-	/**
-	 * Contacts the remote server to verify that the object implements this type.
-	 * Raises a local exception if a communication error occurs.
-	 * 
-	 * @param __obj
-	 *            The untyped proxy.
-	 * @return A proxy for this type, or null if the object does not support this
-	 *         type.
-	 **/
-	public static IstringPrx checkedCast(Ice.ObjectPrx __obj) {
-		return checkedCastImpl(__obj, ice_staticId(), IstringPrx.class, IstringPrxHelper.class);
-	}
+    /**
+     * Contacts the remote server to verify that the object implements this type.
+     * Raises a local exception if a communication error occurs.
+     *
+     * @param __obj The untyped proxy.
+     * @return A proxy for this type, or null if the object does not support this
+     * type.
+     **/
+    public static IstringPrx checkedCast(Ice.ObjectPrx __obj) {
+        return checkedCastImpl(__obj, ice_staticId(), IstringPrx.class, IstringPrxHelper.class);
+    }
 
-	/**
-	 * Contacts the remote server to verify that the object implements this type.
-	 * Raises a local exception if a communication error occurs.
-	 * 
-	 * @param __obj
-	 *            The untyped proxy.
-	 * @param __ctx
-	 *            The Context map to send with the invocation.
-	 * @return A proxy for this type, or null if the object does not support this
-	 *         type.
-	 **/
-	public static IstringPrx checkedCast(Ice.ObjectPrx __obj, java.util.Map<String, String> __ctx) {
-		return checkedCastImpl(__obj, __ctx, ice_staticId(), IstringPrx.class, IstringPrxHelper.class);
-	}
+    /**
+     * Contacts the remote server to verify that the object implements this type.
+     * Raises a local exception if a communication error occurs.
+     *
+     * @param __obj The untyped proxy.
+     * @param __ctx The Context map to send with the invocation.
+     * @return A proxy for this type, or null if the object does not support this
+     * type.
+     **/
+    public static IstringPrx checkedCast(Ice.ObjectPrx __obj, java.util.Map<String, String> __ctx) {
+        return checkedCastImpl(__obj, __ctx, ice_staticId(), IstringPrx.class, IstringPrxHelper.class);
+    }
 
-	/**
-	 * Contacts the remote server to verify that a facet of the object implements
-	 * this type. Raises a local exception if a communication error occurs.
-	 * 
-	 * @param __obj
-	 *            The untyped proxy.
-	 * @param __facet
-	 *            The name of the desired facet.
-	 * @return A proxy for this type, or null if the object does not support this
-	 *         type.
-	 **/
-	public static IstringPrx checkedCast(Ice.ObjectPrx __obj, String __facet) {
-		return checkedCastImpl(__obj, __facet, ice_staticId(), IstringPrx.class, IstringPrxHelper.class);
-	}
+    /**
+     * Contacts the remote server to verify that a facet of the object implements
+     * this type. Raises a local exception if a communication error occurs.
+     *
+     * @param __obj   The untyped proxy.
+     * @param __facet The name of the desired facet.
+     * @return A proxy for this type, or null if the object does not support this
+     * type.
+     **/
+    public static IstringPrx checkedCast(Ice.ObjectPrx __obj, String __facet) {
+        return checkedCastImpl(__obj, __facet, ice_staticId(), IstringPrx.class, IstringPrxHelper.class);
+    }
 
-	/**
-	 * Contacts the remote server to verify that a facet of the object implements
-	 * this type. Raises a local exception if a communication error occurs.
-	 * 
-	 * @param __obj
-	 *            The untyped proxy.
-	 * @param __facet
-	 *            The name of the desired facet.
-	 * @param __ctx
-	 *            The Context map to send with the invocation.
-	 * @return A proxy for this type, or null if the object does not support this
-	 *         type.
-	 **/
-	public static IstringPrx checkedCast(Ice.ObjectPrx __obj, String __facet, java.util.Map<String, String> __ctx) {
-		return checkedCastImpl(__obj, __facet, __ctx, ice_staticId(), IstringPrx.class, IstringPrxHelper.class);
-	}
+    /**
+     * Contacts the remote server to verify that a facet of the object implements
+     * this type. Raises a local exception if a communication error occurs.
+     *
+     * @param __obj   The untyped proxy.
+     * @param __facet The name of the desired facet.
+     * @param __ctx   The Context map to send with the invocation.
+     * @return A proxy for this type, or null if the object does not support this
+     * type.
+     **/
+    public static IstringPrx checkedCast(Ice.ObjectPrx __obj, String __facet, java.util.Map<String, String> __ctx) {
+        return checkedCastImpl(__obj, __facet, __ctx, ice_staticId(), IstringPrx.class, IstringPrxHelper.class);
+    }
 
-	/**
-	 * Downcasts the given proxy to this type without contacting the remote server.
-	 * 
-	 * @param __obj
-	 *            The untyped proxy.
-	 * @return A proxy for this type.
-	 **/
-	public static IstringPrx uncheckedCast(Ice.ObjectPrx __obj) {
-		return uncheckedCastImpl(__obj, IstringPrx.class, IstringPrxHelper.class);
-	}
+    /**
+     * Downcasts the given proxy to this type without contacting the remote server.
+     *
+     * @param __obj The untyped proxy.
+     * @return A proxy for this type.
+     **/
+    public static IstringPrx uncheckedCast(Ice.ObjectPrx __obj) {
+        return uncheckedCastImpl(__obj, IstringPrx.class, IstringPrxHelper.class);
+    }
 
-	/**
-	 * Downcasts the given proxy to this type without contacting the remote server.
-	 * 
-	 * @param __obj
-	 *            The untyped proxy.
-	 * @param __facet
-	 *            The name of the desired facet.
-	 * @return A proxy for this type.
-	 **/
-	public static IstringPrx uncheckedCast(Ice.ObjectPrx __obj, String __facet) {
-		return uncheckedCastImpl(__obj, __facet, IstringPrx.class, IstringPrxHelper.class);
-	}
+    /**
+     * Downcasts the given proxy to this type without contacting the remote server.
+     *
+     * @param __obj   The untyped proxy.
+     * @param __facet The name of the desired facet.
+     * @return A proxy for this type.
+     **/
+    public static IstringPrx uncheckedCast(Ice.ObjectPrx __obj, String __facet) {
+        return uncheckedCastImpl(__obj, __facet, IstringPrx.class, IstringPrxHelper.class);
+    }
 
-	public static final String[] __ids = { "::Ice::Object", "::ars::invoke::remote::slice::Iresult",
-			"::ars::invoke::remote::slice::Istring" };
+    public static final String[] __ids = {"::Ice::Object", "::ars::invoke::remote::slice::Iresult",
+        "::ars::invoke::remote::slice::Istring"};
 
-	/**
-	 * Provides the Slice type ID of this type.
-	 * 
-	 * @return The Slice type ID.
-	 **/
-	public static String ice_staticId() {
-		return __ids[2];
-	}
+    /**
+     * Provides the Slice type ID of this type.
+     *
+     * @return The Slice type ID.
+     **/
+    public static String ice_staticId() {
+        return __ids[2];
+    }
 
-	public static void __write(IceInternal.BasicStream __os, IstringPrx v) {
-		__os.writeProxy(v);
-	}
+    public static void __write(IceInternal.BasicStream __os, IstringPrx v) {
+        __os.writeProxy(v);
+    }
 
-	public static IstringPrx __read(IceInternal.BasicStream __is) {
-		Ice.ObjectPrx proxy = __is.readProxy();
-		if (proxy != null) {
-			IstringPrxHelper result = new IstringPrxHelper();
-			result.__copyFrom(proxy);
-			return result;
-		}
-		return null;
-	}
+    public static IstringPrx __read(IceInternal.BasicStream __is) {
+        Ice.ObjectPrx proxy = __is.readProxy();
+        if (proxy != null) {
+            IstringPrxHelper result = new IstringPrxHelper();
+            result.__copyFrom(proxy);
+            return result;
+        }
+        return null;
+    }
 
-	public static final long serialVersionUID = 0L;
+    public static final long serialVersionUID = 0L;
 }

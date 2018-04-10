@@ -4,9 +4,8 @@ import java.io.Serializable;
 
 /**
  * 资源接口
- * 
- * @author yongqiangwu
- * 
+ *
+ * @author wuyongqiang
  */
 public interface Resource extends Serializable {
 

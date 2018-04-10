@@ -3,9 +3,6 @@ package ars.invoke.convert;
 import java.util.Map;
 import java.util.HashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ars.util.Beans;
 import ars.invoke.InvokeException;
 import ars.invoke.request.AccessDeniedException;
@@ -70,7 +67,6 @@ public class StandardConvertWrapper implements Converter {
     public static final int CODE_ERROR_PARAMETER_INVALID = 52010;
 
     protected final Converter converter;
-    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     private ThrowableResolver[] throwableResolvers;
 
     public StandardConvertWrapper(Converter converter) {
@@ -189,27 +185,12 @@ public class StandardConvertWrapper implements Converter {
 
     @Override
     public String serialize(Object object) {
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Before wrap: {}", object);
-        }
-        object = this.wrap(object);
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("After wrap: {}", object);
-        }
-        return this.converter.serialize(object);
+        return this.converter.serialize(this.wrap(object));
     }
 
     @Override
     public Object deserialize(String string) {
-        Map<?, ?> wrap = (Map<?, ?>) this.converter.deserialize(string);
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Before unwarp: {}", wrap);
-        }
-        Object object = this.unwrap(wrap);
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("After unwrap: {}", object);
-        }
-        return object;
+        return this.unwrap((Map<?, ?>) this.converter.deserialize(string));
     }
 
 }

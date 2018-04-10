@@ -753,7 +753,7 @@ class BytesEncoding extends Encoding {
     }
 
     /*
-	 * Function: euc_tw_probability Argument: byte array Returns : number from 0 to
+     * Function: euc_tw_probability Argument: byte array Returns : number from 0 to
 	 * 100 representing probability text in array uses EUC-TW (CNS 11643) encoding
 	 */
     int euc_tw_probability(byte[] rawtext) {

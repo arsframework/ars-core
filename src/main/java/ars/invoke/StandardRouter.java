@@ -272,7 +272,7 @@ public class StandardRouter implements Router {
         Object result = null;
         boolean debug = this.logger.isDebugEnabled();
         if (debug) {
-        	this.logger.debug("Request: {}", requester.getParameters());
+            this.logger.debug("Request: {}", requester.getParameters());
         }
         try {
             this.beforeInvoke(requester);

@@ -80,7 +80,7 @@ public class StandardRouter implements Router {
 
         @Override
         public String toString() {
-            return new StringBuffer(this.invoker.toString()).append('@').append(this.resource).toString();
+            return new StringBuffer(this.invoker.toString()).append("->").append(this.resource).toString();
         }
 
     }
@@ -270,18 +270,18 @@ public class StandardRouter implements Router {
     @Override
     public Object routing(Requester requester) {
         Object result = null;
+        boolean debug = this.logger.isDebugEnabled();
+        if (debug) {
+        	this.logger.debug("Request: {}", requester.getParameters());
+        }
         try {
             this.beforeInvoke(requester);
-            boolean debug = this.logger.isDebugEnabled();
             Cacheable cacheable = this.caches.get(requester.getUri());
             if (debug) {
-                this.logger.debug("Get the cache configuration: {}", cacheable);
+                this.logger.debug("Cache configuration: {}", cacheable);
             }
             if (cacheable == null) {
                 result = this.access(requester);
-                if (debug) {
-                    this.logger.debug("");
-                }
                 Set<String> refresh = this.refreshs.get(requester.getUri());
                 if (refresh != null && !refresh.isEmpty()) {
                     for (String uri : refresh) {
@@ -334,7 +334,7 @@ public class StandardRouter implements Router {
                 }
             }
             if (debug) {
-                this.logger.debug("Execute result: {}", result);
+                this.logger.debug("Response: {}", result);
             }
             this.afterInvoke(requester, result);
         } catch (Throwable e) {

@@ -769,11 +769,22 @@ public final class Https {
      * @throws IOException IO操作异常
      */
     public static String getGetEntity(Map<String, Object> parameters) throws IOException {
+        return getGetEntity(parameters, Charset.defaultCharset());
+    }
+
+    /**
+     * 获取Get请求参数
+     *
+     * @param parameters 请求参数
+     * @param charset    编码字符集（如果为空则不对参数进行编码处理）
+     * @return 参数字符串形式
+     * @throws IOException IO操作异常
+     */
+    public static String getGetEntity(Map<String, Object> parameters, Charset charset) throws IOException {
         if (parameters == null || parameters.isEmpty()) {
             return null;
         }
         StringBuilder buffer = new StringBuilder();
-        String charset = Charset.defaultCharset().name();
         for (Entry<String, Object> entry : parameters.entrySet()) {
             String key = entry.getKey();
             if (key == null || key.isEmpty()) {
@@ -792,7 +803,11 @@ public final class Https {
                         if (i > 0) {
                             buffer.append('&');
                         }
-                        buffer.append(key).append('=').append(URLEncoder.encode(Strings.toString(array[i]), charset));
+                        String str = Strings.toString(array[i]);
+                        if (charset != null) {
+                            str = URLEncoder.encode(str, charset.name());
+                        }
+                        buffer.append(key).append('=').append(str);
                     }
                 }
             } else if (value instanceof Collection) {
@@ -805,13 +820,21 @@ public final class Https {
                         if (i++ > 0) {
                             buffer.append('&');
                         }
-                        buffer.append(key).append('=').append(URLEncoder.encode(Strings.toString(v), charset));
+                        String str = Strings.toString(v);
+                        if (charset != null) {
+                            str = URLEncoder.encode(str, charset.name());
+                        }
+                        buffer.append(key).append('=').append(str);
                     }
                 }
             } else if (value == null) {
                 buffer.append(key).append('=');
             } else {
-                buffer.append(key).append('=').append(URLEncoder.encode(Strings.toString(value), charset));
+                String str = Strings.toString(value);
+                if (charset != null) {
+                    str = URLEncoder.encode(str, charset.name());
+                }
+                buffer.append(key).append('=').append(str);
             }
         }
         return buffer.length() == 0 ? null : buffer.toString();
@@ -821,10 +844,20 @@ public final class Https {
      * 获取普通表单请求实例
      *
      * @param parameters 请求参数
-     * @return HTTP实例
-     * @throws IOException IO操作异常
+     * @return 表单请求实例
      */
-    public static UrlEncodedFormEntity getPostEntity(Map<String, Object> parameters) throws IOException {
+    public static UrlEncodedFormEntity getPostEntity(Map<String, Object> parameters) {
+        return getPostEntity(parameters, Charset.defaultCharset());
+    }
+
+    /**
+     * 获取普通表单请求实例
+     *
+     * @param parameters 请求参数
+     * @param charset    编码字符集
+     * @return 表单请求实例
+     */
+    public static UrlEncodedFormEntity getPostEntity(Map<String, Object> parameters, Charset charset) {
         if (parameters == null || parameters.isEmpty()) {
             return null;
         }
@@ -859,21 +892,32 @@ public final class Https {
                 pairs.add(new BasicNameValuePair(key, Strings.toString(value)));
             }
         }
-        return new UrlEncodedFormEntity(pairs, Charset.defaultCharset());
+        return new UrlEncodedFormEntity(pairs, charset);
     }
 
     /**
      * 获取文件上传请求实例
      *
      * @param parameters 请求参数
-     * @return HTTP实例
+     * @return 文件上传请求实例
      * @throws IOException IO操作异常
      */
     public static MultipartEntity getUploadEntity(Map<String, Object> parameters) throws IOException {
+        return getUploadEntity(parameters, Charset.defaultCharset());
+    }
+
+    /**
+     * 获取文件上传请求实例
+     *
+     * @param parameters 请求参数
+     * @param charset    编码字符集
+     * @return 文件上传请求实例
+     * @throws IOException IO操作异常
+     */
+    public static MultipartEntity getUploadEntity(Map<String, Object> parameters, Charset charset) throws IOException {
         if (parameters == null || parameters.isEmpty()) {
             return null;
         }
-        Charset charset = Charset.defaultCharset();
         MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE, null, charset);
         for (Entry<String, Object> entry : parameters.entrySet()) {
             String key = entry.getKey();

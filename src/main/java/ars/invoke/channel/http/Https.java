@@ -772,25 +772,46 @@ public final class Https {
         if (parameters == null || parameters.isEmpty()) {
             return null;
         }
-        String charset = Charset.defaultCharset().name();
         StringBuilder buffer = new StringBuilder();
+        String charset = Charset.defaultCharset().name();
         for (Entry<String, Object> entry : parameters.entrySet()) {
             String key = entry.getKey();
-            if (key == null) {
+            if (key == null || key.isEmpty()) {
                 continue;
             }
+            if (buffer.length() > 0) {
+                buffer.append('&');
+            }
             Object value = entry.getValue();
-            Collection<?> collection = value instanceof Collection ? (Collection<?>) value
-                : value instanceof Object[] ? Arrays.asList((Object[]) value) : Arrays.asList(value);
-            for (Object object : collection) {
-                if (buffer.length() > 0) {
-                    buffer.append('&');
+            if (value instanceof Object[]) {
+                Object[] array = (Object[]) value;
+                if (array.length == 0) {
+                    buffer.append(key).append('=');
+                } else {
+                    for (int i = 0; i < array.length; i++) {
+                        if (i > 0) {
+                            buffer.append('&');
+                        }
+                        buffer.append(key).append('=').append(URLEncoder.encode(Strings.toString(array[i]), charset));
+                    }
                 }
-                buffer.append(key);
-                buffer.append('=');
-                if (object != null) {
-                    buffer.append(URLEncoder.encode(Strings.toString(object), charset));
+            } else if (value instanceof Collection) {
+                Collection<?> collection = (Collection<?>) value;
+                if (collection.isEmpty()) {
+                    buffer.append(key).append('=');
+                } else {
+                    int i = 0;
+                    for (Object v : collection) {
+                        if (i++ > 0) {
+                            buffer.append('&');
+                        }
+                        buffer.append(key).append('=').append(URLEncoder.encode(Strings.toString(v), charset));
+                    }
                 }
+            } else if (value == null) {
+                buffer.append(key).append('=');
+            } else {
+                buffer.append(key).append('=').append(URLEncoder.encode(Strings.toString(value), charset));
             }
         }
         return buffer.length() == 0 ? null : buffer.toString();
@@ -807,18 +828,38 @@ public final class Https {
         if (parameters == null || parameters.isEmpty()) {
             return null;
         }
-        List<NameValuePair> nameValues = new LinkedList<NameValuePair>();
+        List<NameValuePair> pairs = new LinkedList<NameValuePair>();
         for (Entry<String, Object> entry : parameters.entrySet()) {
             String key = entry.getKey();
+            if (key == null || key.isEmpty()) {
+                continue;
+            }
             Object value = entry.getValue();
-            Collection<?> collection = value instanceof Collection ? (Collection<?>) value
-                : value instanceof Object[] ? Arrays.asList((Object[]) value) : Arrays.asList(value);
-            for (Object object : collection) {
-                nameValues.add(
-                    new BasicNameValuePair(key, object == null ? Strings.EMPTY_STRING : Strings.toString(object)));
+            if (value instanceof Object[]) {
+                Object[] array = (Object[]) value;
+                if (array.length == 0) {
+                    pairs.add(new BasicNameValuePair(key, Strings.EMPTY_STRING));
+                } else {
+                    for (Object v : array) {
+                        pairs.add(new BasicNameValuePair(key, Strings.toString(v)));
+                    }
+                }
+            } else if (value instanceof Collection) {
+                Collection<?> collection = (Collection<?>) value;
+                if (collection.isEmpty()) {
+                    pairs.add(new BasicNameValuePair(key, Strings.EMPTY_STRING));
+                } else {
+                    for (Object v : collection) {
+                        pairs.add(new BasicNameValuePair(key, Strings.toString(v)));
+                    }
+                }
+            } else if (value == null) {
+                pairs.add(new BasicNameValuePair(key, Strings.EMPTY_STRING));
+            } else {
+                pairs.add(new BasicNameValuePair(key, Strings.toString(value)));
             }
         }
-        return new UrlEncodedFormEntity(nameValues, Charset.defaultCharset());
+        return new UrlEncodedFormEntity(pairs, Charset.defaultCharset());
     }
 
     /**

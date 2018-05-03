@@ -34,11 +34,11 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 
 /**
- * 接口操作工具类
+ * 基于Spring Rest Template 接口操作工具类
  *
  * @author wuyongqiang
  */
-public final class Apis {
+public final class Rests {
     /**
      * 默认请求读取超时时间（毫秒）
      */
@@ -57,7 +57,7 @@ public final class Apis {
     /**
      * 包装类型参数类型名称/实例映射表
      */
-    private static final Map<String, ParameterizedTypeReference> wrappers = new HashMap<String, ParameterizedTypeReference>();
+    private static final Map<String, ParameterizedTypeReference<?>> wrappers = new HashMap<String, ParameterizedTypeReference<?>>();
 
     /**
      * 基于内存的java文件对象
@@ -83,7 +83,7 @@ public final class Apis {
      *
      * @author wuyongqiang
      */
-    private static class MemoryJavaFileManager extends ForwardingJavaFileManager {
+    private static class MemoryJavaFileManager extends ForwardingJavaFileManager<JavaFileManager> {
         protected Map<String, byte[]> bytes = new HashMap<String, byte[]>();
 
         public MemoryJavaFileManager(JavaFileManager manager) {
@@ -215,20 +215,21 @@ public final class Apis {
      * @param generics 目标对象类型范型数组
      * @return 包装类型参数类型实例
      */
-    public static ParameterizedTypeReference wrap(Class<?> target, Type... generics) {
+    @SuppressWarnings("rawtypes")
+	public static ParameterizedTypeReference wrap(Class<?> target, Type... generics) {
         if (target == null) {
             throw new IllegalArgumentException("Target type must not be null");
         }
         LinkedList<String> classpaths = new LinkedList<String>(); // 类加载路径集合
         String types = buildSourceName(classpaths, target, generics).toString(); // 目标类范型类型字符串
-        ParameterizedTypeReference wrapper = wrappers.get(types);
+        ParameterizedTypeReference<?> wrapper = wrappers.get(types);
         if (wrapper == null) {
             synchronized (types.intern()) {
                 wrapper = wrappers.get(types);
                 if (wrapper == null) {
                     String name = new StringBuilder("ParameterizedTypeReferenceWrapper$").append(Hex.encodeHexString(types.getBytes())).toString();
                     classpaths.addFirst(getSourcePath(ParameterizedTypeReference.class)); // ParameterizedTypeReference所在包路径
-                    classpaths.addFirst(Apis.class.getResource("/").getPath()); // 添加当前包路径
+                    classpaths.addFirst(Rests.class.getResource("/").getPath()); // 添加当前包路径
 
                     // 构建类🌧️源码
                     final StringBuilder source = new StringBuilder("public class ").append(name);
@@ -246,7 +247,7 @@ public final class Apis {
                     final List<String> options = Arrays.asList("-encoding", "UTF-8", "-classpath", classpath.toString());
 
                     // 构建类加载器
-                    ClassLoader classLoader = new URLClassLoader(new URL[0], Apis.class.getClassLoader()) {
+                    ClassLoader classLoader = new URLClassLoader(new URL[0], Rests.class.getClassLoader()) {
 
                         @Override
                         protected Class<?> findClass(String name) throws ClassNotFoundException {
@@ -269,7 +270,7 @@ public final class Apis {
 
                     // 初始化类实例
                     try {
-                        wrapper = (ParameterizedTypeReference) classLoader.loadClass(name).newInstance();
+                        wrapper = (ParameterizedTypeReference<?>) classLoader.loadClass(name).newInstance();
                         wrappers.put(name, wrapper);
                     } catch (ClassNotFoundException e) {
                         throw new RuntimeException(e);
@@ -406,7 +407,8 @@ public final class Apis {
      * @param <T>       结果数据类型
      * @return 请求结果
      */
-    public static <T> T request(Class<T> type, String url, Object parameter, HttpMethod method, int timeout, Map<String, String> headers) {
+    @SuppressWarnings("unchecked")
+	public static <T> T request(Class<T> type, String url, Object parameter, HttpMethod method, int timeout, Map<String, String> headers) {
         return (T) request(wrap(type), url, parameter, method, timeout, headers);
     }
 
@@ -494,7 +496,7 @@ public final class Apis {
             }
         }
         // 构建请求实体
-        HttpEntity<Object> body = new HttpEntity(parameter, header);
+        HttpEntity<Object> body = new HttpEntity<Object>(parameter, header);
 
         // 执行请求
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();

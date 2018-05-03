@@ -1,9 +1,12 @@
 package ars.util;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Collection;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
@@ -23,7 +26,7 @@ import com.google.gson.reflect.TypeToken;
 public final class Jsons {
     private static Gson defaultGson;
     private static ObjectAdapter[] objectAdapters;
-    private static final GsonBuilder gsonBuilder = new GsonBuilder();
+    private static final String dateFormatPattern = "yyyy-MM-dd HH:mm:ss.SSS";
 
     private Jsons() {
 
@@ -61,6 +64,7 @@ public final class Jsons {
      */
     private static class CommonTypeAdapter extends TypeAdapter<Object> {
         protected final int depth; // 对象属性下钻深度（小于1表示不限制深度）
+        protected final DateFormat dateFormat = new SimpleDateFormat(dateFormatPattern);
 
         public CommonTypeAdapter(int depth) {
             this.depth = depth;
@@ -84,6 +88,8 @@ public final class Jsons {
                 writer.value((Number) object);
             } else if (object instanceof Boolean) {
                 writer.value((Boolean) object);
+            } else if (object instanceof Date) {
+                writer.value(this.dateFormat.format((Date) object));
             } else if (Beans.isMetaClass(object.getClass())) {
                 writer.value(Strings.toString(object));
             } else if ((adapted = adaption(object)) != object) {
@@ -219,7 +225,7 @@ public final class Jsons {
      * @return json处理对象
      */
     public static Gson buildGson(final int depth) {
-        return gsonBuilder.registerTypeAdapterFactory(new TypeAdapterFactory() {
+        return new GsonBuilder().registerTypeAdapterFactory(new TypeAdapterFactory() {
 
             @SuppressWarnings("unchecked")
             @Override
@@ -239,7 +245,7 @@ public final class Jsons {
         if (defaultGson == null) {
             synchronized (Jsons.class) {
                 if (defaultGson == null) {
-                    defaultGson = gsonBuilder.create();
+                    defaultGson = new GsonBuilder().setDateFormat(dateFormatPattern).create();
                 }
             }
         }

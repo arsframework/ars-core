@@ -201,7 +201,8 @@ public final class Rests {
     /**
      * 获取对象类型类型
      *
-     * @param generics 类型数组
+     * @param target   目标类型
+     * @param generics 泛型类型数组
      * @return 对象类型
      */
     public static Type type(Class<?> target, Type... generics) {
@@ -216,7 +217,7 @@ public final class Rests {
      * @return 包装类型参数类型实例
      */
     @SuppressWarnings("rawtypes")
-	public static ParameterizedTypeReference wrap(Class<?> target, Type... generics) {
+    public static ParameterizedTypeReference wrap(Class<?> target, Type... generics) {
         if (target == null) {
             throw new IllegalArgumentException("Target type must not be null");
         }
@@ -408,7 +409,7 @@ public final class Rests {
      * @return 请求结果
      */
     @SuppressWarnings("unchecked")
-	public static <T> T request(Class<T> type, String url, Object parameter, HttpMethod method, int timeout, Map<String, String> headers) {
+    public static <T> T request(Class<T> type, String url, Object parameter, HttpMethod method, int timeout, Map<String, String> headers) {
         return (T) request(wrap(type), url, parameter, method, timeout, headers);
     }
 

@@ -147,8 +147,7 @@ public final class Strings {
         } else {
             String ip = null;
             try {
-                Enumeration<NetworkInterface> enumeration = (Enumeration<NetworkInterface>) NetworkInterface
-                    .getNetworkInterfaces();
+                Enumeration<NetworkInterface> enumeration = NetworkInterface.getNetworkInterfaces();
                 outer:
                 while (enumeration.hasMoreElements()) {
                     NetworkInterface networks = enumeration.nextElement();

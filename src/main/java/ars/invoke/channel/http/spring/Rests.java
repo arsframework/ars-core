@@ -244,7 +244,7 @@ public final class Rests {
                         }
                         classpath.append(path);
                     }
-                    final List<String> options = Arrays.asList("-encoding", "UTF-8", "-classpath", classpath.toString());
+                    final List<String> options = Arrays.asList("-nowarn", "-encoding", "UTF-8", "-classpath", classpath.toString());
 
                     // 构建类加载器
                     ClassLoader classLoader = new URLClassLoader(new URL[0], Rests.class.getClassLoader()) {
